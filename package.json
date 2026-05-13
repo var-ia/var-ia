@@ -10,7 +10,9 @@
     "packages/evidence-graph",
     "packages/analyzers",
     "packages/interpreter",
-    "packages/cli"
+    "packages/cli",
+    "packages/persistence",
+    "packages/eval"
   ],
   "scripts": {
     "build": "tsc -b",

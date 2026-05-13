@@ -59,3 +59,8 @@ export interface TemplateChange {
   type: "added" | "removed" | "unchanged";
   template: Template;
 }
+
+export { sectionDiffer } from "./section-differ.js";
+export { citationTracker } from "./citation-tracker.js";
+export { revertDetector } from "./revert-detector.js";
+export { templateTracker } from "./template-tracker.js";

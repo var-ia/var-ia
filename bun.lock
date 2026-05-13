@@ -30,6 +30,13 @@
         "@wikipedia-provenance/interpreter": "workspace:*",
       },
     },
+    "packages/eval": {
+      "name": "@wikipedia-provenance/eval",
+      "version": "0.1.0",
+      "dependencies": {
+        "@wikipedia-provenance/evidence-graph": "workspace:*",
+      },
+    },
     "packages/evidence-graph": {
       "name": "@wikipedia-provenance/evidence-graph",
       "version": "0.1.0",
@@ -43,6 +50,13 @@
     },
     "packages/interpreter": {
       "name": "@wikipedia-provenance/interpreter",
+      "version": "0.1.0",
+      "dependencies": {
+        "@wikipedia-provenance/evidence-graph": "workspace:*",
+      },
+    },
+    "packages/persistence": {
+      "name": "@wikipedia-provenance/persistence",
       "version": "0.1.0",
       "dependencies": {
         "@wikipedia-provenance/evidence-graph": "workspace:*",
@@ -170,11 +184,15 @@
 
     "@wikipedia-provenance/cli": ["@wikipedia-provenance/cli@workspace:packages/cli"],
 
+    "@wikipedia-provenance/eval": ["@wikipedia-provenance/eval@workspace:packages/eval"],
+
     "@wikipedia-provenance/evidence-graph": ["@wikipedia-provenance/evidence-graph@workspace:packages/evidence-graph"],
 
     "@wikipedia-provenance/ingestion": ["@wikipedia-provenance/ingestion@workspace:packages/ingestion"],
 
     "@wikipedia-provenance/interpreter": ["@wikipedia-provenance/interpreter@workspace:packages/interpreter"],
+
+    "@wikipedia-provenance/persistence": ["@wikipedia-provenance/persistence@workspace:packages/persistence"],
 
     "acorn": ["acorn@8.16.0", "", { "bin": { "acorn": "bin/acorn" } }, "sha512-UVJyE9MttOsBQIDKw1skb9nAwQuR5wuGD3+82K6JgJlm/Y+KI92oNsMNGZCYdDsVtRHSak0pcV5Dno5+4jh9sw=="],
 

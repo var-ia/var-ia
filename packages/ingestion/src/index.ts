@@ -14,3 +14,6 @@ export interface RevisionOptions {
   end?: Date;
   direction?: "newer" | "older";
 }
+
+export { MediaWikiClient } from "./mediawiki-client.js";
+export { RateLimiter } from "./rate-limiter.js";

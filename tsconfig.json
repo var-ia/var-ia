@@ -5,6 +5,8 @@
     { "path": "packages/ingestion" },
     { "path": "packages/analyzers" },
     { "path": "packages/interpreter" },
-    { "path": "packages/cli" }
+    { "path": "packages/cli" },
+    { "path": "packages/persistence" },
+    { "path": "packages/eval" }
   ]
 }

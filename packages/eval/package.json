@@ -1,0 +1,18 @@
+{
+  "name": "@wikipedia-provenance/eval",
+  "version": "0.1.0",
+  "type": "module",
+  "private": false,
+  "description": "Evaluation harness for Wikipedia provenance analyzers",
+  "license": "AGPL-3.0",
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@wikipedia-provenance/evidence-graph": "workspace:*"
+  },
+  "devDependencies": {}
+}
