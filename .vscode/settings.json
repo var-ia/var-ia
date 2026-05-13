@@ -1,0 +1,72 @@
+{
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "eslint.useFlatConfig": true,
+  "eslint.workingDirectories": [{ "mode": "auto" }],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "files.exclude": {
+    "**/dist": true,
+    "**/*.tsbuildinfo": true,
+    "**/.DS_Store": true
+  },
+  "files.watcherExclude": {
+    "**/dist/**": true,
+    "**/node_modules/**": true,
+    "**/*.tsbuildinfo": true
+  },
+  "search.exclude": {
+    "**/dist": true,
+    "**/bun.lock": true
+  },
+  "vitest.enable": true,
+  "vitest.commandLine": "bun run test --",
+  "[typescript]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
+
+  "chat.tools.compressOutput.enabled": true,
+  "chat.artifacts.enabled": true,
+  "chat.checkpoints.showFileChanges": true,
+  "chat.tools.terminal.enableAutoApprove": true,
+  "chat.tools.terminal.autoApprove": {
+    "bun run build": true,
+    "bun run lint": true,
+    "bun run typecheck": true,
+    "bun run test": true,
+    "bun run clean": true,
+    "bun --version": true,
+    "node --version": true,
+    "git status": true,
+    "git diff": true,
+    "git log": true,
+    "git branch": true,
+    "ls": true,
+    "pwd": true,
+    "whoami": true,
+    "mkdir": true,
+    "echo": true,
+    "rm": false,
+    "rmdir": false,
+    "kill": false,
+    "curl": false,
+    "wget": false,
+    "chmod": false,
+    "chown": false
+  },
+  "chat.tools.terminal.autoReplyToPrompts": true,
+
+  "chat.instructionsFilesLocations": {
+    ".github/instructions": true
+  },
+
+  "github.copilot.chat.commitMessageGeneration.instructions": [
+    {
+      "text": "Use Conventional Commits. Subject ≤50 chars. Body only when 'why' is not obvious."
+    }
+  ]
+}
