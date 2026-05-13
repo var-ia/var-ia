@@ -46,10 +46,7 @@ export interface UnexpectedEvent {
 }
 
 export interface EvalHarness {
-  evaluate(
-    test: EvalTestCase,
-    events: EvidenceEvent[],
-  ): EvalResult;
+  evaluate(test: EvalTestCase, events: EvidenceEvent[]): EvalResult;
   benchmarkPages(): EvalTestCase[];
   computeScores(results: EvalResult[]): EvalScoreSummary;
 }
@@ -71,9 +68,7 @@ export function createEvalHarness(): EvalHarness {
 
       for (const expected of test.expectedEvents) {
         const found = events.find(
-          (e) =>
-            e.eventType === expected.eventType &&
-            e.section === expected.section,
+          (e) => e.eventType === expected.eventType && e.section === expected.section,
         );
         if (found) {
           matches.push({ expected, actual: found });
@@ -119,7 +114,76 @@ export function createEvalHarness(): EvalHarness {
     },
 
     benchmarkPages(): EvalTestCase[] {
-      return [];
+      return [
+        {
+          id: "page-has-revisions",
+          description: "Any active Wikipedia page returns at least 2 revisions and generates section events",
+          pageTitle: "Earth",
+          pageId: 9228,
+          revisionRange: { from: 0, to: 0 },
+          expectedEvents: [
+            { eventType: "section_reorganized", section: "(lead)" },
+          ],
+          tolerance: { minEventCount: 1, minPrecision: 0.0 },
+        },
+        {
+          id: "contentious-page-has-reverts",
+          description: "Pages with edit wars should have revert events",
+          pageTitle: "Donald_Trump",
+          pageId: 4848272,
+          revisionRange: { from: 0, to: 0 },
+          expectedEvents: [
+            { eventType: "revert_detected", section: "" },
+          ],
+          tolerance: { minEventCount: 1, minPrecision: 0.0 },
+        },
+        {
+          id: "controversy-page-has-templates",
+          description: "Controversial topics have policy maintenance templates",
+          pageTitle: "COVID-19_pandemic",
+          pageId: 58899562,
+          revisionRange: { from: 0, to: 0 },
+          expectedEvents: [
+            { eventType: "template_added", section: "body" },
+          ],
+          tolerance: { minEventCount: 5, minPrecision: 0.0 },
+        },
+        {
+          id: "scientific-article-has-citations",
+          description: "Scientific articles always have citation changes",
+          pageTitle: "CRISPR",
+          pageId: 5000000,
+          revisionRange: { from: 0, to: 0 },
+          expectedEvents: [
+            { eventType: "citation_added", section: "body" },
+            { eventType: "citation_removed", section: "body" },
+          ],
+          tolerance: { minEventCount: 3, minPrecision: 0.1 },
+        },
+        {
+          id: "featured-article-has-template-cleanup",
+          description: "Featured articles show cleanup/maintenance template activity",
+          pageTitle: "Shakespeare",
+          pageId: 26825,
+          revisionRange: { from: 0, to: 0 },
+          expectedEvents: [
+            { eventType: "template_added", section: "body" },
+            { eventType: "section_reorganized", section: "(lead)" },
+          ],
+          tolerance: { minEventCount: 5, minPrecision: 0.1 },
+        },
+        {
+          id: "events-has-citation-additions",
+          description: "Pages with many citations will have observable citation diffs",
+          pageTitle: "Albert_Einstein",
+          pageId: 736,
+          revisionRange: { from: 0, to: 0 },
+          expectedEvents: [
+            { eventType: "citation_added", section: "body" },
+          ],
+          tolerance: { minEventCount: 2, minPrecision: 0.0 },
+        },
+      ];
     },
 
     computeScores(results) {

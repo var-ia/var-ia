@@ -16,6 +16,7 @@
     { "path": "../evidence-graph" },
     { "path": "../ingestion" },
     { "path": "../analyzers" },
-    { "path": "../interpreter" }
+    { "path": "../interpreter" },
+    { "path": "../persistence" }
   ]
 }

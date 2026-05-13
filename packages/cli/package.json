@@ -17,7 +17,8 @@
     "@wikipedia-provenance/ingestion": "workspace:*",
     "@wikipedia-provenance/analyzers": "workspace:*",
     "@wikipedia-provenance/interpreter": "workspace:*",
-    "@wikipedia-provenance/evidence-graph": "workspace:*"
+    "@wikipedia-provenance/evidence-graph": "workspace:*",
+    "@wikipedia-provenance/persistence": "workspace:*"
   },
   "devDependencies": {}
 }

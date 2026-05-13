@@ -9,7 +9,7 @@ export interface InterpretedEvent extends EvidenceEvent {
 }
 
 export interface ModelConfig {
-  provider: "openai" | "anthropic" | "local" | "byok";
+  provider: "openai" | "anthropic" | "deepseek" | "local" | "byok";
   apiKey?: string;
   model?: string;
   endpoint?: string;
@@ -18,8 +18,11 @@ export interface ModelConfig {
 export function createAdapter(config: ModelConfig): ModelAdapter {
   switch (config.provider) {
     case "openai":
+      return createOpenAIAdapter(config);
     case "anthropic":
-      return createHostedAdapter(config);
+      return createAnthropicAdapter(config);
+    case "deepseek":
+      return createDeepSeekAdapter(config);
     case "local":
       return createLocalAdapter(config);
     case "byok":
@@ -29,11 +32,125 @@ export function createAdapter(config: ModelConfig): ModelAdapter {
   }
 }
 
-function createHostedAdapter(_config: ModelConfig): ModelAdapter {
-  // TODO: Implement hosted LLM adapter (OpenAI, Anthropic)
-  // Must receive only evidence objects, never raw wikitext
-  // Must return bounded interpretations with confidence scores
-  throw new Error("Hosted adapter not yet implemented");
+function createOpenAIAdapter(config: ModelConfig): ModelAdapter {
+  const endpoint = config.endpoint ?? "https://api.openai.com/v1";
+  const model = config.model ?? "gpt-4o";
+  const apiKey = config.apiKey ?? process.env.OPENAI_API_KEY;
+  if (!apiKey) throw new Error("OpenAI adapter requires apiKey or OPENAI_API_KEY env var");
+
+  return {
+    async interpret(events: EvidenceEvent[]): Promise<InterpretedEvent[]> {
+      const response = await fetch(`${endpoint}/chat/completions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model,
+          messages: [
+            { role: "system", content: buildSystemPrompt() },
+            { role: "user", content: buildUserPrompt(events) },
+          ],
+          temperature: 0.1,
+        }),
+      });
+
+      if (!response.ok) {
+        const err = await response.text();
+        throw new Error(`OpenAI API error ${response.status}: ${err.slice(0, 300)}`);
+      }
+
+      const data = await response.json() as {
+        choices?: Array<{ message?: { content?: string } }>;
+      };
+      const content = data.choices?.[0]?.message?.content;
+      if (!content) throw new Error("OpenAI returned empty response");
+
+      return parseInterpretations(content, events);
+    },
+  };
+}
+
+function createAnthropicAdapter(config: ModelConfig): ModelAdapter {
+  const endpoint = config.endpoint ?? "https://api.anthropic.com/v1";
+  const model = config.model ?? "claude-sonnet-4-20250514";
+  const apiKey = config.apiKey ?? process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) throw new Error("Anthropic adapter requires apiKey or ANTHROPIC_API_KEY env var");
+
+  return {
+    async interpret(events: EvidenceEvent[]): Promise<InterpretedEvent[]> {
+      const response = await fetch(`${endpoint}/messages`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": apiKey,
+          "anthropic-version": "2023-06-01",
+        },
+        body: JSON.stringify({
+          model,
+          max_tokens: 4096,
+          system: buildSystemPrompt(),
+          messages: [
+            { role: "user", content: buildUserPrompt(events) },
+          ],
+        }),
+      });
+
+      if (!response.ok) {
+        const err = await response.text();
+        throw new Error(`Anthropic API error ${response.status}: ${err.slice(0, 300)}`);
+      }
+
+      const data = await response.json() as {
+        content?: Array<{ type: string; text?: string }>;
+      };
+      const content = data.content?.find((c) => c.type === "text")?.text;
+      if (!content) throw new Error("Anthropic returned empty response");
+
+      return parseInterpretations(content, events);
+    },
+  };
+}
+
+function createDeepSeekAdapter(config: ModelConfig): ModelAdapter {
+  const endpoint = config.endpoint ?? "https://api.deepseek.com/v1";
+  const model = config.model ?? "deepseek-chat";
+  const apiKey = config.apiKey ?? process.env.DEEPSEEK_API_KEY;
+  if (!apiKey) throw new Error("DeepSeek adapter requires apiKey or DEEPSEEK_API_KEY env var");
+
+  return {
+    async interpret(events: EvidenceEvent[]): Promise<InterpretedEvent[]> {
+      const response = await fetch(`${endpoint}/chat/completions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model,
+          messages: [
+            { role: "system", content: buildSystemPrompt() },
+            { role: "user", content: buildUserPrompt(events) },
+          ],
+          temperature: 0.1,
+        }),
+      });
+
+      if (!response.ok) {
+        const err = await response.text();
+        throw new Error(`DeepSeek API error ${response.status}: ${err.slice(0, 300)}`);
+      }
+
+      const data = await response.json() as {
+        choices?: Array<{ message?: { content?: string } }>;
+      };
+      const content = data.choices?.[0]?.message?.content;
+      if (!content) throw new Error("DeepSeek returned empty response");
+
+      return parseInterpretations(content, events);
+    },
+  };
 }
 
 function createLocalAdapter(config: ModelConfig): ModelAdapter {
@@ -42,23 +159,14 @@ function createLocalAdapter(config: ModelConfig): ModelAdapter {
 
   return {
     async interpret(events: EvidenceEvent[]): Promise<InterpretedEvent[]> {
-      const systemPrompt = `You are a Wikipedia edit classifier. Given a list of evidence events describing what changed between revisions, classify each event's semantic meaning. For each event, respond with:
-- semanticChange: a concise description of what the change means semantically (e.g., "factual claim removed", "attribution strengthened", "sentence reworded without changing meaning")
-- confidence: a score from 0.0 to 1.0 indicating how certain you are
-- policyDimension (optional): if the change touches a Wikipedia policy, name it (e.g., "verifiability", "npov", "blp", "due_weight")
-
-Return ONLY a JSON array of objects with fields: eventIndex (matching the input array index), semanticChange, confidence, policyDimension.`;
-
-      const userPrompt = `Evidence events to classify:\n${JSON.stringify(events.map((e, i) => ({ index: i, eventType: e.eventType, section: e.section, before: e.before.slice(0, 500), after: e.after.slice(0, 500), deterministicFacts: e.deterministicFacts })), null, 2)}`;
-
       const response = await fetch(`${endpoint}/api/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           model,
           messages: [
-            { role: "system", content: systemPrompt },
-            { role: "user", content: userPrompt },
+            { role: "system", content: buildSystemPrompt() },
+            { role: "user", content: buildUserPrompt(events) },
           ],
           stream: false,
           format: "json",
@@ -71,42 +179,112 @@ Return ONLY a JSON array of objects with fields: eventIndex (matching the input 
 
       const data = await response.json() as { message?: { content?: string } };
       const content = data.message?.content;
-      if (!content) {
-        throw new Error("Ollama returned empty response");
-      }
+      if (!content) throw new Error("Ollama returned empty response");
 
-      let interpretations: Array<{ eventIndex: number; semanticChange: string; confidence: number; policyDimension?: string }>;
-      try {
-        interpretations = JSON.parse(content);
-        if (!Array.isArray(interpretations)) {
-          interpretations = JSON.parse(content.replace(/^```json\s*|```$/g, ""));
-        }
-      } catch {
-        throw new Error(`Failed to parse Ollama response: ${content.slice(0, 200)}`);
-      }
-
-      const interpreted: InterpretedEvent[] = [];
-      const interpretationMap = new Map(interpretations.map((i) => [i.eventIndex, i]));
-
-      for (let i = 0; i < events.length; i++) {
-        const event = events[i];
-        const interp = interpretationMap.get(i);
-        interpreted.push({
-          ...event,
-          modelInterpretation: {
-            semanticChange: interp?.semanticChange ?? "unknown",
-            confidence: interp?.confidence ?? 0.0,
-            policyDimension: interp?.policyDimension,
-          },
-        });
-      }
-
-      return interpreted;
+      return parseInterpretations(content, events);
     },
   };
 }
 
-function createByokAdapter(_config: ModelConfig): ModelAdapter {
-  // TODO: Implement BYOK adapter (customer-specified endpoint)
-  throw new Error("BYOK adapter not yet implemented");
+function createByokAdapter(config: ModelConfig): ModelAdapter {
+  const endpoint = config.endpoint;
+  const model = config.model;
+  const apiKey = config.apiKey ?? process.env.BYOK_API_KEY;
+  if (!endpoint) throw new Error("BYOK adapter requires endpoint");
+  if (!model) throw new Error("BYOK adapter requires model");
+  if (!apiKey) throw new Error("BYOK adapter requires apiKey or BYOK_API_KEY env var");
+
+  return {
+    async interpret(events: EvidenceEvent[]): Promise<InterpretedEvent[]> {
+      const response = await fetch(`${endpoint}/chat/completions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model,
+          messages: [
+            { role: "system", content: buildSystemPrompt() },
+            { role: "user", content: buildUserPrompt(events) },
+          ],
+          temperature: 0.1,
+        }),
+      });
+
+      if (!response.ok) {
+        const err = await response.text();
+        throw new Error(`BYOK API error ${response.status}: ${err.slice(0, 300)}`);
+      }
+
+      const data = await response.json() as {
+        choices?: Array<{ message?: { content?: string } }>;
+      };
+      const content = data.choices?.[0]?.message?.content;
+      if (!content) throw new Error("BYOK endpoint returned empty response");
+
+      return parseInterpretations(content, events);
+    },
+  };
+}
+
+function buildSystemPrompt(): string {
+  return `You are a Wikipedia edit classifier. Given a list of evidence events describing what changed between revisions, classify each event's semantic meaning. For each event, respond with:
+- semanticChange: a concise description of what the change means semantically (e.g., "factual claim removed", "attribution strengthened", "sentence reworded without changing meaning")
+- confidence: a score from 0.0 to 1.0 indicating how certain you are
+- policyDimension (optional): if the change touches a Wikipedia policy, name it (e.g., "verifiability", "npov", "blp", "due_weight")
+
+Return ONLY a JSON array of objects with fields: eventIndex (matching the input array index), semanticChange, confidence, policyDimension.`;
+}
+
+function buildUserPrompt(events: EvidenceEvent[]): string {
+  return `Evidence events to classify:\n${JSON.stringify(
+    events.map((e, i) => ({
+      index: i,
+      eventType: e.eventType,
+      section: e.section,
+      before: e.before.slice(0, 500),
+      after: e.after.slice(0, 500),
+      deterministicFacts: e.deterministicFacts,
+    })),
+    null,
+    2,
+  )}`;
+}
+
+function parseInterpretations(raw: string, events: EvidenceEvent[]): InterpretedEvent[] {
+  let interpretations: Array<{
+    eventIndex: number;
+    semanticChange: string;
+    confidence: number;
+    policyDimension?: string;
+  }>;
+
+  try {
+    interpretations = JSON.parse(raw);
+    if (!Array.isArray(interpretations)) {
+      const cleaned = raw.replace(/^```json\s*|```$/g, "").trim();
+      interpretations = JSON.parse(cleaned);
+    }
+  } catch {
+    throw new Error(`Failed to parse model response: ${raw.slice(0, 200)}`);
+  }
+
+  const interpreted: InterpretedEvent[] = [];
+  const interpretationMap = new Map(interpretations.map((i) => [i.eventIndex, i]));
+
+  for (let i = 0; i < events.length; i++) {
+    const event = events[i];
+    const interp = interpretationMap.get(i);
+    interpreted.push({
+      ...event,
+      modelInterpretation: {
+        semanticChange: interp?.semanticChange ?? "unknown",
+        confidence: interp?.confidence ?? 0.0,
+        policyDimension: interp?.policyDimension,
+      },
+    });
+  }
+
+  return interpreted;
 }
