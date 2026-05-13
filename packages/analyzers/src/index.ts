@@ -64,3 +64,14 @@ export { sectionDiffer } from "./section-differ.js";
 export { citationTracker } from "./citation-tracker.js";
 export { revertDetector } from "./revert-detector.js";
 export { templateTracker } from "./template-tracker.js";
+export { classifyHeuristic } from "./heuristic-classifier.js";
+export type { HeuristicKind } from "./heuristic-classifier.js";
+export {
+  sanitizeWikitext,
+  extractHeadingMap,
+  deriveSectionHeading,
+  countCitations,
+  countKeywordMentions,
+  extractAnchorSnippet,
+} from "./wikitext-parser.js";
+export type { HeadingPosition } from "./wikitext-parser.js";

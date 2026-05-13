@@ -1,5 +1,10 @@
 # Agent Instructions for varia
 
+Varia is the open-source deterministic L1 observation engine built and maintained
+by [NextConsensus](https://nextconsensus.com). The engine powers NextConsensus's
+proprietary Review Briefs — community improvements to this repo automatically
+upgrade the commercial pipeline through a single adapter boundary.
+
 ## Build & Verify Commands
 
 ```bash
