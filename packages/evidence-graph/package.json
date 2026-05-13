@@ -1,6 +1,7 @@
 {
   "name": "@wikipedia-provenance/evidence-graph",
   "version": "0.1.0",
+  "type": "module",
   "private": false,
   "description": "Generic evidence graph schemas: claim, evidence, source, report objects",
   "license": "AGPL-3.0",

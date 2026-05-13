@@ -1,6 +1,7 @@
 {
   "name": "wikipedia-provenance",
   "version": "0.1.0",
+  "type": "module",
   "private": false,
   "description": "A deterministic claim-provenance engine for Wikipedia page histories. Show what changed, not what is true.",
   "license": "AGPL-3.0",

@@ -45,7 +45,5 @@ export async function cli(args: string[]): Promise<void> {
   }
 }
 
-// ESM entry
-if (import.meta.url === `file://${process.argv[1]}`) {
-  cli(process.argv.slice(2));
-}
+// Entry point — called by the bin script via dist/src/index.js
+// Runtime entry is handled by the bin field in package.json

@@ -1,6 +1,7 @@
 {
   "name": "@wikipedia-provenance/interpreter",
   "version": "0.1.0",
+  "type": "module",
   "private": false,
   "description": "Pluggable model adapter for semantic interpretation of evidence events",
   "license": "AGPL-3.0",

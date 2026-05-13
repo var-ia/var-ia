@@ -1,6 +1,7 @@
 {
   "name": "@wikipedia-provenance/analyzers",
   "version": "0.1.0",
+  "type": "module",
   "private": false,
   "description": "Deterministic analyzers: section diffing, citation tracking, revert detection, template tracking",
   "license": "AGPL-3.0",
