@@ -1,0 +1,22 @@
+{
+  "name": "@wikipedia-provenance/cli",
+  "version": "0.1.0",
+  "private": false,
+  "description": "CLI tool for Wikipedia claim provenance analysis",
+  "license": "AGPL-3.0",
+  "main": "./dist/src/index.js",
+  "bin": {
+    "wikihistory": "./dist/src/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@wikipedia-provenance/ingestion": "workspace:*",
+    "@wikipedia-provenance/analyzers": "workspace:*",
+    "@wikipedia-provenance/interpreter": "workspace:*",
+    "@wikipedia-provenance/evidence-graph": "workspace:*"
+  },
+  "devDependencies": {}
+}

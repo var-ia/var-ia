@@ -1,0 +1,15 @@
+{
+  "name": "@wikipedia-provenance/ingestion",
+  "version": "0.1.0",
+  "private": false,
+  "description": "Wikimedia API adapters: revision fetching, diff computation, rate limiting, pagination",
+  "license": "AGPL-3.0",
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

@@ -1,0 +1,15 @@
+{
+  "name": "@wikipedia-provenance/evidence-graph",
+  "version": "0.1.0",
+  "private": false,
+  "description": "Generic evidence graph schemas: claim, evidence, source, report objects",
+  "license": "AGPL-3.0",
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

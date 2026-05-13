@@ -1,0 +1,26 @@
+{
+  "name": "wikipedia-provenance",
+  "version": "0.1.0",
+  "private": false,
+  "description": "A deterministic claim-provenance engine for Wikipedia page histories. Show what changed, not what is true.",
+  "license": "AGPL-3.0",
+  "workspaces": [
+    "packages/ingestion",
+    "packages/evidence-graph",
+    "packages/analyzers",
+    "packages/interpreter",
+    "packages/cli"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "lint": "eslint packages/",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "clean": "rm -rf packages/*/dist"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "vitest": "^1.6.0",
+    "@types/node": "^20.12.0"
+  }
+}

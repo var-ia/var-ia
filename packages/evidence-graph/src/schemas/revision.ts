@@ -1,0 +1,40 @@
+// Revision and diff — raw Wikipedia data types
+
+export interface Revision {
+  revId: number;
+  pageId: number;
+  pageTitle: string;
+  timestamp: string;         // ISO 8601
+  comment: string;           // Edit summary
+  content: string;           // Full wikitext
+  size: number;              // Bytes
+  minor: boolean;
+}
+
+export interface DiffResult {
+  fromRevId: number;
+  toRevId: number;
+  lines: DiffLine[];
+  sections: SectionChange[];
+  sizeDelta: number;
+}
+
+export interface DiffLine {
+  type: "added" | "removed" | "unchanged";
+  content: string;
+  lineNumber: number;
+}
+
+export interface Section {
+  title: string;
+  level: number;             // 1 = lead, 2 = == Section ==, 3 = === Subsection ===
+  content: string;
+  byteOffset: number;
+}
+
+export interface SectionChange {
+  section: string;
+  changeType: "added" | "removed" | "modified" | "moved" | "unchanged";
+  fromContent?: string;
+  toContent?: string;
+}

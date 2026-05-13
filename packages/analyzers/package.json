@@ -1,0 +1,17 @@
+{
+  "name": "@wikipedia-provenance/analyzers",
+  "version": "0.1.0",
+  "private": false,
+  "description": "Deterministic analyzers: section diffing, citation tracking, revert detection, template tracking",
+  "license": "AGPL-3.0",
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@wikipedia-provenance/evidence-graph": "workspace:*"
+  },
+  "devDependencies": {}
+}
