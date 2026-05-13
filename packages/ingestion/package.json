@@ -7,12 +7,13 @@
   "license": "AGPL-3.0",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
+  "files": ["dist", "src"],
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@varia/evidence-graph": "workspace:*"
+    "@varia/evidence-graph": "^0.1.0"
   },
   "devDependencies": {}
 }

@@ -6,6 +6,8 @@
   "description": "CLI tool for Wikipedia edit history analysis",
   "license": "AGPL-3.0",
   "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "files": ["dist", "src"],
   "bin": {
     "wikihistory": "./dist/src/cli.js"
   },
@@ -14,11 +16,11 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@varia/ingestion": "workspace:*",
-    "@varia/analyzers": "workspace:*",
-    "@varia/interpreter": "workspace:*",
-    "@varia/evidence-graph": "workspace:*",
-    "@varia/persistence": "workspace:*"
+    "@varia/ingestion": "^0.1.0",
+    "@varia/analyzers": "^0.1.0",
+    "@varia/interpreter": "^0.1.0",
+    "@varia/evidence-graph": "^0.1.0",
+    "@varia/persistence": "^0.1.0"
   },
   "devDependencies": {}
 }
