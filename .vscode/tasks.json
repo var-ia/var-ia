@@ -36,6 +36,21 @@
       "command": "bun run vitest run ${relativeFile}",
       "group": "test",
       "presentation": { "reveal": "always" }
+    },
+    {
+      "label": "clean",
+      "type": "shell",
+      "command": "bun run clean",
+      "presentation": { "reveal": "silent" }
+    },
+    {
+      "label": "gate",
+      "type": "shell",
+      "command": "bun run build && bun run lint && bun run typecheck && bun run test",
+      "group": { "kind": "test", "isDefault": false },
+      "problemMatcher": ["$tsc", "$eslint-stylish"],
+      "presentation": { "reveal": "always" },
+      "dependsOrder": "sequence"
     }
   ]
 }

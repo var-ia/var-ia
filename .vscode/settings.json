@@ -63,6 +63,23 @@
   "chat.instructionsFilesLocations": {
     ".github/instructions": true
   },
+  "chat.promptFilesLocations": {
+    ".github/prompts": true
+  },
+  "chat.agentFilesLocations": {
+    ".github/agents": true
+  },
+  "chat.promptFilesRecommendations": {
+    "gate": true,
+    "new-analyzer": true
+  },
+  "chat.artifacts.rules.byFilePath": {
+    "**/*plan*.md": { "groupName": "Plans" }
+  },
+  "chat.useNestedAgentsMdFiles": true,
+  "workbench.diffEditorAssociations": {
+    "*.md": "vscode.markdown.preview.editor"
+  },
 
   "github.copilot.chat.commitMessageGeneration.instructions": [
     {

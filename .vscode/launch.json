@@ -8,6 +8,22 @@
       "program": "${relativeFile}",
       "preLaunchTask": "build",
       "internalConsoleOptions": "openOnSessionStart"
+    },
+    {
+      "type": "bun",
+      "request": "launch",
+      "name": "Debug Current File",
+      "program": "${relativeFile}",
+      "internalConsoleOptions": "openOnSessionStart"
+    },
+    {
+      "type": "bun",
+      "request": "launch",
+      "name": "Debug CLI (wikihistory)",
+      "program": "packages/cli/src/index.ts",
+      "preLaunchTask": "build",
+      "args": [],
+      "internalConsoleOptions": "openOnSessionStart"
     }
   ]
 }
