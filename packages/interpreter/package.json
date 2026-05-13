@@ -1,5 +1,5 @@
 {
-  "name": "@varia/interpreter",
+  "name": "@var-ia/interpreter",
   "version": "0.1.0",
   "type": "module",
   "private": false,
@@ -13,7 +13,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@varia/evidence-graph": "^0.1.0"
+    "@var-ia/evidence-graph": "^0.1.0"
   },
   "devDependencies": {}
 }

@@ -1,6 +1,6 @@
-import { MediaWikiClient } from "@varia/ingestion";
-import { sectionDiffer, citationTracker, revertDetector, templateTracker } from "@varia/analyzers";
-import type { EvidenceEvent, EvidenceLayer, Revision } from "@varia/evidence-graph";
+import { MediaWikiClient } from "@var-ia/ingestion";
+import { sectionDiffer, citationTracker, revertDetector, templateTracker } from "@var-ia/analyzers";
+import type { EvidenceEvent, EvidenceLayer, Revision } from "@var-ia/evidence-graph";
 import { loadCachedRevisions, saveRevisions } from "./cache.js";
 
 export async function runAnalyze(

@@ -1,5 +1,5 @@
 import { runAnalyze } from "./analyze.js";
-import type { EvidenceEvent, Report } from "@varia/evidence-graph";
+import type { EvidenceEvent, Report } from "@var-ia/evidence-graph";
 
 export async function runExport(
   pageTitle: string,

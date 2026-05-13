@@ -1,4 +1,4 @@
-import type { EvidenceEvent } from "@varia/evidence-graph";
+import type { EvidenceEvent } from "@var-ia/evidence-graph";
 
 export interface EvalTestCase {
   id: string;

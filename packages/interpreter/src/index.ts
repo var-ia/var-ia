@@ -1,4 +1,4 @@
-import type { EvidenceEvent, ModelInterpretation } from "@varia/evidence-graph";
+import type { EvidenceEvent, ModelInterpretation } from "@var-ia/evidence-graph";
 
 export interface ModelAdapter {
   interpret(events: EvidenceEvent[]): Promise<InterpretedEvent[]>;

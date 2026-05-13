@@ -1,5 +1,5 @@
-import { Persistence } from "@varia/persistence";
-import type { Revision } from "@varia/evidence-graph";
+import { Persistence } from "@var-ia/persistence";
+import type { Revision } from "@var-ia/evidence-graph";
 import { existsSync, mkdirSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";

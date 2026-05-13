@@ -54,8 +54,8 @@ Invariants (from ARCHITECTURE.md):
 ## Code Conventions
 
 ### Imports
-- **Cross-package types**: `import type { Foo } from "@varia/evidence-graph"`
-- **Cross-package runtime**: `import { Bar } from "@varia/analyzers"`
+- **Cross-package types**: `import type { Foo } from "@var-ia/evidence-graph"`
+- **Cross-package runtime**: `import { Bar } from "@var-ia/analyzers"`
 - **Intra-package**: Use relative paths with `.js` extension: `import { baz } from "./baz.js"`
 - **Node built-ins**: `import { createHash } from "node:crypto"`
 - **Bun built-ins**: `import { Database } from "bun:sqlite"`

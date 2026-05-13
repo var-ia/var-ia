@@ -1,6 +1,6 @@
-import { MediaWikiClient } from "@varia/ingestion";
-import { createClaimIdentity } from "@varia/evidence-graph";
-import type { ClaimState, Revision } from "@varia/evidence-graph";
+import { MediaWikiClient } from "@var-ia/ingestion";
+import { createClaimIdentity } from "@var-ia/evidence-graph";
+import type { ClaimState, Revision } from "@var-ia/evidence-graph";
 import { loadCachedRevisions, saveRevisions } from "./cache.js";
 
 export async function runClaim(

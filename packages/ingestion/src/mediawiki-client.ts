@@ -1,4 +1,4 @@
-import type { Revision, DiffResult, DiffLine } from "@varia/evidence-graph";
+import type { Revision, DiffResult, DiffLine } from "@var-ia/evidence-graph";
 import type { RevisionFetcher, DiffFetcher, RevisionOptions } from "./index.js";
 import { RateLimiter } from "./rate-limiter.js";
 

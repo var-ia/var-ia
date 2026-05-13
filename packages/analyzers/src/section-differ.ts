@@ -1,4 +1,4 @@
-import type { Section, SectionChange } from "@varia/evidence-graph";
+import type { Section, SectionChange } from "@var-ia/evidence-graph";
 import type { SectionDiffer } from "./index.js";
 
 export const sectionDiffer: SectionDiffer = {

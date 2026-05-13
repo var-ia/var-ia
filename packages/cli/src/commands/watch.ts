@@ -1,6 +1,6 @@
-import { MediaWikiClient } from "@varia/ingestion";
-import { sectionDiffer, citationTracker, templateTracker, revertDetector } from "@varia/analyzers";
-import type { EvidenceEvent, EvidenceLayer } from "@varia/evidence-graph";
+import { MediaWikiClient } from "@var-ia/ingestion";
+import { sectionDiffer, citationTracker, templateTracker, revertDetector } from "@var-ia/analyzers";
+import type { EvidenceEvent, EvidenceLayer } from "@var-ia/evidence-graph";
 
 const POLL_INTERVAL_MS = 60_000;
 

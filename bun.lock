@@ -14,56 +14,56 @@
       },
     },
     "packages/analyzers": {
-      "name": "@varia/analyzers",
+      "name": "@var-ia/analyzers",
       "version": "0.1.0",
       "dependencies": {
-        "@varia/evidence-graph": "workspace:*",
+        "@var-ia/evidence-graph": "^0.1.0",
       },
     },
     "packages/cli": {
-      "name": "@varia/cli",
+      "name": "@var-ia/cli",
       "version": "0.1.0",
       "bin": {
         "wikihistory": "./dist/src/cli.js",
       },
       "dependencies": {
-        "@varia/analyzers": "workspace:*",
-        "@varia/evidence-graph": "workspace:*",
-        "@varia/ingestion": "workspace:*",
-        "@varia/interpreter": "workspace:*",
-        "@varia/persistence": "workspace:*",
+        "@var-ia/analyzers": "^0.1.0",
+        "@var-ia/evidence-graph": "^0.1.0",
+        "@var-ia/ingestion": "^0.1.0",
+        "@var-ia/interpreter": "^0.1.0",
+        "@var-ia/persistence": "^0.1.0",
       },
     },
     "packages/eval": {
-      "name": "@varia/eval",
+      "name": "@var-ia/eval",
       "version": "0.1.0",
       "dependencies": {
-        "@varia/evidence-graph": "workspace:*",
+        "@var-ia/evidence-graph": "workspace:*",
       },
     },
     "packages/evidence-graph": {
-      "name": "@varia/evidence-graph",
+      "name": "@var-ia/evidence-graph",
       "version": "0.1.0",
     },
     "packages/ingestion": {
-      "name": "@varia/ingestion",
+      "name": "@var-ia/ingestion",
       "version": "0.1.0",
       "dependencies": {
-        "@varia/evidence-graph": "workspace:*",
+        "@var-ia/evidence-graph": "^0.1.0",
       },
     },
     "packages/interpreter": {
-      "name": "@varia/interpreter",
+      "name": "@var-ia/interpreter",
       "version": "0.1.0",
       "dependencies": {
-        "@varia/evidence-graph": "workspace:*",
+        "@var-ia/evidence-graph": "^0.1.0",
       },
     },
     "packages/persistence": {
-      "name": "@varia/persistence",
+      "name": "@var-ia/persistence",
       "version": "0.1.0",
       "dependencies": {
-        "@varia/evidence-graph": "workspace:*",
+        "@var-ia/evidence-graph": "^0.1.0",
       },
     },
   },
@@ -224,19 +224,19 @@
 
     "@typescript-eslint/visitor-keys": ["@typescript-eslint/visitor-keys@8.59.3", "", { "dependencies": { "@typescript-eslint/types": "8.59.3", "eslint-visitor-keys": "^5.0.0" } }, "sha512-f1UQF7ggd42YiwI5wGrRaPsa+P0CINBlrkLPmGfpq/u/I/oVtecoEIfFR9ag/oa1sLOsRNZ6xehf6qMZhQGBDg=="],
 
-    "@varia/analyzers": ["@varia/analyzers@workspace:packages/analyzers"],
+    "@var-ia/analyzers": ["@var-ia/analyzers@workspace:packages/analyzers"],
 
-    "@varia/cli": ["@varia/cli@workspace:packages/cli"],
+    "@var-ia/cli": ["@var-ia/cli@workspace:packages/cli"],
 
-    "@varia/eval": ["@varia/eval@workspace:packages/eval"],
+    "@var-ia/eval": ["@var-ia/eval@workspace:packages/eval"],
 
-    "@varia/evidence-graph": ["@varia/evidence-graph@workspace:packages/evidence-graph"],
+    "@var-ia/evidence-graph": ["@var-ia/evidence-graph@workspace:packages/evidence-graph"],
 
-    "@varia/ingestion": ["@varia/ingestion@workspace:packages/ingestion"],
+    "@var-ia/ingestion": ["@var-ia/ingestion@workspace:packages/ingestion"],
 
-    "@varia/interpreter": ["@varia/interpreter@workspace:packages/interpreter"],
+    "@var-ia/interpreter": ["@var-ia/interpreter@workspace:packages/interpreter"],
 
-    "@varia/persistence": ["@varia/persistence@workspace:packages/persistence"],
+    "@var-ia/persistence": ["@var-ia/persistence@workspace:packages/persistence"],
 
     "@vitest/expect": ["@vitest/expect@1.6.1", "", { "dependencies": { "@vitest/spy": "1.6.1", "@vitest/utils": "1.6.1", "chai": "^4.3.10" } }, "sha512-jXL+9+ZNIJKruofqXuuTClf44eSpcHlgj3CiuNihUF3Ioujtmc0zIa3UJOW5RjDK1YLBJZnWBlPuqhYycLioog=="],
 

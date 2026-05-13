@@ -1,5 +1,5 @@
 {
-  "name": "@varia/cli",
+  "name": "@var-ia/cli",
   "version": "0.1.0",
   "type": "module",
   "private": false,
@@ -16,11 +16,11 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@varia/ingestion": "^0.1.0",
-    "@varia/analyzers": "^0.1.0",
-    "@varia/interpreter": "^0.1.0",
-    "@varia/evidence-graph": "^0.1.0",
-    "@varia/persistence": "^0.1.0"
+    "@var-ia/ingestion": "^0.1.0",
+    "@var-ia/analyzers": "^0.1.0",
+    "@var-ia/interpreter": "^0.1.0",
+    "@var-ia/evidence-graph": "^0.1.0",
+    "@var-ia/persistence": "^0.1.0"
   },
   "devDependencies": {}
 }

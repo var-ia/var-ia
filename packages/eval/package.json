@@ -1,5 +1,5 @@
 {
-  "name": "@varia/eval",
+  "name": "@var-ia/eval",
   "version": "0.1.0",
   "type": "module",
   "private": false,
@@ -12,7 +12,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@varia/evidence-graph": "workspace:*"
+    "@var-ia/evidence-graph": "workspace:*"
   },
   "devDependencies": {}
 }
