@@ -5,8 +5,6 @@ export const sectionDiffer: SectionDiffer = {
   extractSections(wikitext: string): Section[] {
     const sections: Section[] = [];
     const lines = wikitext.split("\n");
-    let byteOffset = 0;
-
     const headerRegex = /^(=+)\s*([^=]+?)\s*\1$/;
     const headerMatches: Array<{
       index: number;

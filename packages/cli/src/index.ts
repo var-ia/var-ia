@@ -1,6 +1,6 @@
 import { MediaWikiClient } from "@wikipedia-provenance/ingestion";
 import { sectionDiffer, citationTracker, revertDetector, templateTracker } from "@wikipedia-provenance/analyzers";
-import type { Revision, EvidenceEvent, EvidenceLayer } from "@wikipedia-provenance/evidence-graph";
+import type { EvidenceEvent, EvidenceLayer } from "@wikipedia-provenance/evidence-graph";
 
 const HELP = `
 wikihistory — Wikipedia claim provenance engine
@@ -58,7 +58,7 @@ async function runAnalyze(
   pageTitle: string,
   depth: string,
   fromRevId?: number,
-  toRevId?: number,
+  _toRevId?: number,
 ): Promise<void> {
   const client = new MediaWikiClient();
   console.log(`Analyzing "${pageTitle}" at depth: ${depth}...`);

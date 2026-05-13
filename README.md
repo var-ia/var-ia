@@ -16,6 +16,8 @@ Given a Wikipedia page URL, the engine produces a structured evidence graph:
 
 Every interpretation is tagged with its evidence layer:
 
+![Evidence Label Taxonomy](./docs/diagrams/evidence-labels.svg)
+
 | Label | Meaning |
 |-------|---------|
 | **Observed** | Deterministic, byte-for-byte reproducible |
@@ -50,6 +52,8 @@ wikihistory export "CRISPR gene editing" --format json
 # Watch a page section
 wikihistory watch "FTX" --section "Controversy"
 ```
+
+![Concept Overview](./docs/diagrams/concept-overview.svg)
 
 ## Architecture
 

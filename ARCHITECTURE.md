@@ -26,7 +26,9 @@ The Wikipedia Provenance Engine separates computation into three architecturally
 
 **Output**: Outcome labels with public observability timestamps and source references.
 
-## Data Flow
+![Architecture Data Flow](./docs/diagrams/architecture-flow.svg)
+
+## Data Flow (Text)
 
 ```
 Wikipedia API

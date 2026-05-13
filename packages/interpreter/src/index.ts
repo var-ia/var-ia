@@ -29,7 +29,7 @@ export function createAdapter(config: ModelConfig): ModelAdapter {
   }
 }
 
-function createHostedAdapter(config: ModelConfig): ModelAdapter {
+function createHostedAdapter(_config: ModelConfig): ModelAdapter {
   // TODO: Implement hosted LLM adapter (OpenAI, Anthropic)
   // Must receive only evidence objects, never raw wikitext
   // Must return bounded interpretations with confidence scores
@@ -106,7 +106,7 @@ Return ONLY a JSON array of objects with fields: eventIndex (matching the input 
   };
 }
 
-function createByokAdapter(config: ModelConfig): ModelAdapter {
+function createByokAdapter(_config: ModelConfig): ModelAdapter {
   // TODO: Implement BYOK adapter (customer-specified endpoint)
   throw new Error("BYOK adapter not yet implemented");
 }

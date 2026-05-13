@@ -1,11 +1,4 @@
-import type {
-  Revision,
-  EvidenceEvent,
-  Report,
-  ReportLayer,
-  ReportLayerLabel,
-  Depth,
-} from "@wikipedia-provenance/evidence-graph";
+import type { EvidenceEvent } from "@wikipedia-provenance/evidence-graph";
 
 export interface EvalTestCase {
   id: string;
@@ -72,11 +65,6 @@ export interface EvalScoreSummary {
 export function createEvalHarness(): EvalHarness {
   return {
     evaluate(test, events) {
-      const expectedTypes = new Set(
-        test.expectedEvents.map((e) => e.eventType),
-      );
-      const actualTypes = new Set(events.map((e) => e.eventType));
-
       const matches: EventMatch[] = [];
       const misses: MissingEvent[] = [];
       const falsePositives: UnexpectedEvent[] = [];

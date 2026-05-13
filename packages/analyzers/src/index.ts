@@ -1,4 +1,4 @@
-import type { Revision, DiffResult, Section, SectionChange, EvidenceEvent, DeterministicFact } from "@wikipedia-provenance/evidence-graph";
+import type { Revision, Section, SectionChange } from "@wikipedia-provenance/evidence-graph";
 
 export interface SectionDiffer {
   extractSections(wikitext: string): Section[];
