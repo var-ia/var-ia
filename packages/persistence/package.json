@@ -1,5 +1,5 @@
 {
-  "name": "@wikipedia-provenance/persistence",
+  "name": "@varia/persistence",
   "version": "0.1.0",
   "type": "module",
   "private": false,
@@ -12,7 +12,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@wikipedia-provenance/evidence-graph": "workspace:*"
+    "@varia/evidence-graph": "workspace:*"
   },
   "devDependencies": {}
 }

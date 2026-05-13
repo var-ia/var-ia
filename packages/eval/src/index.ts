@@ -1,4 +1,4 @@
-import type { EvidenceEvent } from "@wikipedia-provenance/evidence-graph";
+import type { EvidenceEvent } from "@varia/evidence-graph";
 
 export interface EvalTestCase {
   id: string;

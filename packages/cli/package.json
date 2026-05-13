@@ -1,9 +1,9 @@
 {
-  "name": "@wikipedia-provenance/cli",
+  "name": "@varia/cli",
   "version": "0.1.0",
   "type": "module",
   "private": false,
-  "description": "CLI tool for Wikipedia claim provenance analysis",
+  "description": "CLI tool for Wikipedia edit history analysis",
   "license": "AGPL-3.0",
   "main": "./dist/src/index.js",
   "bin": {
@@ -14,11 +14,11 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@wikipedia-provenance/ingestion": "workspace:*",
-    "@wikipedia-provenance/analyzers": "workspace:*",
-    "@wikipedia-provenance/interpreter": "workspace:*",
-    "@wikipedia-provenance/evidence-graph": "workspace:*",
-    "@wikipedia-provenance/persistence": "workspace:*"
+    "@varia/ingestion": "workspace:*",
+    "@varia/analyzers": "workspace:*",
+    "@varia/interpreter": "workspace:*",
+    "@varia/evidence-graph": "workspace:*",
+    "@varia/persistence": "workspace:*"
   },
   "devDependencies": {}
 }

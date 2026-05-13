@@ -1,6 +1,6 @@
 import { Database } from "bun:sqlite";
-import type { Revision } from "@wikipedia-provenance/evidence-graph";
-import type { ClaimObject } from "@wikipedia-provenance/evidence-graph";
+import type { Revision } from "@varia/evidence-graph";
+import type { ClaimObject } from "@varia/evidence-graph";
 
 export interface PersistenceConfig {
   dbPath: string;

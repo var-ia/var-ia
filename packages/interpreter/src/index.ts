@@ -1,4 +1,4 @@
-import type { EvidenceEvent, ModelInterpretation } from "@wikipedia-provenance/evidence-graph";
+import type { EvidenceEvent, ModelInterpretation } from "@varia/evidence-graph";
 
 export interface ModelAdapter {
   interpret(events: EvidenceEvent[]): Promise<InterpretedEvent[]>;
@@ -229,7 +229,7 @@ function createByokAdapter(config: ModelConfig): ModelAdapter {
 }
 
 function buildSystemPrompt(): string {
-  return `You are a Wikipedia edit classifier. Given a list of evidence events describing what changed between revisions, classify each event's semantic meaning. For each event, respond with:
+  return `You are a wiki edit classifier. Given a list of evidence events describing what changed between revisions, classify each event's semantic meaning. For each event, respond with:
 - semanticChange: a concise description of what the change means semantically (e.g., "factual claim removed", "attribution strengthened", "sentence reworded without changing meaning")
 - confidence: a score from 0.0 to 1.0 indicating how certain you are
 - policyDimension (optional): if the change touches a Wikipedia policy, name it (e.g., "verifiability", "npov", "blp", "due_weight")

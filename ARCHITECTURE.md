@@ -1,6 +1,6 @@
 # Architecture: Three-Knowledge-Split Design
 
-The Wikipedia Provenance Engine separates computation into three architecturally isolated layers. No layer's output feeds into another layer's input in a way that would contaminate evidence with interpretation.
+Varia separates computation into three architecturally isolated layers. No layer's output feeds into another layer's input in a way that would contaminate evidence with interpretation.
 
 ## Layer 1 (L1): Deterministic
 

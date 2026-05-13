@@ -1,11 +1,11 @@
-import { Persistence } from "@wikipedia-provenance/persistence";
-import type { Revision } from "@wikipedia-provenance/evidence-graph";
+import { Persistence } from "@varia/persistence";
+import type { Revision } from "@varia/evidence-graph";
 import { existsSync, mkdirSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 
 const CACHE_DIR = join(homedir(), ".wikihistory");
-const DB_PATH = join(CACHE_DIR, "provenance.db");
+const DB_PATH = join(CACHE_DIR, "varia.db");
 
 let _instance: Persistence | null = null;
 

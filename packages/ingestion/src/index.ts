@@ -1,4 +1,4 @@
-import type { Revision, DiffResult } from "@wikipedia-provenance/evidence-graph";
+import type { Revision, DiffResult } from "@varia/evidence-graph";
 
 export interface RevisionFetcher {
   fetchRevisions(pageTitle: string, options?: RevisionOptions): Promise<Revision[]>;

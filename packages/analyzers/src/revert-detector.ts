@@ -1,4 +1,4 @@
-import type { Revision } from "@wikipedia-provenance/evidence-graph";
+import type { Revision } from "@varia/evidence-graph";
 import type { RevertDetector, RevertChain } from "./index.js";
 
 const REVERT_PATTERNS = [

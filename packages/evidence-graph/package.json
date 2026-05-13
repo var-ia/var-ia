@@ -1,5 +1,5 @@
 {
-  "name": "@wikipedia-provenance/evidence-graph",
+  "name": "@varia/evidence-graph",
   "version": "0.1.0",
   "type": "module",
   "private": false,

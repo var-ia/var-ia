@@ -1,9 +1,9 @@
-import type { Revision, DiffResult, DiffLine } from "@wikipedia-provenance/evidence-graph";
+import type { Revision, DiffResult, DiffLine } from "@varia/evidence-graph";
 import type { RevisionFetcher, DiffFetcher, RevisionOptions } from "./index.js";
 import { RateLimiter } from "./rate-limiter.js";
 
 const DEFAULT_API_URL = "https://en.wikipedia.org/w/api.php";
-const DEFAULT_USER_AGENT = "WikipediaProvenance/0.1.0 (https://github.com/anomalyco/wikipedia-provenance; provenance@anomaly.co)";
+const DEFAULT_USER_AGENT = "Varia/0.1.0 (https://github.com/anomalyco/varia; varia@anomaly.co)";
 const MAX_REVISIONS_PER_REQUEST = 500;
 
 interface PageInfo {

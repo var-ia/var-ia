@@ -1,4 +1,4 @@
-# Wikipedia Provenance Engine
+# Varia
 
 **Show what changed. Not what is true.**
 
@@ -38,7 +38,7 @@ Every interpretation is tagged with its evidence layer:
 
 ```bash
 # Install
-npm install -g wikipedia-provenance
+npm install -g varia
 
 # Analyze a page
 wikihistory analyze "COVID-19 pandemic" --depth detailed

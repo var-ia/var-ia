@@ -1,4 +1,4 @@
-# Agent Instructions for wikipedia-provenance
+# Agent Instructions for varia
 
 ## Build & Verify Commands
 
@@ -49,8 +49,8 @@ Invariants (from ARCHITECTURE.md):
 ## Code Conventions
 
 ### Imports
-- **Cross-package types**: `import type { Foo } from "@wikipedia-provenance/evidence-graph"`
-- **Cross-package runtime**: `import { Bar } from "@wikipedia-provenance/analyzers"`
+- **Cross-package types**: `import type { Foo } from "@varia/evidence-graph"`
+- **Cross-package runtime**: `import { Bar } from "@varia/analyzers"`
 - **Intra-package**: Use relative paths with `.js` extension: `import { baz } from "./baz.js"`
 - **Node built-ins**: `import { createHash } from "node:crypto"`
 - **Bun built-ins**: `import { Database } from "bun:sqlite"`

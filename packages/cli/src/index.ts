@@ -4,7 +4,7 @@ import { runExport } from "./commands/export.js";
 import { runWatch } from "./commands/watch.js";
 
 const HELP = `
-wikihistory — Wikipedia claim provenance engine
+wikihistory — Wikipedia edit history analysis
 
 Usage:
   wikihistory analyze <page> [--depth brief|detailed|forensic] [--from <revId>] [--to <revId>] [--cache]
@@ -19,7 +19,7 @@ Options:
   --section    Watch a specific section only
   --from       Start revision ID
   --to         End revision ID
-  --cache      Cache revisions in SQLite (~/.wikihistory/provenance.db)
+  --cache      Cache revisions in SQLite (~/.wikihistory/varia.db)
 `;
 
 export async function cli(args: string[]): Promise<void> {

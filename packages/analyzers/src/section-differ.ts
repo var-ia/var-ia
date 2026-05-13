@@ -1,4 +1,4 @@
-import type { Section, SectionChange } from "@wikipedia-provenance/evidence-graph";
+import type { Section, SectionChange } from "@varia/evidence-graph";
 import type { SectionDiffer } from "./index.js";
 
 export const sectionDiffer: SectionDiffer = {

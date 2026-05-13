@@ -1,6 +1,6 @@
-import { MediaWikiClient } from "@wikipedia-provenance/ingestion";
-import { sectionDiffer, citationTracker, templateTracker, revertDetector } from "@wikipedia-provenance/analyzers";
-import type { EvidenceEvent, EvidenceLayer } from "@wikipedia-provenance/evidence-graph";
+import { MediaWikiClient } from "@varia/ingestion";
+import { sectionDiffer, citationTracker, templateTracker, revertDetector } from "@varia/analyzers";
+import type { EvidenceEvent, EvidenceLayer } from "@varia/evidence-graph";
 
 const POLL_INTERVAL_MS = 60_000;
 
