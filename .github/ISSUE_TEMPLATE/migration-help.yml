@@ -1,0 +1,53 @@
+name: Migration Help — I used to do X with WikiWho/ORES
+description: Tell us what you used to do with another tool, and we'll show you the Varia equivalent.
+title: "[migration] "
+labels: ["migration", "question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Varia provides deterministic, provenance-tagged evidence where other tools provide raw diffs or ML scores.
+        Fill this out and we'll show you the Varia equivalent.
+
+  - type: dropdown
+    id: from-tool
+    attributes:
+      label: Which tool are you coming from?
+      options:
+        - WikiWho
+        - ORES
+        - XTools
+        - PetScan
+        - Manual Wikipedia API
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-i-did
+    attributes:
+      label: What did you do with that tool?
+      description: Paste your query, script, or describe your workflow.
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-i-needed
+    attributes:
+      label: What question were you trying to answer?
+      description: E.g., "I needed to know who wrote a specific sentence" or "I needed to detect edit quality".
+    validations:
+      required: true
+
+  - type: input
+    id: page
+    attributes:
+      label: Example page (optional)
+      description: Wikipedia page title you were analyzing
+      placeholder: "Bitcoin"
+
+  - type: textarea
+    id: output
+    attributes:
+      label: Example output (optional)
+      description: Paste sample output from the other tool

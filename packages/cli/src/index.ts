@@ -8,6 +8,7 @@ import type { DiffResult } from "./commands/diff.js";
 import { runDiff } from "./commands/diff.js";
 import { runEval } from "./commands/eval.js";
 import { runExport } from "./commands/export.js";
+import { runMcpServer } from "./commands/mcp.js";
 import { runVisualize } from "./commands/visualize.js";
 import { runWatch } from "./commands/watch.js";
 import { bold, cyan, dim, formatEvent, gray, green, heading, red, success } from "./render.js";
@@ -328,6 +329,20 @@ withModel(evalCmd);
 evalCmd.action(async (opts) => {
   await runEval(opts.page as string | undefined, opts.groundTruth as string | undefined, !!opts.l2, extractModel(opts));
 });
+
+// ── mcp ──
+program
+  .command("mcp")
+  .description("start MCP server for AI agent integration (stdio JSON-RPC)")
+  .action(async () => {
+    try {
+      await runMcpServer();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      process.stderr.write(`Fatal MCP error: ${message}\n`);
+      process.exit(1);
+    }
+  });
 
 export async function cli(args: string[]): Promise<void> {
   if (args.length === 0) {

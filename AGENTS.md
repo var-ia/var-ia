@@ -1,9 +1,11 @@
 # Agent Instructions for varia
 
-Varia is the open-source deterministic L1 observation engine built and maintained
-by [NextConsensus](https://nextconsensus.com). The engine powers NextConsensus's
-proprietary Review Briefs — community improvements to this repo automatically
-upgrade the commercial pipeline through a single adapter boundary.
+Varia is the open-source deterministic observation engine built and maintained
+by [NextConsensus](https://nextconsensus.com). It is domain-neutral
+infrastructure for MediaWiki and public revision histories.
+
+Repository boundary: read `docs/repository-boundary.md` before adding scope.
+Varia observes change. NextConsensus judges healthcare decision relevance.
 
 ## Build & Verify Commands
 
@@ -104,3 +106,8 @@ Conventional Commits: `feat:`, `fix:`, `refactor:`, `chore:`, `docs:`, `test:`.
 ## Forbidden Contributions
 
 Features that: target individual editors, do sentiment/toxicity scoring, predict/forecast, automate Wikipedia editing, make truth/accuracy claims about content, or use healthcare-specific vocabulary.
+
+Do not add payer, guideline, clinical, regulatory, customer-workflow,
+healthcare decision-judgment, domain-specific source-weighting, decision
+threshold, production-backtest, outcome-data, or NextConsensus-private logic to
+this repo. Keep Varia agents focused on observability, not judgment.

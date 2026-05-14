@@ -28,4 +28,6 @@
 
 <!-- Confirm your change does not violate the forbidden contributions list -->
 
+- [ ] I read `docs/repository-boundary.md`
 - [ ] Does not target individual editors, score sentiment, predict outcomes, automate editing, or make truth claims
+- [ ] Does not add healthcare decision judgment, payer/guideline logic, source weighting, thresholds, production backtests, outcome-data claims, customer workflows, or NextConsensus-private logic

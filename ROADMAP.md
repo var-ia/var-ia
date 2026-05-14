@@ -126,7 +126,7 @@ New CLI command: `wikihistory diff --wiki-a <url> --wiki-b <url> <topic>`. Runs 
 Test and document the engine against non-English Wikipedias (de.wikipedia.org, fr.wikipedia.org, ja.wikipedia.org, etc.). The `--api` flag already accepts any MediaWiki endpoint, so the architecture supports this. This task is about verification: run the full analyze pipeline against non-English pages, document any parser edge cases (RTL languages, non-ASCII section headers, CJK citation formats), and add integration tests. No architecture changes expected — just hardening.
 
 ### CW-05: Private MediaWiki Instance Support
-Test and document the engine against self-hosted/private MediaWiki instances (corporate wikis, institutional knowledge bases, private fan wikis). Builds on `--api` flag. Requires: authentication support (OAuth, basic auth, API tokens) via config, documentation for connecting to non-public instances, and integration tests against a local MediaWiki container. Private wikis are the natural enterprise extension path — if Varia handles a corporate wiki behind auth, it proves the adapter boundary works for paid NextConsensus deployments without requiring open-source scope creep into healthcare.
+Test and document the engine against self-hosted/private MediaWiki instances (corporate wikis, institutional knowledge bases, private fan wikis). Builds on `--api` flag. Requires: authentication support (OAuth, basic auth, API tokens) via config, documentation for connecting to non-public instances, and integration tests against a local MediaWiki container. This remains generic MediaWiki observability: authenticated access should not add domain-specific judgment, source weighting, or private workflow logic.
 
 ## Infrastructure
 

@@ -4,6 +4,8 @@ description: Review changes against varia PR requirements, architecture invarian
 tools: ['search/codebase', 'read/file', 'search/usages']
 ---
 Review code changes for the varia project. Do not make edits — report findings only.
+Read `docs/repository-boundary.md` before judging scope. Varia observes change.
+NextConsensus judges healthcare decision relevance.
 
 ## PR Requirements (from CONTRIBUTING.md)
 - PR description states what the code shows, not what it claims
@@ -33,5 +35,8 @@ Review code changes for the varia project. Do not make edits — report findings
 - Automated Wikipedia editing
 - Truth/accuracy claims about content
 - Healthcare-specific vocabulary
+- Payer/guideline logic, source weighting, decision thresholds, production
+  backtests, outcome-data claims, customer workflows, or NextConsensus-private
+  logic
 
 Return: violations found, borderline cases, and whether the change passes review.

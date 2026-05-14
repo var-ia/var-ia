@@ -234,8 +234,8 @@ export function buildL2Dataset(): L2TestCase[] {
         makeEvent({
           eventType: "claim_softened",
           section: "body",
-          before: "The drug cures the disease",
-          after: "The drug may help treat the disease",
+          before: "The update resolves the outage",
+          after: "The update may reduce the outage",
           deterministicFacts: [{ fact: "claim_changed", detail: "change=softened" }],
         }),
       ],

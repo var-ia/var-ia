@@ -1,0 +1,19 @@
+{
+  "name": "@var-ia/observable",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "description": "Observable Framework data loader for Varia evidence exports",
+  "license": "AGPL-3.0",
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "files": ["dist", "src"],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@var-ia/evidence-graph": "^0.2.1"
+  },
+  "devDependencies": {}
+}

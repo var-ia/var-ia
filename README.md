@@ -18,7 +18,10 @@ score: L1 facts (what changed) are deterministic and reproducible. L2
 interpretations (what the change means) are model-assisted and
 confidence-bounded.
 
-Built and open-sourced by [NextConsensus](https://nextconsensus.com). Varia is the open-source observation layer — domain-neutral infrastructure for structuring public knowledge change. NextConsensus sits above it as the proprietary healthcare decision layer, turning observable claim movement into sourced, review-ready briefs. Varia observes change. NextConsensus interprets it for healthcare decisions.
+Built and open-sourced by [NextConsensus](https://nextconsensus.com). Varia is
+domain-neutral infrastructure for structuring public knowledge change.
+[Repository boundary](./docs/repository-boundary.md): Varia observes change.
+NextConsensus judges healthcare decision relevance.
 
 ![Concept Overview](./docs/diagrams/concept-overview.svg)
 
@@ -134,7 +137,6 @@ import { sectionDiffer, citationTracker } from "@var-ia/analyzers";
 | `@var-ia/ingestion` | [![npm](https://img.shields.io/npm/v/@var-ia/ingestion)](https://www.npmjs.com/package/@var-ia/ingestion) | Wikimedia API adapters — fetching, diffing, rate limits |
 | `@var-ia/analyzers` | [![npm](https://img.shields.io/npm/v/@var-ia/analyzers)](https://www.npmjs.com/package/@var-ia/analyzers) | Deterministic analyzers — sections, citations, reverts, templates |
 | `@var-ia/interpreter` | [![npm](https://img.shields.io/npm/v/@var-ia/interpreter)](https://www.npmjs.com/package/@var-ia/interpreter) | Pluggable model adapter for semantic interpretation |
-| `@var-ia/persistence` | [![npm](https://img.shields.io/npm/v/@var-ia/persistence)](https://www.npmjs.com/package/@var-ia/persistence) | SQLite persistence (Bun-only) |
 | `@var-ia/cli` | [![npm](https://img.shields.io/npm/v/@var-ia/cli)](https://www.npmjs.com/package/@var-ia/cli) | CLI tool — `wikihistory` command |
 | `@var-ia/eval` | [![npm](https://img.shields.io/npm/v/@var-ia/eval)](https://www.npmjs.com/package/@var-ia/eval) | Evaluation harness with benchmark pages |
 

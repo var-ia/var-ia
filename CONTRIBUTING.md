@@ -1,17 +1,15 @@
 # Contributing
 
-## Phase Discipline
+## Repository Boundary
 
-All measurement claims must carry a phase tag. The phase indicates how much validation supports the claim:
+Varia observes change. NextConsensus judges healthcare decision relevance.
 
-| Phase | Allowed | Meaning |
-|-------|---------|---------|
-| **Phase 0** | Nothing | No production backtest. Internal exploration only. |
-| **Phase 1b** | Cross-lane transferability | Claim transfers across contexts. Lane-specific values prohibited. |
-| **Phase 2a** | n=1 values with caveat | Validated on one case. No generalization. |
-| **Phase 2b** | Full validated claims | Holdout > 0, multiple independent backtests. |
-
-Unsure of a claim's phase → Phase 0.
+Contributions must stay inside the open-source observability boundary described
+in [docs/repository-boundary.md](./docs/repository-boundary.md). Varia can
+detect and label public revision-history events. It must not import healthcare
+decision judgment, payer/guideline logic, source weighting, thresholds,
+production backtests, outcome-data claims, customer workflows, or
+NextConsensus-private logic.
 
 ## Commit Convention
 
