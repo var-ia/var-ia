@@ -12,7 +12,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@var-ia/evidence-graph": "workspace:*"
+    "@var-ia/evidence-graph": "workspace:*",
+    "@var-ia/interpreter": "workspace:*"
   },
   "devDependencies": {}
 }

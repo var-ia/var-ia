@@ -24,7 +24,8 @@
     "@var-ia/interpreter": "^0.1.1",
     "@var-ia/evidence-graph": "^0.2.1",
     "@var-ia/persistence": "^0.1.1",
-    "@var-ia/eval": "^0.1.1"
+    "@var-ia/eval": "^0.1.1",
+    "commander": "^12.0.0"
   },
   "devDependencies": {}
 }

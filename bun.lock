@@ -15,7 +15,7 @@
       "name": "@var-ia/analyzers",
       "version": "0.2.1",
       "dependencies": {
-        "@var-ia/evidence-graph": "^0.1.0",
+        "@var-ia/evidence-graph": "^0.2.1",
       },
     },
     "packages/cli": {
@@ -25,12 +25,13 @@
         "wikihistory": "dist/src/cli.js",
       },
       "dependencies": {
-        "@var-ia/analyzers": "^0.1.0",
-        "@var-ia/eval": "^0.1.0",
-        "@var-ia/evidence-graph": "^0.1.0",
-        "@var-ia/ingestion": "^0.1.0",
-        "@var-ia/interpreter": "^0.1.0",
-        "@var-ia/persistence": "^0.1.0",
+        "@var-ia/analyzers": "^0.2.1",
+        "@var-ia/eval": "^0.1.1",
+        "@var-ia/evidence-graph": "^0.2.1",
+        "@var-ia/ingestion": "^0.2.1",
+        "@var-ia/interpreter": "^0.1.1",
+        "@var-ia/persistence": "^0.1.1",
+        "commander": "^12.0.0",
       },
     },
     "packages/eval": {
@@ -38,6 +39,7 @@
       "version": "0.1.1",
       "dependencies": {
         "@var-ia/evidence-graph": "workspace:*",
+        "@var-ia/interpreter": "workspace:*",
       },
     },
     "packages/evidence-graph": {
@@ -48,21 +50,21 @@
       "name": "@var-ia/ingestion",
       "version": "0.2.1",
       "dependencies": {
-        "@var-ia/evidence-graph": "^0.1.0",
+        "@var-ia/evidence-graph": "^0.2.1",
       },
     },
     "packages/interpreter": {
       "name": "@var-ia/interpreter",
       "version": "0.1.1",
       "dependencies": {
-        "@var-ia/evidence-graph": "^0.1.0",
+        "@var-ia/evidence-graph": "^0.2.1",
       },
     },
     "packages/persistence": {
       "name": "@var-ia/persistence",
       "version": "0.1.1",
       "dependencies": {
-        "@var-ia/evidence-graph": "^0.1.0",
+        "@var-ia/evidence-graph": "^0.2.1",
       },
     },
   },
@@ -172,6 +174,8 @@
     "assertion-error": ["assertion-error@2.0.1", "", {}, "sha512-Izi8RQcffqCeNVgFigKli1ssklIbpHnCYc6AknXGYoB6grJqyeby7jv12JUQgmTAnIDnbck1uxksT4dzN3PWBA=="],
 
     "chai": ["chai@6.2.2", "", {}, "sha512-NUPRluOfOiTKBKvWPtSD4PhFvWCqOi0BGStNWs57X9js7XGTprSmFoz5F0tWhR4WPjNeR9jXqdC7/UpSJTnlRg=="],
+
+    "commander": ["commander@12.1.0", "", {}, "sha512-Vw8qHK3bZM9y/P10u3Vib8o/DdkvA2OtPtZvD871QKjy74Wj1WSKFILMPRPSdUSx5RFK1arlJzEtA4PkFgnbuA=="],
 
     "convert-source-map": ["convert-source-map@2.0.0", "", {}, "sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg=="],
 
