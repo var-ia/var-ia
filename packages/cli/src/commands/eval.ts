@@ -1,8 +1,19 @@
-import { createEvalHarness, GROUND_TRUTH_LABELS, validateAgainstGroundTruth } from "@var-ia/eval";
+import { createEvalHarness, GROUND_TRUTH_LABELS, printBenchmarkResult, runL2Benchmark, validateAgainstGroundTruth } from "@var-ia/eval";
 import type { EvidenceEvent } from "@var-ia/evidence-graph";
+import type { ModelConfig } from "@var-ia/interpreter";
 import { runAnalyze } from "./analyze.js";
 
-export async function runEval(pageTitleOverride?: string, groundTruthPath?: string): Promise<void> {
+export async function runEval(
+  pageTitleOverride?: string,
+  groundTruthPath?: string,
+  l2Benchmark?: boolean,
+  modelConfig?: ModelConfig,
+): Promise<void> {
+  if (l2Benchmark) {
+    await runL2Eval(modelConfig);
+    return;
+  }
+
   if (groundTruthPath) {
     await runGroundTruth(groundTruthPath);
     return;
@@ -44,6 +55,40 @@ export async function runEval(pageTitleOverride?: string, groundTruthPath?: stri
   console.log(`\n=== Eval Summary ===`);
   console.log(`Passed: ${summary.testsPassed}/${summary.totalTests}`);
   console.log(`Overall precision: ${(summary.overallPrecision * 100).toFixed(1)}%`);
+}
+
+async function runL2Eval(modelConfig?: ModelConfig): Promise<void> {
+  const providers: ModelConfig[] = [];
+
+  if (modelConfig) {
+    providers.push(modelConfig);
+  } else {
+    // Try all configured env vars
+    if (process.env.OPENAI_API_KEY) {
+      providers.push({ provider: "openai", model: "gpt-4o" });
+    }
+    if (process.env.ANTHROPIC_API_KEY) {
+      providers.push({ provider: "anthropic", model: "claude-sonnet-4-20250514" });
+    }
+    if (process.env.DEEPSEEK_API_KEY) {
+      providers.push({ provider: "deepseek", model: "deepseek-chat" });
+    }
+  }
+
+  if (providers.length === 0) {
+    console.log("No model provider configured.\n");
+    console.log("Available synthetic test cases:");
+    const { buildL2Dataset } = await import("@var-ia/eval");
+    const dataset = buildL2Dataset();
+    for (const tc of dataset) {
+      console.log(`  ${tc.id}: ${tc.description} (${tc.events.length} events)`);
+    }
+    console.log(`\nSet OPENAI_API_KEY, ANTHROPIC_API_KEY, or DEEPSEEK_API_KEY to run benchmarks.`);
+    return;
+  }
+
+  const result = await runL2Benchmark(providers);
+  printBenchmarkResult(result);
 }
 
 async function runGroundTruth(path: string): Promise<void> {

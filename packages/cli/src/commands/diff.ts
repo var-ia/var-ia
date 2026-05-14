@@ -81,7 +81,6 @@ export async function runDiff(
     generatedAt: new Date().toISOString(),
   };
 
-  printDiff(result, labels);
   return result;
 }
 
@@ -199,47 +198,4 @@ function detectOutliers(
   return outliers.sort((a, b) => Math.abs(b.zScore) - Math.abs(a.zScore));
 }
 
-function printDiff(result: DiffResult, labels: string[]): void {
-  const { wikis, comparison, outliers } = result;
 
-  console.log(`\n=== Cross-Wiki Diff: "${result.pageTitle}" ===`);
-  for (let i = 0; i < wikis.length; i++) {
-    console.log(`Wiki ${labels[i]}: ${wikis[i].url}`);
-  }
-  console.log();
-
-  console.log("── Overview ──");
-  const overviewLabels = labels.map((l) => `${l}`.padStart(6));
-  console.log(`  ${"".padEnd(14)} ${overviewLabels.join(" ")}`);
-  console.log(`  ${"Total events".padEnd(14)} ${comparison.totalEvents.map((n) => String(n).padStart(6)).join(" ")}`);
-  console.log(`  ${"Sections".padEnd(14)} ${comparison.totalSections.map((n) => String(n).padStart(6)).join(" ")}`);
-  console.log(`  ${"Citations".padEnd(14)} ${wikis.map((w) => String(w.summary.citations).padStart(6)).join(" ")}`);
-  console.log(`  ${"Templates".padEnd(14)} ${wikis.map((w) => String(w.summary.templates).padStart(6)).join(" ")}`);
-  console.log(`  ${"Reverts".padEnd(14)} ${wikis.map((w) => String(w.summary.reverts).padStart(6)).join(" ")}`);
-  console.log(`  ${"Categories".padEnd(14)} ${wikis.map((w) => String(w.summary.categories).padStart(6)).join(" ")}`);
-  console.log(`  ${"Wikilinks".padEnd(14)} ${wikis.map((w) => String(w.summary.wikilinks).padStart(6)).join(" ")}`);
-  console.log();
-
-  const eventRows = comparison.eventTypeDiffs.map((d) => [
-    d.eventType,
-    ...d.counts.map((c) => String(c)),
-  ]);
-  if (eventRows.length > 0) {
-    console.log("── Event Type Breakdown ──");
-    console.log(eventRows.map((row) => {
-      const label = row[0].padEnd(28);
-      const values = row.slice(1).map((v) => {
-        const num = Number(v);
-        return num === 0 ? "-" : v;
-      });
-      return `  ${label} ${values.map((v) => v.padStart(5)).join(" ")}`;
-    }).join("\n"));
-  }
-
-  if (outliers.length > 0) {
-    console.log("\n── Outliers (|z-score| > 2) ──");
-    for (const o of outliers) {
-      console.log(`  Wiki ${o.wikiLabel}: ${o.eventType} = ${o.count} (mean=${o.mean}, z=${o.zScore > 0 ? "+" : ""}${o.zScore})`);
-    }
-  }
-}

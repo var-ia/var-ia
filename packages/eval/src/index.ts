@@ -264,3 +264,5 @@ export function createEvalHarness(): EvalHarness {
 export { GROUND_TRUTH_LABELS, getGroundTruthById, getGroundTruthForPage } from "./ground-truth.js";
 export type { ExpectedInterpretation } from "./calibration.js";
 export { computeCalibration } from "./calibration.js";
+export type { L2TestCase, L2MetricScore, L2ProviderResult, L2BenchmarkResult } from "./l2-benchmark.js";
+export { buildL2Dataset, printBenchmarkResult, runL2Benchmark } from "./l2-benchmark.js";

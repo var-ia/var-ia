@@ -4,6 +4,7 @@ import { runAnalyze } from "./commands/analyze.js";
 import { runCron } from "./commands/cron.js";
 import { runDiff } from "./commands/diff.js";
 import type { DiffResult } from "./commands/diff.js";
+import { runVisualize } from "./commands/visualize.js";
 import { runClaim } from "./commands/claim.js";
 import { runEval } from "./commands/eval.js";
 import { runExport } from "./commands/export.js";
@@ -186,6 +187,17 @@ cronCmd.action(async (pagesFile, opts) => {
   }
 });
 
+// ── visualize ──
+const visualizeCmd = program
+  .command("visualize <page>")
+  .description("export evidence graph as Mermaid or DOT diagram")
+  .option("-f, --format <format>", "output format: mermaid, dot", "mermaid")
+  .option("--all", "show all event types (default: claim events only)");
+withGlobal(visualizeCmd);
+visualizeCmd.action(async (page, opts) => {
+  await runVisualize(page, opts.format as string, !!opts.all, opts.api as string | undefined);
+});
+
 // ── diff ──
 const diffCmd = program
   .command("diff <topic>")
@@ -266,9 +278,16 @@ const evalCmd = program
   .command("eval")
   .description("run evaluation harness against benchmark pages or ground truth")
   .option("--page <title>", "run only benchmarks for a specific page")
-  .option("--ground-truth <path|builtin>", "validate against L3 ground truth labels");
+  .option("--ground-truth <path|builtin>", "validate against L3 ground truth labels")
+  .option("--l2", "run L2 quality benchmarks against synthetic dataset");
+withModel(evalCmd);
 evalCmd.action(async (opts) => {
-  await runEval(opts.page as string | undefined, opts.groundTruth as string | undefined);
+  await runEval(
+    opts.page as string | undefined,
+    opts.groundTruth as string | undefined,
+    !!opts.l2,
+    extractModel(opts),
+  );
 });
 
 export async function cli(args: string[]): Promise<void> {
