@@ -33,6 +33,17 @@ export interface FactProvenance {
   inputHashes: string[];
 }
 
+export type PolicyDimension =
+  | "verifiability"
+  | "npov"
+  | "blp"
+  | "due_weight"
+  | "protection"
+  | "edit_warring"
+  | "notability"
+  | "copyright"
+  | "civility";
+
 export interface DeterministicFact {
   fact: string;
   detail?: string;
@@ -40,9 +51,9 @@ export interface DeterministicFact {
 }
 
 export interface ModelInterpretation {
-  semanticChange: string;    // e.g., "direct accusation changed to attributed institutional finding"
-  confidence: number;        // 0.0–1.0
-  policyDimension?: string;  // e.g., "verifiability", "npov", "blp", "due_weight"
+  semanticChange: string;
+  confidence: number;
+  policyDimension?: PolicyDimension;
 }
 
 export interface EvidenceEvent {

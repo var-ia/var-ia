@@ -1,9 +1,9 @@
 import { readFileSync } from "node:fs";
 import { MediaWikiClient } from "@var-ia/ingestion";
 import type { RevisionOptions } from "@var-ia/ingestion";
-import { sectionDiffer, citationTracker, revertDetector, templateTracker, extractWikilinks, diffWikilinks, buildPageMoveEvents, extractCategories, diffCategories, classifyClaimChange, buildSectionLineage } from "@var-ia/analyzers";
-import type { TemplateType } from "@var-ia/analyzers";
-import type { PageMove } from "@var-ia/ingestion";
+import { sectionDiffer, citationTracker, revertDetector, templateTracker, extractWikilinks, diffWikilinks, buildPageMoveEvents, extractCategories, diffCategories, classifyClaimChange, buildSectionLineage, protectionTracker } from "@var-ia/analyzers";
+import type { TemplateType, ProtectionChange } from "@var-ia/analyzers";
+import type { PageMove, ProtectionLogEvent } from "@var-ia/ingestion";
 import type { EvidenceEvent, EvidenceLayer, Revision, DeterministicFact } from "@var-ia/evidence-graph";
 import { createAdapter } from "@var-ia/interpreter";
 import type { ModelConfig } from "@var-ia/interpreter";
@@ -98,6 +98,8 @@ export async function runAnalyze(
   const pageMoves: PageMove[] = await client.fetchPageMoves(pageTitle);
   const pageMoveEvents = buildPageMoveEvents(pageMoves);
   events.push(...pageMoveEvents);
+
+  const protectionLogs: ProtectionLogEvent[] = await client.fetchProtectionLogs(pageTitle);
 
   for (let i = 1; i < sortedRevs.length; i++) {
     const before = sortedRevs[i - 1];
@@ -294,6 +296,29 @@ export async function runAnalyze(
         ],
         layer: "policy_coded",
         timestamp: after.timestamp,
+      });
+    }
+
+    const protectionLogsInRange = protectionTracker.findLogsBetween(
+      protectionLogs,
+      before.timestamp,
+      after.timestamp,
+    );
+    for (const log of protectionLogsInRange) {
+      events.push({
+        eventType: "protection_changed",
+        fromRevisionId: before.revId,
+        toRevisionId: after.revId,
+        section: "",
+        before: "",
+        after: log.action,
+        deterministicFacts: [
+          { fact: "protection_log_event", detail: `action=${log.action} logId=${log.logId}` },
+          ...(log.comment ? [{ fact: "protection_summary", detail: log.comment }] : []),
+          ...extraFacts,
+        ],
+        layer: "policy_coded",
+        timestamp: log.timestamp,
       });
     }
 

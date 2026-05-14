@@ -1,5 +1,5 @@
 import type { Revision, DiffResult, DiffLine } from "@var-ia/evidence-graph";
-import type { RevisionFetcher, RevisionSource, DiffFetcher, MoveFetcher, RevisionOptions, PageMove } from "./index.js";
+import type { RevisionFetcher, RevisionSource, DiffFetcher, MoveFetcher, RevisionOptions, PageMove, ProtectionLogEvent } from "./index.js";
 import { RateLimiter } from "./rate-limiter.js";
 
 const DEFAULT_API_URL = "https://en.wikipedia.org/w/api.php";
@@ -181,6 +181,62 @@ export class MediaWikiClient implements RevisionFetcher, RevisionSource, DiffFet
     }
 
     return moves;
+  }
+
+  async fetchProtectionLogs(pageTitle: string): Promise<ProtectionLogEvent[]> {
+    const events: ProtectionLogEvent[] = [];
+    let lecontinue: string | undefined;
+
+    while (true) {
+      const params = new URLSearchParams({
+        action: "query",
+        list: "logevents",
+        letype: "protect",
+        letitle: pageTitle,
+        lelimit: "50",
+        leprop: "details",
+        format: "json",
+        formatversion: "2",
+      });
+
+      if (lecontinue) params.set("lecontinue", lecontinue);
+
+      const url = `${this.apiUrl}?${params.toString()}`;
+      const response = await this.fetch(url);
+      const data = await response.json() as {
+        query?: {
+          logevents?: Array<{
+            logid: number;
+            title: string;
+            timestamp: string;
+            comment: string;
+            action: string;
+            params?: { duration?: string; expiry?: string };
+          }>;
+        };
+        continue?: { lecontinue: string };
+      };
+
+      if (data.query?.logevents) {
+        for (const entry of data.query.logevents) {
+          events.push({
+            logId: entry.logid,
+            pageTitle: entry.title,
+            timestamp: entry.timestamp,
+            comment: entry.comment ?? "",
+            action: entry.action as "protect" | "unprotect" | "modify",
+          });
+        }
+      }
+
+      if (data.continue?.lecontinue) {
+        lecontinue = data.continue.lecontinue;
+      } else {
+        break;
+      }
+    }
+
+    return events;
   }
 
   async fetchDiff(fromRevId: number, toRevId: number): Promise<DiffResult> {

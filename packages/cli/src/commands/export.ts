@@ -40,6 +40,13 @@ export async function runExport(
     console.log(JSON.stringify(report, null, 2));
   } else if (format === "csv") {
     console.log(toCSV(events));
+  } else if (format === "ndjson") {
+    for (const event of events) {
+      console.log(JSON.stringify({
+        ...event,
+        eventId: event.eventId ?? createEventIdentity(event),
+      }));
+    }
   } else {
     console.log(JSON.stringify(events, null, 2));
   }

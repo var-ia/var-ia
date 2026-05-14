@@ -1,5 +1,5 @@
 import type { EvidenceEvent, ModelInterpretation } from "@var-ia/evidence-graph";
-import type { ModelAdapter, InterpretedEvent } from "./index.js";
+import type { ModelAdapter, InterpretedEvent, LineageContext } from "./index.js";
 
 export interface ConsensusConfig {
   adapters: ModelAdapter[];
@@ -24,9 +24,9 @@ export class ConsensusAdapter implements ModelAdapter {
     this.agreementKey = config.agreementKey ?? ((i) => i.semanticChange);
   }
 
-  async interpret(events: EvidenceEvent[]): Promise<InterpretedEvent[]> {
+  async interpret(events: EvidenceEvent[], lineage?: LineageContext): Promise<InterpretedEvent[]> {
     const allResults = await Promise.all(
-      this.adapters.map((a) => a.interpret(events)),
+      this.adapters.map((a) => a.interpret(events, lineage)),
     );
 
     const consolidated: InterpretedEvent[] = [];

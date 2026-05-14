@@ -13,7 +13,7 @@ Usage:
   wikihistory analyze <page> [--depth brief|detailed|forensic] [--from <revId>] [--to <revId>] [--cache] [--model <provider>]
   wikihistory analyze --pages-file <path> [--depth brief|detailed|forensic] [--cache] [--model <provider>]
   wikihistory claim <page> --text "<claim text>" [--cache] [--model <provider>]
-  wikihistory export <page> --format json|csv [--bundle] [--model <provider>]
+  wikihistory export <page> --format json|csv|ndjson [--bundle] [--manifest] [--model <provider>]
   wikihistory watch <page> [--section <name>]
   wikihistory diff <topic> --wiki-a <url> --wiki-b <url> [--depth brief|detailed|forensic] [--model <provider>]
   wikihistory eval [--page <title>]
@@ -21,7 +21,9 @@ Usage:
 Options:
   --depth          Analysis depth (default: detailed)
   --text           Claim text to track across revisions
-  --format         Export format (json, csv)
+  --format         Export format (json, csv, ndjson)
+  --bundle         Export as a signed evidence bundle with SHA-256 hash
+  --manifest       Export as a replay manifest listing all input/output hashes
   --section        Watch a specific section only
   --from           Start revision ID
   --to             End revision ID

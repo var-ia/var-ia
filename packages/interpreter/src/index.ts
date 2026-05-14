@@ -255,7 +255,7 @@ function buildSystemPrompt(): string {
   return `You are a wiki edit classifier. Given a list of evidence events describing what changed between revisions, classify each event's semantic meaning. For each event, respond with:
 - semanticChange: a concise description of what the change means semantically (e.g., "factual claim removed", "attribution strengthened", "sentence reworded without changing meaning")
 - confidence: a score from 0.0 to 1.0 indicating how certain you are
-- policyDimension (optional): if the change touches a Wikipedia policy, name it (e.g., "verifiability", "npov", "blp", "due_weight")
+- policyDimension (optional): if the change touches a Wikipedia policy, use one of: verifiability, npov, blp, due_weight, protection, edit_warring, notability, copyright, civility
 
 Return ONLY a JSON array of objects with fields: eventIndex (matching the input array index), semanticChange, confidence, policyDimension.`;
 }

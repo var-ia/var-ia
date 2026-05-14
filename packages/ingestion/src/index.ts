@@ -16,6 +16,15 @@ export interface MoveFetcher {
   fetchPageMoves(pageTitle: string): Promise<PageMove[]>;
 }
 
+export interface ProtectionLogEvent {
+  logId: number;
+  pageTitle: string;
+  timestamp: string;
+  comment: string;
+  action: "protect" | "unprotect" | "modify";
+  level?: string;
+}
+
 export interface PageMove {
   oldTitle: string;
   newTitle: string;

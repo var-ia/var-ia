@@ -71,6 +71,8 @@ export { extractWikilinks, diffWikilinks, buildWikilinkEvents } from "./wikilink
 export { buildPageMoveEvents } from "./page-move-detector.js";
 export { extractCategories, diffCategories, buildCategoryEvents } from "./category-tracker.js";
 export { classifyClaimChange } from "./claim-differ.js";
+export { protectionTracker } from "./protection-tracker.js";
+export type { ProtectionTracker, ProtectionChange } from "./protection-tracker.js";
 export {
   sanitizeWikitext,
   extractHeadingMap,
