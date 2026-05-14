@@ -1,15 +1,18 @@
 {
   "name": "@var-ia/cli",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "private": false,
   "description": "CLI tool for Wikipedia edit history analysis",
   "license": "AGPL-3.0",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
-  "files": ["dist", "src"],
+  "files": [
+    "dist",
+    "src"
+  ],
   "bin": {
-    "wikihistory": "./dist/src/cli.js"
+    "wikihistory": "dist/src/cli.js"
   },
   "scripts": {
     "build": "tsc",
