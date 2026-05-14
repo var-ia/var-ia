@@ -1,8 +1,8 @@
 import { classifyClaimChange } from "@var-ia/analyzers";
 import type { ClaimState, EvidenceEvent, Revision } from "@var-ia/evidence-graph";
 import { createClaimIdentity } from "@var-ia/evidence-graph";
+import type { AuthConfig, RevisionOptions } from "@var-ia/ingestion";
 import { MediaWikiClient } from "@var-ia/ingestion";
-import type { RevisionOptions } from "@var-ia/ingestion";
 import type { ModelConfig } from "@var-ia/interpreter";
 import { createAdapter } from "@var-ia/interpreter";
 import { loadCachedRevisions, loadLatestCachedTimestamp, saveRevisions } from "./cache.js";
@@ -14,8 +14,9 @@ export async function runClaim(
   modelConfig?: ModelConfig,
   apiUrl?: string,
   cacheDir?: string,
+  auth?: AuthConfig,
 ): Promise<void> {
-  const client = new MediaWikiClient(apiUrl ? { apiUrl } : undefined);
+  const client = new MediaWikiClient(apiUrl ? { apiUrl, auth } : auth ? { auth } : undefined);
   console.log(`Tracking claim in "${pageTitle}"...`);
   console.log(`Claim text: "${claimText}"\n`);
 

@@ -5,16 +5,20 @@
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-0f172a.svg)](./LICENSE)
 [![npm scope](https://img.shields.io/badge/npm-%40var--ia-2563eb.svg)](https://www.npmjs.com/org/var-ia)
 
-**Wikipedia page histories, reconstructed as evidence graphs.**
+**Open-source infrastructure for knowledge change.**
 
 > Evidence, not truth.
 
-A deterministic claim-provenance engine for Wikipedia page histories. This tool
-reconstructs how claims moved through Wikipedia's editorial system — when they
-appeared, how they changed, what sources supported them, and what policy signals
-surrounded each change.
+Var-ia turns revision histories from MediaWiki-based knowledge systems into
+structured timelines of how claims, sources, wording, and disputes change over
+time. It works across Wikipedia, Fandom, and any other MediaWiki instance.
 
-Built and open-sourced by [NextConsensus](https://nextconsensus.com).
+Every event is provenance-tagged and every interpretation carries a confidence
+score: L1 facts (what changed) are deterministic and reproducible. L2
+interpretations (what the change means) are model-assisted and
+confidence-bounded.
+
+Built and open-sourced by [NextConsensus](https://nextconsensus.com). Varia is the open-source observation layer — domain-neutral infrastructure for structuring public knowledge change. NextConsensus sits above it as the proprietary healthcare decision layer, turning observable claim movement into sourced, review-ready briefs. Varia observes change. NextConsensus interprets it for healthcare decisions.
 
 ![Concept Overview](./docs/diagrams/concept-overview.svg)
 
@@ -163,6 +167,51 @@ redefined by L1/L2 | Every interpretation carries a confidence score |
 Deterministic facts before interpretations.
 
 [Full architecture](./ARCHITECTURE.md)
+
+## Private Instances
+
+Var-ia connects to any MediaWiki instance — corporate wikis, institutional
+knowledge bases, private fan wikis. Use the `--api` flag with the wiki's
+`api.php` URL.
+
+### Authentication
+
+| Method | CLI flags | Description |
+|--------|-----------|-------------|
+| Bearer token | `--api-key <token>` | Sends `Authorization: Bearer <token>` with every request |
+| Basic auth | `--api-user <user> --api-password <pass>` | Sends HTTP basic auth credentials |
+| OAuth2 | `OAUTH_CLIENT_ID` + `OAUTH_CLIENT_SECRET` env vars | Sends `X-OAuth-Client-Id` and `X-OAuth-Client-Secret` headers |
+
+All three methods work with every command:
+
+```bash
+# Bearer token
+wikihistory analyze "Page" --api https://corp-wiki.example.com/w/api.php --api-key "sk-..."
+
+# Basic auth
+wikihistory analyze "Page" --api https://corp-wiki.example.com/w/api.php --api-user "admin" --api-password "..."
+
+# OAuth2 (via env vars)
+OAUTH_CLIENT_ID="..." OAUTH_CLIENT_SECRET="..." \
+  wikihistory analyze "Page" --api https://corp-wiki.example.com/w/api.php
+```
+
+Credentials are never logged or exposed in error messages.
+
+### Local Docker Testing
+
+A Docker Compose setup is available for testing against a local MediaWiki
+instance with auth:
+
+```bash
+cd docker
+docker compose up -d
+DOCKER_TESTS=true bun run test
+```
+
+This starts MediaWiki at `http://localhost:8080` and an nginx proxy with basic
+auth at `http://localhost:8081`. The auth integration tests validate bearer
+token, basic auth, and OAuth2 paths.
 
 ## Beyond Wikipedia
 

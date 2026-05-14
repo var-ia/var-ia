@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import type { EvidenceEvent, PolicySignal, Report, Revision } from "@var-ia/evidence-graph";
 import { createEventIdentity } from "@var-ia/evidence-graph";
+import type { AuthConfig } from "@var-ia/ingestion";
 import type { ModelConfig } from "@var-ia/interpreter";
 import { runAnalyze } from "./analyze.js";
 
@@ -20,6 +21,7 @@ export async function runExport(
   modelConfig?: ModelConfig,
   apiUrl?: string,
   bundle?: boolean,
+  auth?: AuthConfig,
 ): Promise<void> {
   if (bundle) {
     const { events, revisions } = await runAnalyze(
@@ -31,6 +33,10 @@ export async function runExport(
       false,
       modelConfig,
       apiUrl,
+      undefined,
+      undefined,
+      false,
+      auth,
     );
     const bundleData = buildBundle(pageTitle, events, revisions);
     console.log(JSON.stringify(bundleData, null, 2));
@@ -46,6 +52,10 @@ export async function runExport(
     false,
     modelConfig,
     apiUrl,
+    undefined,
+    undefined,
+    false,
+    auth,
   );
 
   if (events.length === 0) {

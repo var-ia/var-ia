@@ -1,5 +1,6 @@
 import type { DiffLine, DiffResult, Revision } from "@var-ia/evidence-graph";
 import type {
+  AuthConfig,
   DiffFetcher,
   MoveFetcher,
   PageMove,
@@ -78,11 +79,13 @@ export class MediaWikiClient implements RevisionFetcher, RevisionSource, DiffFet
   private rateLimiter: RateLimiter;
   private userAgent: string;
   private apiUrl: string;
+  private auth?: AuthConfig;
 
-  constructor(options?: { apiUrl?: string; userAgent?: string; minDelayMs?: number }) {
+  constructor(options?: { apiUrl?: string; userAgent?: string; minDelayMs?: number; auth?: AuthConfig }) {
     this.apiUrl = options?.apiUrl ?? DEFAULT_API_URL;
     this.userAgent = options?.userAgent ?? DEFAULT_USER_AGENT;
     this.rateLimiter = new RateLimiter(options?.minDelayMs ?? 100);
+    this.auth = options?.auth;
   }
 
   async fetchTalkRevisions(pageTitle: string, options?: RevisionOptions, talkPrefix?: string): Promise<Revision[]> {
@@ -300,13 +303,25 @@ export class MediaWikiClient implements RevisionFetcher, RevisionSource, DiffFet
   private async fetch(url: string, retries = 3): Promise<Response> {
     for (let attempt = 0; attempt < retries; attempt++) {
       await this.rateLimiter.acquire();
-      const response = await fetch(url, {
-        headers: {
-          "User-Agent": this.userAgent,
-          Accept: "application/json",
-          "Accept-Encoding": "gzip",
-        },
-      });
+      const headers: Record<string, string> = {
+        "User-Agent": this.userAgent,
+        Accept: "application/json",
+        "Accept-Encoding": "gzip",
+      };
+
+      if (this.auth?.apiKey) {
+        headers.Authorization = `Bearer ${this.auth.apiKey}`;
+      } else if (this.auth?.apiUser && this.auth?.apiPassword) {
+        const encoded = btoa(`${this.auth.apiUser}:${this.auth.apiPassword}`);
+        headers.Authorization = `Basic ${encoded}`;
+      }
+
+      if (this.auth?.oauthClientId && this.auth?.oauthClientSecret) {
+        headers["X-OAuth-Client-Id"] = this.auth.oauthClientId;
+        headers["X-OAuth-Client-Secret"] = this.auth.oauthClientSecret;
+      }
+
+      const response = await fetch(url, { headers });
 
       if (response.ok) return response;
 

@@ -1,3 +1,4 @@
+import type { AuthConfig } from "@var-ia/ingestion";
 import type { EvidenceEvent, Revision } from "@var-ia/evidence-graph";
 import { runAnalyze } from "./analyze.js";
 
@@ -29,6 +30,7 @@ export async function runVisualize(
   format: string,
   showAll?: boolean,
   apiUrl?: string,
+  auth?: AuthConfig,
 ): Promise<void> {
   const { events, revisions } = await runAnalyze(
     pageTitle,
@@ -39,6 +41,10 @@ export async function runVisualize(
     false,
     undefined,
     apiUrl,
+    undefined,
+    undefined,
+    false,
+    auth,
   );
 
   if (events.length === 0) {

@@ -1,0 +1,35 @@
+services:
+  mediawiki:
+    image: mediawiki:1.42
+    container_name: varia-mw
+    expose:
+      - "80"
+    environment:
+      - MW_SITE_NAME=VariaTest
+      - MW_SITE_LANG=en
+      - MW_ADMIN_USER=Admin
+      - MW_ADMIN_PASS=testpassword123!
+      - MW_DB_TYPE=sqlite
+      - MW_DB_PATH=/var/www/data
+    volumes:
+      - mw-data:/var/www/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/w/api.php?action=query&meta=siteinfo&format=json"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  nginx-auth:
+    image: nginx:alpine
+    container_name: varia-mw-auth
+    ports:
+      - "8081:80"
+    volumes:
+      - ./nginx-auth.conf:/etc/nginx/conf.d/default.conf
+      - ./htpasswd:/etc/nginx/.htpasswd
+    depends_on:
+      mediawiki:
+        condition: service_healthy
+
+volumes:
+  mw-data:

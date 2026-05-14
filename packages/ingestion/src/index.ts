@@ -1,5 +1,13 @@
 import type { DiffResult, Revision } from "@var-ia/evidence-graph";
 
+export interface AuthConfig {
+  apiKey?: string;
+  apiUser?: string;
+  apiPassword?: string;
+  oauthClientId?: string;
+  oauthClientSecret?: string;
+}
+
 export interface RevisionFetcher {
   fetchRevisions(pageTitle: string, options?: RevisionOptions): Promise<Revision[]>;
 }

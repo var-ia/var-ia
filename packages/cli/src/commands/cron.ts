@@ -3,6 +3,7 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 import type { EvidenceEvent } from "@var-ia/evidence-graph";
 import { diffObservations } from "@var-ia/analyzers";
+import type { AuthConfig } from "@var-ia/ingestion";
 import type { NotifyConfig } from "../notify.js";
 import { sendNotifications } from "../notify.js";
 import { runAnalyze } from "./analyze.js";
@@ -30,6 +31,7 @@ export async function runCron(
   apiUrl?: string,
   cacheDir?: string,
   notifyConfig?: NotifyConfig,
+  auth?: AuthConfig,
 ): Promise<CronResult> {
   const content = readFileSync(pagesFile, "utf-8");
   const titles = content
@@ -84,6 +86,10 @@ export async function runCron(
       false,
       undefined,
       apiUrl,
+      undefined,
+      undefined,
+      false,
+      auth,
     );
 
     let priorEvents: EvidenceEvent[] = [];

@@ -1,5 +1,6 @@
 import { citationTracker, revertDetector, sectionDiffer, templateTracker } from "@var-ia/analyzers";
 import type { EvidenceEvent, EvidenceLayer } from "@var-ia/evidence-graph";
+import type { AuthConfig } from "@var-ia/ingestion";
 import { MediaWikiClient } from "@var-ia/ingestion";
 
 const DEFAULT_POLL_INTERVAL_MS = 60_000;
@@ -9,9 +10,10 @@ export async function runWatch(
   section?: string,
   apiUrl?: string,
   intervalMs?: number,
+  auth?: AuthConfig,
 ): Promise<void> {
   const pollInterval = intervalMs ?? DEFAULT_POLL_INTERVAL_MS;
-  const client = new MediaWikiClient(apiUrl ? { apiUrl } : undefined);
+  const client = new MediaWikiClient(apiUrl ? { apiUrl, auth } : auth ? { auth } : undefined);
   console.log(`Watching "${pageTitle}"${section ? ` section="${section}"` : ""}`);
   console.log(`Polling every ${pollInterval / 1000}s. Press Ctrl+C to stop.\n`);
 

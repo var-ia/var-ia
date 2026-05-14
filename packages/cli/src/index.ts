@@ -1,4 +1,5 @@
 import { Command } from "commander";
+import type { AuthConfig } from "@var-ia/ingestion";
 import type { ModelConfig } from "@var-ia/interpreter";
 import { runAnalyze } from "./commands/analyze.js";
 import { runCron } from "./commands/cron.js";
@@ -22,7 +23,24 @@ function withModel(cmd: Command): Command {
 }
 
 function withGlobal(cmd: Command): Command {
-  return cmd.option("--api <url>", "MediaWiki API base URL").option("--cache-dir <path>", "cache directory path");
+  return cmd
+    .option("--api <url>", "MediaWiki API base URL")
+    .option("--cache-dir <path>", "cache directory path")
+    .option("--api-key <token>", "API key for bearer token auth")
+    .option("--api-user <user>", "username for basic auth")
+    .option("--api-password <pass>", "password for basic auth");
+}
+
+function extractAuth(opts: Record<string, unknown>): AuthConfig | undefined {
+  const apiKey = opts.apiKey as string | undefined;
+  const apiUser = opts.apiUser as string | undefined;
+  const apiPassword = opts.apiPassword as string | undefined;
+  const oauthClientId = process.env.OAUTH_CLIENT_ID;
+  const oauthClientSecret = process.env.OAUTH_CLIENT_SECRET;
+
+  if (!apiKey && !apiUser && !apiPassword && !oauthClientId && !oauthClientSecret) return undefined;
+
+  return { apiKey, apiUser, apiPassword, oauthClientId, oauthClientSecret };
 }
 
 function extractModel(opts: Record<string, unknown>): ModelConfig | undefined {
@@ -61,6 +79,7 @@ withGlobal(analyzeCmd);
 analyzeCmd.action(async (page, opts) => {
   const pagesFile = opts.pagesFile as string | undefined;
   const modelConfig = extractModel(opts);
+  const auth = extractAuth(opts);
 
   if (pagesFile) {
     const result = await runAnalyze(
@@ -75,6 +94,7 @@ analyzeCmd.action(async (page, opts) => {
       pagesFile,
       opts.cacheDir as string | undefined,
       !!opts.router,
+      auth,
     );
     console.log(`\n${success(`Batch complete. ${result.events.length} events total.`)}`);
     return;
@@ -98,6 +118,7 @@ analyzeCmd.action(async (page, opts) => {
     undefined,
     opts.cacheDir as string | undefined,
     !!opts.router,
+    auth,
   );
 
   console.log(heading("Analysis Results"));
@@ -136,6 +157,7 @@ claimCmd.action(async (page, opts) => {
     extractModel(opts),
     opts.api as string | undefined,
     opts.cacheDir as string | undefined,
+    extractAuth(opts),
   );
 });
 
@@ -155,6 +177,7 @@ exportCmd.action(async (page, opts) => {
     extractModel(opts),
     opts.api as string | undefined,
     !!opts.bundle,
+    extractAuth(opts),
   );
 });
 
@@ -163,10 +186,10 @@ const watchCmd = program
   .command("watch <page>")
   .description("live polling daemon for new edits")
   .option("-s, --section <name>", "watch a specific section only")
-  .option("-i, --interval <ms>", "poll interval in ms (default: 60000)", parseInt)
-  .option("--api <url>", "MediaWiki API base URL");
+  .option("-i, --interval <ms>", "poll interval in ms (default: 60000)", parseInt);
+withGlobal(watchCmd);
 watchCmd.action(async (page, opts) => {
-  await runWatch(page, opts.section as string | undefined, opts.api as string | undefined, opts.interval as number | undefined);
+  await runWatch(page, opts.section as string | undefined, opts.api as string | undefined, opts.interval as number | undefined, extractAuth(opts));
 });
 
 // ── cron ──
@@ -192,6 +215,7 @@ cronCmd.action(async (pagesFile, opts) => {
     opts.api as string | undefined,
     opts.cacheDir as string | undefined,
     hasNotify ? notifyConfig : undefined,
+    extractAuth(opts),
   );
   if (result.totalNewEvents > 0) {
     process.exit(1);
@@ -206,7 +230,7 @@ const visualizeCmd = program
   .option("--all", "show all event types (default: claim events only)");
 withGlobal(visualizeCmd);
 visualizeCmd.action(async (page, opts) => {
-  await runVisualize(page, opts.format as string, !!opts.all, opts.api as string | undefined);
+  await runVisualize(page, opts.format as string, !!opts.all, opts.api as string | undefined, extractAuth(opts));
 });
 
 // ── diff ──

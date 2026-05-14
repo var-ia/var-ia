@@ -21,7 +21,7 @@ import {
   templateTracker,
 } from "@var-ia/analyzers";
 import type { DeterministicFact, EvidenceEvent, EvidenceLayer, Revision } from "@var-ia/evidence-graph";
-import type { RevisionOptions } from "@var-ia/ingestion";
+import type { AuthConfig, RevisionOptions } from "@var-ia/ingestion";
 import { MediaWikiClient } from "@var-ia/ingestion";
 import type { ModelConfig } from "@var-ia/interpreter";
 import { createAdapter, ModelRouter } from "@var-ia/interpreter";
@@ -80,6 +80,7 @@ export async function runAnalyze(
   pagesFile?: string,
   cacheDir?: string,
   useRouter = false,
+  auth?: AuthConfig,
 ): Promise<{ events: EvidenceEvent[]; revisions: Revision[] }> {
   if (pagesFile) {
     return runBatch(
@@ -93,9 +94,10 @@ export async function runAnalyze(
       apiUrl,
       cacheDir,
       useRouter,
+      auth,
     );
   }
-  const client = new MediaWikiClient(apiUrl ? { apiUrl } : undefined);
+  const client = new MediaWikiClient(apiUrl ? { apiUrl, auth } : auth ? { auth } : undefined);
   console.log(`Analyzing "${pageTitle}" at depth: ${depth}...`);
 
   let revisions: Revision[] = [];
@@ -645,6 +647,7 @@ async function runBatch(
   apiUrl?: string,
   cacheDir?: string,
   useRouter = false,
+  auth?: AuthConfig,
 ): Promise<{ events: EvidenceEvent[]; revisions: Revision[] }> {
   const content = readFileSync(pagesFile, "utf-8");
   const titles: string[] = content
@@ -676,6 +679,7 @@ async function runBatch(
           undefined,
           cacheDir,
           useRouter,
+          auth,
         );
         return { pageTitle: title, pageId: 0, eventCount: events.length, events };
       }),

@@ -120,6 +120,10 @@ describe("cron command", () => {
       false,
       undefined,
       undefined,
+      undefined,
+      undefined,
+      false,
+      undefined,
     );
 
     rmSync(tmpDir, { recursive: true, force: true });

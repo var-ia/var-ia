@@ -1,16 +1,16 @@
 ---
 name: varia
-description: Use when integrating Wikipedia edit history analysis, building claim-provenance tools, or working with @var-ia/* packages — deterministic L1 observation engine with three-layer architecture
+description: Use when integrating MediaWiki edit history analysis, building claim-provenance tools, or working with @var-ia/* packages — deterministic L1 observation engine with three-layer architecture
 license: AGPL-3.0
 ---
 
-# Varia
+# Var-ia
 
-Deterministic claim-provenance engine for Wikipedia page histories. Evidence, not truth.
+Deterministic claim-provenance engine for MediaWiki knowledge systems. Evidence, not truth.
 
 ## When to Use
 
-- Integrating Wikipedia edit history analysis into a tool
+- Integrating MediaWiki edit history analysis into a tool
 - Building claim-provenance tracking across revisions
 - Using `@var-ia/*` packages (evidence-graph, analyzers, ingestion, interpreter)
 - Running the `wikihistory` CLI for page analysis

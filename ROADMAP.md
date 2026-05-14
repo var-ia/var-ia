@@ -63,7 +63,7 @@ anything.
 | CW-02 | Multi-workset diff | CLI | 10 | medium | CW-01 | done |
 | CW-03 | Evidence graph viz | CLI | 13 | small | — | done |
 | CW-04 | Non-English Wikipedia support | CLI | 15 | medium | — | done |
-| CW-05 | Private MediaWiki instance support | INFRA | 16 | medium | — | ready |
+| CW-05 | Private MediaWiki instance support | INFRA | 16 | medium | — | done |
 | INFRA-01 | Real L3 eval with ground truth | INFRA | 9 | large | L1-01, L1-02 | done |
 | INFRA-02 | Scheduled re-observation | INFRA | 11 | medium | L1-07 | done |
 | INFRA-03 | L2 quality benchmarks | INFRA | 12 | large | L2-01, INFRA-01 | done |
@@ -87,7 +87,7 @@ CW-04 ✓ (independent)
 CW-05 (independent)
 ```
 
-**Ready to pick up:** CW-05
+**Ready to pick up:** None — all items are done.
 
 ## L1 — Deterministic
 
