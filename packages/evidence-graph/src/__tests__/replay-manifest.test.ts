@@ -1,0 +1,82 @@
+import { describe, it, expect } from "vitest";
+import { createReplayManifest } from "../replay-manifest.js";
+import type { Revision, EvidenceEvent } from "../index.js";
+
+const rev: Revision = {
+  revId: 1,
+  pageId: 100,
+  pageTitle: "Test",
+  timestamp: "2026-01-01T00:00:00Z",
+  comment: "first edit",
+  content: "Hello world",
+  size: 11,
+  minor: false,
+};
+
+const event: EvidenceEvent = {
+  eventType: "revert_detected",
+  fromRevisionId: 1,
+  toRevisionId: 2,
+  section: "",
+  before: "",
+  after: "reverted",
+  deterministicFacts: [{ fact: "revert" }],
+  layer: "observed",
+  timestamp: "2026-01-01T00:00:00Z",
+};
+
+describe("createReplayManifest", () => {
+  it("produces a manifest with expected format", () => {
+    const manifest = createReplayManifest({
+      pageTitle: "Test",
+      analyzerVersions: { "revert-detector": "0.1.0" },
+      revisions: [rev],
+      events: [event],
+    });
+
+    expect(manifest.format).toBe("varia-replay-manifest/v1");
+    expect(manifest.pageTitle).toBe("Test");
+    expect(manifest.analyzerVersions["revert-detector"]).toBe("0.1.0");
+  });
+
+  it("generates a manifest hash", () => {
+    const manifest = createReplayManifest({
+      pageTitle: "Test",
+      analyzerVersions: { "revert-detector": "0.1.0" },
+      revisions: [rev],
+      events: [event],
+    });
+
+    expect(manifest.manifestHash).toMatch(/^[0-9a-f]{64}$/);
+  });
+
+  it("includes input and output hashes", () => {
+    const manifest = createReplayManifest({
+      pageTitle: "Test",
+      analyzerVersions: { "revert-detector": "0.1.0" },
+      revisions: [rev],
+      events: [event],
+    });
+
+    expect(manifest.inputRevisionHashes).toHaveLength(1);
+    expect(manifest.outputEventHashes).toHaveLength(1);
+  });
+
+  it("is deterministic for same inputs", () => {
+    const a = createReplayManifest({
+      pageTitle: "Test",
+      analyzerVersions: { "revert-detector": "0.1.0" },
+      revisions: [rev],
+      events: [event],
+    });
+
+    const b = createReplayManifest({
+      pageTitle: "Test",
+      analyzerVersions: { "revert-detector": "0.1.0" },
+      revisions: [rev],
+      events: [event],
+    });
+
+    expect(a.manifestHash).toBe(b.manifestHash);
+  });
+});

@@ -1,4 +1,4 @@
-import { buildSectionLineage } from "../section-differ.js";
+import { sectionDiffer, buildSectionLineage } from "../section-differ.js";
 import { describe, it, expect } from "vitest";
 
 describe("buildSectionLineage", () => {
@@ -58,5 +58,63 @@ describe("buildSectionLineage", () => {
     expect(lineage[0].sectionName).toBe("(lead)");
     expect(lineage[1].sectionName).toBe("A");
     expect(lineage[2].sectionName).toBe("Z");
+  });
+});
+
+describe("extractSections", () => {
+  it("extracts lead section when no headers", () => {
+    const sections = sectionDiffer.extractSections("Plain text content.");
+    expect(sections).toHaveLength(1);
+    expect(sections[0].title).toBe("");
+  });
+
+  it("extracts sections with headers", () => {
+    const wikitext = "Lead\n\n== History ==\nOld history\n\n== References ==\n{{reflist}}";
+    const sections = sectionDiffer.extractSections(wikitext);
+    expect(sections.length).toBeGreaterThanOrEqual(3);
+    const history = sections.find((s) => s.title === "History");
+    expect(history).toBeDefined();
+    expect(history!.content).toContain("Old history");
+  });
+
+  it("parses heading levels", () => {
+    const wikitext = "Lead\n\n== Level 2 ==\nContent\n\n=== Level 3 ===\nDeeper";
+    const sections = sectionDiffer.extractSections(wikitext);
+    const level3 = sections.find((s) => s.title === "Level 3");
+    expect(level3).toBeDefined();
+    expect(level3!.level).toBe(3);
+  });
+});
+
+describe("diffSections", () => {
+  it("detects added sections", () => {
+    const before = sectionDiffer.extractSections("Lead content");
+    const after = sectionDiffer.extractSections("Lead content\n\n== New ==\nFresh");
+    const changes = sectionDiffer.diffSections(before, after);
+    const added = changes.find((c) => c.changeType === "added");
+    expect(added).toBeDefined();
+    expect(added!.section).toBe("New");
+  });
+
+  it("detects removed sections", () => {
+    const before = sectionDiffer.extractSections("Lead\n\n== Gone ==\nBye");
+    const after = sectionDiffer.extractSections("Lead");
+    const changes = sectionDiffer.diffSections(before, after);
+    const removed = changes.find((c) => c.changeType === "removed");
+    expect(removed).toBeDefined();
+  });
+
+  it("detects modified sections", () => {
+    const before = sectionDiffer.extractSections("Lead\n\n== Same ==\nOld content");
+    const after = sectionDiffer.extractSections("Lead\n\n== Same ==\nNew content");
+    const changes = sectionDiffer.diffSections(before, after);
+    const modified = changes.find((c) => c.changeType === "modified");
+    expect(modified).toBeDefined();
+  });
+
+  it("marks unchanged sections", () => {
+    const sections = sectionDiffer.extractSections("Lead\n\n== Stable ==\nSame");
+    const changes = sectionDiffer.diffSections(sections, sections);
+    expect(changes.every((c) => c.changeType === "unchanged")).toBe(true);
   });
 });

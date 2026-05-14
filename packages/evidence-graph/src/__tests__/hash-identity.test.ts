@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { createClaimIdentity } from "../hash-identity.js";
+import { createClaimIdentity, createEventIdentity } from "../hash-identity.js";
+import type { EvidenceEvent } from "../schemas/evidence.js";
 
 describe("Claim identity hash", () => {
   it("produces deterministic hash from same inputs", () => {
@@ -75,5 +76,36 @@ describe("Claim identity hash", () => {
       pageId: 1,
     });
     expect(id.claimId).toMatch(/^[0-9a-f]{16}$/);
+  });
+});
+
+describe("createEventIdentity", () => {
+  const base: Omit<EvidenceEvent, "eventId" | "modelInterpretation"> = {
+    eventType: "revert_detected",
+    fromRevisionId: 1,
+    toRevisionId: 2,
+    section: "body",
+    before: "",
+    after: "reverted",
+    deterministicFacts: [{ fact: "test" }],
+    layer: "observed",
+    timestamp: "2026-01-01T00:00:00Z",
+  };
+
+  it("produces a deterministic 16-char hex hash", () => {
+    const id = createEventIdentity(base);
+    expect(id).toMatch(/^[0-9a-f]{16}$/);
+  });
+
+  it("is deterministic for same input", () => {
+    const a = createEventIdentity(base);
+    const b = createEventIdentity(base);
+    expect(a).toBe(b);
+  });
+
+  it("differs for different event types", () => {
+    const a = createEventIdentity({ ...base, eventType: "claim_removed" });
+    const b = createEventIdentity(base);
+    expect(a).not.toBe(b);
   });
 });

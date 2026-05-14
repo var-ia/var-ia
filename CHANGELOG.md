@@ -52,6 +52,25 @@ consensus, and page protection events. New `--ground-truth builtin | <path>`
 flag for `wikihistory eval`. CLI validates pipeline signal against independent
 outcome labels.
 
+### Test Coverage (expanded from 12 files to 20)
+
+New test files:
+- heuristic-classifier, wikitext-parser, protection-tracker, revert-detector — 0→full coverage
+- rate-limiter, mediawiki-client (mocked) — 0→full coverage
+- adapter (createAdapter, parseInterpretations, ConsensusAdapter) — 0→full coverage
+- eval harness (evaluate, benchmarkPages, computeScores) — 0→full coverage
+- persistence (all 7 methods via bun:sqlite mock) — 0→full coverage
+- claim-utils (stripWikitext, fuzzyFindClaim, findSectionForText) — 0→full coverage
+- parseFlag — 0→full coverage
+
+Extended existing tests:
+- section-differ: added extractSections + diffSections (was buildSectionLineage-only)
+- template-tracker: added extractTemplates + diffTemplates (was param-differ-only)
+- hash-identity: added createEventIdentity (was createClaimIdentity-only)
+- replay-manifest: created (was 0 tests)
+
+Total: 30 test files, 251 tests passing.
+
 ## 0.1.0 (2025-01-01)
 
 Initial release.
