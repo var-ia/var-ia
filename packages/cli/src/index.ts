@@ -173,14 +173,25 @@ watchCmd.action(async (page, opts) => {
 const cronCmd = program
   .command("cron <pages-file>")
   .description("one-shot re-observation for cron (exits 1 if new events detected)")
-  .option("-i, --interval <hours>", "lookback window in hours (default: from last observation)", parseInt);
+  .option("-i, --interval <hours>", "lookback window in hours (default: from last observation)", parseInt)
+  .option("--notify-slack", "send Slack notification on changes (requires SLACK_WEBHOOK_URL env)")
+  .option("--notify-email", "send email notification on changes (requires SMTP_TO env)")
+  .option("--notify-webhook <url>", "send generic webhook POST on changes");
 withGlobal(cronCmd);
 cronCmd.action(async (pagesFile, opts) => {
+  const notifyConfig = {
+    slack: !!opts.notifySlack,
+    email: !!opts.notifyEmail,
+    webhookUrl: opts.notifyWebhook as string | undefined,
+  };
+  const hasNotify = notifyConfig.slack || notifyConfig.email || notifyConfig.webhookUrl;
+
   const result = await runCron(
     pagesFile,
     opts.interval as number | undefined,
     opts.api as string | undefined,
     opts.cacheDir as string | undefined,
+    hasNotify ? notifyConfig : undefined,
   );
   if (result.totalNewEvents > 0) {
     process.exit(1);

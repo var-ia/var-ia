@@ -3,6 +3,8 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 import type { EvidenceEvent } from "@var-ia/evidence-graph";
 import { diffObservations } from "@var-ia/analyzers";
+import type { NotifyConfig } from "../notify.js";
+import { sendNotifications } from "../notify.js";
 import { runAnalyze } from "./analyze.js";
 
 export interface CronReport {
@@ -27,6 +29,7 @@ export async function runCron(
   intervalHours?: number,
   apiUrl?: string,
   cacheDir?: string,
+  notifyConfig?: NotifyConfig,
 ): Promise<CronResult> {
   const content = readFileSync(pagesFile, "utf-8");
   const titles = content
@@ -130,6 +133,19 @@ export async function runCron(
   console.log(`\n=== Cron Summary ===`);
   console.log(`Pages: ${titles.length}`);
   console.log(`Total new events: ${totalNewEvents}`);
+
+  if (notifyConfig) {
+    const changedDeltas = reports
+      .filter((r) => r.eventsNew > 0 || r.eventsResolved > 0)
+      .map((r) => ({
+        pageTitle: r.pageTitle,
+        eventsNew: r.eventsNew,
+        eventsResolved: r.eventsResolved,
+        deltaSummary: r.deltaSummary,
+        wikiUrl: apiUrl,
+      }));
+    await sendNotifications(notifyConfig, changedDeltas);
+  }
 
   return result;
 }

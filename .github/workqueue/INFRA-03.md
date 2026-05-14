@@ -1,6 +1,6 @@
 ---
 id: INFRA-03
-status: ready
+status: done
 priority: 12
 dependencies: [L2-01, INFRA-01]
 packages: [eval, interpreter]

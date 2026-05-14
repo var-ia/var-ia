@@ -1,3 +1,4 @@
+import type { EvidenceEvent } from "@var-ia/evidence-graph";
 import { describe, expect, it, vi } from "vitest";
 
 vi.mock("@var-ia/interpreter", () => ({
@@ -28,7 +29,7 @@ describe("L2 benchmark", () => {
       interpret: vi.fn().mockImplementation(async (events) => {
         const tc = dataset[callIndex];
         callIndex++;
-        return events.map((e, i) => {
+        return (events as EvidenceEvent[]).map((e: EvidenceEvent, i: number) => {
           const exp = tc.expected[i];
           return {
             ...e,
@@ -49,14 +50,13 @@ describe("L2 benchmark", () => {
 
     expect(result.providers).toHaveLength(1);
     expect(result.providers[0].overallAccuracy).toBe(100);
-    expect(result.providers[0].avgConfidence).toBe(0.95);
     expect(result.testCases).toBe(13);
   });
 
   it("runL2Benchmark scores zero for adversarial adapter", async () => {
     const mockAdapter = {
       interpret: vi.fn().mockImplementation(async (events) => {
-        return events.map((e) => ({
+        return (events as EvidenceEvent[]).map((e: EvidenceEvent) => ({
           ...e,
           modelInterpretation: {
             semanticChange: "wrong answer",

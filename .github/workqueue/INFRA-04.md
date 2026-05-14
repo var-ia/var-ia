@@ -1,6 +1,6 @@
 ---
 id: INFRA-04
-status: ready
+status: done
 priority: 14
 dependencies: [INFRA-02]
 packages: [cli]
