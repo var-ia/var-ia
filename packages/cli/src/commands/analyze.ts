@@ -468,8 +468,9 @@ export async function runAnalyze(
     const beforePlain = getStripped(before);
     const afterPlain = getStripped(after);
 
-    const beforeSentences = beforePlain.split(/[.!?]\s+/).filter((s) => s.trim().length > 20);
-    const afterSentences = afterPlain.split(/[.!?]\s+/).filter((s) => s.trim().length > 20);
+    const sentenceSplit = /(?:[.!?]\s+|[。！？؟]\s*)/;
+    const beforeSentences = beforePlain.split(sentenceSplit).filter((s) => s.trim().length > 20);
+    const afterSentences = afterPlain.split(sentenceSplit).filter((s) => s.trim().length > 20);
 
     const beforeNorm = beforePlain.toLowerCase().replace(/\s+/g, " ");
     const afterNorm = afterPlain.toLowerCase().replace(/\s+/g, " ");

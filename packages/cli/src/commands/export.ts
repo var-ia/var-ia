@@ -96,12 +96,23 @@ function buildBundle(pageTitle: string, events: EvidenceEvent[], revisions: Revi
 }
 
 function buildReport(pageTitle: string, events: EvidenceEvent[]): Report {
-  const sortedRevs = events.map((e) => e.toRevisionId).sort((a, b) => a - b);
-  const timestamps = events.map((e) => e.timestamp).sort();
+  let minRev = Infinity;
+  let maxRev = -Infinity;
+  let earliest = "";
+  let latest = "";
+  let observedCount = 0;
+  let policyCount = 0;
+  let modelCount = 0;
 
-  const observedCount = events.length;
-  const policyCount = events.filter((e) => e.layer === "policy_coded").length;
-  const modelCount = events.filter((e) => e.modelInterpretation != null).length;
+  for (const e of events) {
+    if (e.toRevisionId < minRev) minRev = e.toRevisionId;
+    if (e.toRevisionId > maxRev) maxRev = e.toRevisionId;
+    if (!earliest || e.timestamp < earliest) earliest = e.timestamp;
+    if (!latest || e.timestamp > latest) latest = e.timestamp;
+    observedCount++;
+    if (e.layer === "policy_coded") policyCount++;
+    if (e.modelInterpretation != null) modelCount++;
+  }
 
   const layers: Report["layers"] = [
     { label: "observed", description: "Deterministic", events: observedCount, reproducible: true },
@@ -129,18 +140,18 @@ function buildReport(pageTitle: string, events: EvidenceEvent[]): Report {
     pageTitle,
     pageId: 0,
     analyzedRevisionRange: {
-      from: sortedRevs[0] ?? 0,
-      to: sortedRevs[sortedRevs.length - 1] ?? 0,
+      from: minRev === Infinity ? 0 : minRev,
+      to: maxRev === -Infinity ? 0 : maxRev,
     },
     generatedAt: new Date().toISOString(),
     depth: "detailed",
     layers,
     timeline: {
-      totalRevisions: sortedRevs.length,
-      analyzedRevisions: sortedRevs.length,
+      totalRevisions: observedCount,
+      analyzedRevisions: observedCount,
       dateRange: {
-        start: timestamps[0] ?? "",
-        end: timestamps[timestamps.length - 1] ?? "",
+        start: earliest,
+        end: latest,
       },
       events: events.map((e) => ({
         revisionId: e.toRevisionId,

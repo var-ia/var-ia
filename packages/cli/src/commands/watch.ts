@@ -17,7 +17,10 @@ export async function runWatch(
 
   let lastSeenRevId = 0;
 
+  let running = false;
   const poll = async () => {
+    if (running) return;
+    running = true;
     try {
       const revisions = await client.fetchRevisions(pageTitle, { limit: 5, direction: "newer" });
       if (revisions.length === 0) return;
@@ -138,14 +141,21 @@ export async function runWatch(
       lastSeenRevId = sortedRevs[sortedRevs.length - 1].revId;
     } catch (err) {
       console.error(`[${new Date().toISOString()}] Watch error:`, (err as Error).message);
+    } finally {
+      running = false;
+    }
+    if (!stopped) {
+      timer = setTimeout(poll, pollInterval);
     }
   };
 
+  let timer: ReturnType<typeof setTimeout>;
+  let stopped = false;
   await poll();
-  const interval = setInterval(poll, pollInterval);
 
   const shutdown = () => {
-    clearInterval(interval);
+    stopped = true;
+    clearTimeout(timer);
     console.log("\nWatch stopped.");
     process.exit(0);
   };

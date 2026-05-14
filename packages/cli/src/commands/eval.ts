@@ -113,8 +113,7 @@ async function runGroundTruth(path: string): Promise<void> {
   for (const label of labels) {
     console.log(`[${label.id}] ${label.description}...`);
     try {
-      const { runAnalyze: ra } = await import("./analyze.js");
-      const { events } = await ra(label.pageTitle, "detailed");
+      const { events } = await runAnalyze(label.pageTitle, "detailed");
       allEvents.push({ outcomeId: label.id, events });
       console.log(`  Fetched ${events.length} events for "${label.pageTitle}".`);
     } catch (err) {

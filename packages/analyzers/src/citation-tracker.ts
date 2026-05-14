@@ -131,9 +131,9 @@ export function buildSourceLineage(revisions: { revId: number; timestamp: string
 
     for (const change of changes) {
       if (change.after) {
-        const id = ensureSource(change.after, before.revId, before.timestamp);
+        const id = ensureSource(change.after, after.revId, after.timestamp);
         if (change.type === "replaced" && change.before) {
-          const oldId = ensureSource(change.before, before.revId, before.timestamp);
+          const oldId = ensureSource(change.before, after.revId, after.timestamp);
           const replacements = replacementMap.get(oldId) ?? [];
           replacements.push({
             replacedById: id,

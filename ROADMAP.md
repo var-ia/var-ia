@@ -62,7 +62,7 @@ anything.
 | CW-01 | Cross-wiki diff command | CLI | 8 | medium | — | done |
 | CW-02 | Multi-workset diff | CLI | 10 | medium | CW-01 | done |
 | CW-03 | Evidence graph viz | CLI | 13 | small | — | done |
-| CW-04 | Non-English Wikipedia support | CLI | 15 | medium | — | ready |
+| CW-04 | Non-English Wikipedia support | CLI | 15 | medium | — | done |
 | CW-05 | Private MediaWiki instance support | INFRA | 16 | medium | — | ready |
 | INFRA-01 | Real L3 eval with ground truth | INFRA | 9 | large | L1-01, L1-02 | done |
 | INFRA-02 | Scheduled re-observation | INFRA | 11 | medium | L1-07 | done |
@@ -83,11 +83,11 @@ L1-05 (independent) ✓
 L1-06 (independent) ✓
 L2-02 (independent) ✓
 CW-03 ✓ (independent)
-CW-04 (independent)
+CW-04 ✓ (independent)
 CW-05 (independent)
 ```
 
-**Ready to pick up:** CW-04, CW-05
+**Ready to pick up:** CW-05
 
 ## L1 — Deterministic
 

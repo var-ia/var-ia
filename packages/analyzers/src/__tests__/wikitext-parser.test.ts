@@ -95,8 +95,8 @@ describe("countCitations", () => {
     expect(countCitations(SAMPLE)).toBeGreaterThan(0);
   });
 
-  it("returns at least 1 even with no refs (floor semantics)", () => {
-    expect(countCitations("Plain text with no citations.")).toBeGreaterThanOrEqual(1);
+  it("returns 0 when there are no refs", () => {
+    expect(countCitations("Plain text with no citations.")).toBe(0);
   });
 });
 

@@ -56,7 +56,10 @@ export const templateTracker: TemplateTracker = {
           const raw = wikitext.slice(start, i + 2);
           const inner = raw.slice(2, -2).trim();
           const firstBar = inner.indexOf("|");
-          const firstName = firstBar >= 0 ? inner.slice(0, firstBar).trim() : inner.split("\n")[0].trim();
+          const firstName =
+      firstBar >= 0
+        ? inner.slice(0, firstBar).trim()
+        : (() => { const nl = inner.indexOf("\n"); return nl >= 0 ? inner.slice(0, nl).trim() : inner.trim(); })();
           const name = firstName.toLowerCase().replace(/\s+/g, " ");
 
           const key = name;
@@ -130,19 +133,30 @@ function parseParams(raw: string): Record<string, string> {
 function splitParams(raw: string): string[] {
   const parts: string[] = [];
   let current = "";
-  let depth = 0;
+  let braceDepth = 0;
+  let linkDepth = 0;
 
   for (let i = 0; i < raw.length; i++) {
     const ch = raw[i];
-    if (ch === "{" && raw[i + 1] === "{") {
-      depth++;
+    const next = raw[i + 1];
+
+    if (ch === "{" && next === "{") {
+      braceDepth++;
       current += "{{";
       i++;
-    } else if (ch === "}" && raw[i + 1] === "}" && depth > 0) {
-      depth--;
+    } else if (ch === "}" && next === "}" && braceDepth > 0) {
+      braceDepth--;
       current += "}}";
       i++;
-    } else if (ch === "|" && depth === 0) {
+    } else if (ch === "[" && next === "[" && linkDepth === 0) {
+      linkDepth++;
+      current += "[[";
+      i++;
+    } else if (ch === "]" && next === "]" && linkDepth > 0) {
+      linkDepth--;
+      current += "]]";
+      i++;
+    } else if (ch === "|" && braceDepth === 0 && linkDepth === 0) {
       parts.push(current.trim());
       current = "";
     } else {
@@ -225,11 +239,12 @@ export function buildParamChangeEvents(
   }));
 }
 
-function normalizeParams(params: Record<string, string>): Record<string, string> {
-  const normalized: Record<string, string> = {};
+function normalizeParams(params: Record<string, string>): Record<string, string | undefined> {
+  const normalized: Record<string, string | undefined> = {};
   for (const [key, val] of Object.entries(params)) {
     const nk = key.toLowerCase().trim();
-    normalized[nk] = val === "" ? (undefined as unknown as string) : val;
+    if (val === "") continue;
+    normalized[nk] = val;
   }
   return normalized;
 }
