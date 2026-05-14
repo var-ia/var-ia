@@ -37,23 +37,45 @@ Every interpretation is tagged with its evidence layer:
 - ❌ A sentiment analyzer
 - ❌ A Wikipedia monitoring dashboard
 
+## Packages
+
+| Package | npm | Description |
+|---------|-----|-------------|
+| `@var-ia/evidence-graph` | [![npm](https://img.shields.io/npm/v/@var-ia/evidence-graph)](https://www.npmjs.com/package/@var-ia/evidence-graph) | Core types and schemas — claim, evidence, source, report objects |
+| `@var-ia/ingestion` | [![npm](https://img.shields.io/npm/v/@var-ia/ingestion)](https://www.npmjs.com/package/@var-ia/ingestion) | Wikimedia API adapters — revision fetching, diffing, rate limiting |
+| `@var-ia/analyzers` | [![npm](https://img.shields.io/npm/v/@var-ia/analyzers)](https://www.npmjs.com/package/@var-ia/analyzers) | Deterministic analyzers — sections, citations, reverts, templates |
+| `@var-ia/interpreter` | [![npm](https://img.shields.io/npm/v/@var-ia/interpreter)](https://www.npmjs.com/package/@var-ia/interpreter) | Pluggable model adapter for semantic interpretation |
+| `@var-ia/persistence` | [![npm](https://img.shields.io/npm/v/@var-ia/persistence)](https://www.npmjs.com/package/@var-ia/persistence) | SQLite persistence layer (Bun-only) |
+| `@var-ia/cli` | [![npm](https://img.shields.io/npm/v/@var-ia/cli)](https://www.npmjs.com/package/@var-ia/cli) | CLI tool — `wikihistory` command |
+
 ## Quick Start
 
+### As a consumer
+
 ```bash
-# Install
+bun add @var-ia/cli
+wikihistory analyze "COVID-19 pandemic" --depth detailed
+wikihistory claim "Theranos" --text "revolutionary blood testing"
+```
+
+### Use individual packages
+
+```bash
+bun add @var-ia/evidence-graph @var-ia/analyzers
+```
+
+```ts
+import type { EvidenceEvent, Revision } from "@var-ia/evidence-graph";
+import { sectionDiffer, citationTracker } from "@var-ia/analyzers";
+```
+
+### As a contributor
+
+```bash
+git clone https://github.com/nextconsensus/varia
+cd varia
 bun install && bun run build
-
-# Analyze a page
 bun packages/cli/src/cli.ts analyze "COVID-19 pandemic" --depth detailed
-
-# Track a specific claim
-bun packages/cli/src/cli.ts claim "Theranos" --text "revolutionary blood testing"
-
-# Export results
-bun packages/cli/src/cli.ts export "CRISPR gene editing" --format json
-
-# Watch a page section
-bun packages/cli/src/cli.ts watch "FTX" --section "Controversy"
 ```
 
 ![Concept Overview](./docs/diagrams/concept-overview.svg)
