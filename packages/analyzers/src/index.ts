@@ -55,6 +55,8 @@ export interface TemplateChange {
 
 export { buildCategoryEvents, diffCategories, extractCategories } from "./category-tracker.js";
 export { buildSourceId, buildSourceLineage, citationTracker } from "./citation-tracker.js";
+export type { EditClusterOptions } from "./edit-cluster-detector.js";
+export { detectEditClusters } from "./edit-cluster-detector.js";
 export { classifyClaimChange } from "./claim-differ.js";
 export type { HeuristicKind, HeuristicOptions } from "./heuristic-classifier.js";
 export { classifyHeuristic } from "./heuristic-classifier.js";
@@ -66,6 +68,8 @@ export { protectionTracker } from "./protection-tracker.js";
 export { revertDetector } from "./revert-detector.js";
 export type { SectionEvent, SectionLineage } from "./section-differ.js";
 export { buildSectionLineage, sectionDiffer } from "./section-differ.js";
+export type { TalkActivityOptions, TalkActivityResult } from "./talk-activity-detector.js";
+export { detectTalkActivitySpikes } from "./talk-activity-detector.js";
 export type { TalkCorrelationOptions } from "./talk-correlator.js";
 export { correlateTalkRevisions } from "./talk-correlator.js";
 export type { TalkReply, TalkThread, TalkThreadChange } from "./talk-section-parser.js";

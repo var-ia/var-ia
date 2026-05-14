@@ -7,6 +7,7 @@ import { runCron } from "./commands/cron.js";
 import type { DiffResult } from "./commands/diff.js";
 import { runDiff } from "./commands/diff.js";
 import { runEval } from "./commands/eval.js";
+import { runExplore } from "./commands/explore.js";
 import { runExport } from "./commands/export.js";
 import { runMcpServer } from "./commands/mcp.js";
 import { runVisualize } from "./commands/visualize.js";
@@ -239,6 +240,17 @@ const visualizeCmd = program
 withGlobal(visualizeCmd);
 visualizeCmd.action(async (page, opts) => {
   await runVisualize(page, opts.format as string, !!opts.all, opts.api as string | undefined, extractAuth(opts));
+});
+
+// ── explore ──
+const exploreCmd = program
+  .command("explore <page>")
+  .description("start local web explorer with timeline, evidence table, and diff viewer")
+  .option("-p, --port <n>", "server port (default: 8899)", parseInt)
+  .option("--no-open", "don't open browser automatically");
+withGlobal(exploreCmd);
+exploreCmd.action(async (page, opts) => {
+  await runExplore(page, opts.port ?? 8899, !!opts.noOpen, opts.api as string | undefined, extractAuth(opts));
 });
 
 // ── diff ──

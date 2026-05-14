@@ -27,6 +27,8 @@ interface RawRevision {
   comment: string;
   size: number;
   minor?: boolean;
+  user?: string;
+  userhidden?: boolean;
   slots?: {
     main?: {
       content?: string;
@@ -106,7 +108,7 @@ export class MediaWikiClient implements RevisionFetcher, RevisionSource, DiffFet
         action: "query",
         prop: "revisions",
         titles: pageTitle,
-        rvprop: "content|ids|timestamp|flags|comment|size",
+        rvprop: "content|ids|timestamp|flags|comment|size|user",
         rvslots: "main",
         rvlimit: String(limit),
         format: "json",
@@ -366,6 +368,7 @@ export class MediaWikiClient implements RevisionFetcher, RevisionSource, DiffFet
       pageId: page.pageId,
       pageTitle: page.title,
       timestamp: raw.timestamp,
+      user: raw.userhidden ? undefined : raw.user,
       comment: raw.comment ?? "",
       content,
       size: raw.size,

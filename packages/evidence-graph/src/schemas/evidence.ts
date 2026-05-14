@@ -29,7 +29,9 @@ export type EventType =
   | "talk_thread_opened"
   | "talk_thread_archived"
   | "talk_reply_added"
-  | "template_parameter_changed";
+  | "template_parameter_changed"
+  | "edit_cluster_detected"
+  | "talk_activity_spike";
 
 export interface FactProvenance {
   analyzer: string;

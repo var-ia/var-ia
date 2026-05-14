@@ -5,6 +5,7 @@ export interface Revision {
   pageId: number;
   pageTitle: string;
   timestamp: string; // ISO 8601
+  user?: string; // Editor username (may be hidden via oversight)
   comment: string; // Edit summary
   content: string; // Full wikitext
   size: number; // Bytes
