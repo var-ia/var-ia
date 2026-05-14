@@ -3,18 +3,17 @@
   "version": "0.2.1",
   "type": "module",
   "private": false,
-  "description": "A deterministic claim-provenance engine for Wikipedia page histories. Evidence, not truth.",
-  "repository": "github:nextconsensus/var-ia",
+  "description": "A deterministic observation engine for public revision histories. Evidence, not truth. Made by NextConsensus.",
+  "repository": "github:var-ia/var-ia",
   "homepage": "https://nextconsensus.com",
-  "bugs": "https://github.com/nextconsensus/var-ia/issues",
+  "bugs": "https://github.com/var-ia/var-ia/issues",
   "keywords": [
-    "wikipedia",
-    "evidence-graph",
-    "claim-provenance",
-    "diff-analysis",
+    "observation-engine",
+    "knowledge-change",
+    "public-knowledge",
     "edit-history",
-    "deterministic",
-    "observation-engine"
+    "wikipedia",
+    "evidence-graph"
   ],
   "engines": {
     "bun": ">=1.2.0",
