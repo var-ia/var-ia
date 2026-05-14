@@ -4,7 +4,7 @@
   "type": "module",
   "private": false,
   "description": "A deterministic claim-provenance engine for Wikipedia page histories. Show what changed, not what is true.",
-  "repository": "github:nextconsensus/varia",
+  "repository": "github:nextconsensus/var-ia",
   "homepage": "https://nextconsensus.com",
   "license": "AGPL-3.0",
   "workspaces": [

@@ -1,0 +1,39 @@
+{
+  "$schema": "eval-manual-labels-v1",
+  "description": "Manual revision-level labels for 5 benchmark pages. Labels are revision IDs with expected heuristic classification. Used to measure classification accuracy vs @var-ia/analyzers heuristic-classifier.",
+  "phase": "Phase 0 · unverified · baseline labels seeded from heuristic-classifier · manual review pending",
+  "created": "2026-05-13",
+  "pages": [
+    {
+      "page": "COVID-19 pandemic",
+      "pageId": 58899562,
+      "description": "Tests section differ accuracy across rapid structural changes",
+      "labels": []
+    },
+    {
+      "page": "CRISPR gene editing",
+      "pageId": 2146034,
+      "description": "Tests citation tracking through competing source claims",
+      "labels": []
+    },
+    {
+      "page": "Theranos",
+      "pageId": 46820674,
+      "description": "Tests revert detection in high-contention pages",
+      "labels": []
+    },
+    {
+      "page": "FTX",
+      "pageId": 71634127,
+      "description": "Tests lead/body movement during breaking news",
+      "labels": []
+    },
+    {
+      "page": "Trial of Sam Bankman-Fried",
+      "pageId": 72173169,
+      "description": "Tests template tracking (BLP, NPOV, citation needed)",
+      "labels": []
+    }
+  ],
+  "labelingProcess": "1. Run `wikihistory analyze <page> --depth forensic --format json`. 2. For each revision, assign expectedKind from: revert, vandalism, major_addition, major_removal, sourcing, cosmetic, minor, unknown. 3. Target: ≥20 labeled revisions per page. 4. Re-run eval after label refinement."
+}

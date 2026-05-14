@@ -1,10 +1,24 @@
 # Varia
 
-**Show what changed. Not what is true.**
+[![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-0f172a.svg)](./LICENSE)
+[![npm scope](https://img.shields.io/badge/npm-%40var--ia-2563eb.svg)](https://www.npmjs.com/org/var-ia)
 
-> Built and open-sourced by [NextConsensus](https://nextconsensus.com). Varia is the deterministic L1 observation engine that powers NextConsensus's proprietary Review Briefs — inspectable method, source-bound audit trail, AGPL-3.0.
+**Wikipedia page histories, reconstructed as evidence graphs.**
+
+> Show what changed. Not what is true.
 
 A deterministic claim-provenance engine for Wikipedia page histories. This tool reconstructs how claims moved through Wikipedia's editorial system — when they appeared, how they changed, what sources supported them, and what policy signals surrounded each change. It does not determine truth, judge editors, or predict outcomes.
+
+Built and open-sourced by [NextConsensus](https://nextconsensus.com). Varia is the deterministic L1 observation engine used in part of the NextConsensus research workflow: inspectable method, source-bound audit trail, AGPL-3.0.
+
+## Why It Exists
+
+Wikipedia is not a source of truth. It is a public record of contested claims
+being rewritten, sourced, challenged, and stabilized over time.
+
+Varia turns that record into structured evidence so downstream reviewers can
+separate deterministic observations from policy-coded signals and model-assisted
+interpretation.
 
 ## What It Does
 
@@ -35,7 +49,8 @@ Every interpretation is tagged with its evidence layer:
 - ❌ An editor quality judge
 - ❌ A prediction engine
 - ❌ A sentiment analyzer
-- ❌ A Wikipedia monitoring dashboard
+- ❌ A live-monitoring product
+- ❌ A healthcare-specific claim scorer
 
 ## Packages
 
@@ -47,6 +62,7 @@ Every interpretation is tagged with its evidence layer:
 | `@var-ia/interpreter` | [![npm](https://img.shields.io/npm/v/@var-ia/interpreter)](https://www.npmjs.com/package/@var-ia/interpreter) | Pluggable model adapter for semantic interpretation |
 | `@var-ia/persistence` | [![npm](https://img.shields.io/npm/v/@var-ia/persistence)](https://www.npmjs.com/package/@var-ia/persistence) | SQLite persistence layer (Bun-only) |
 | `@var-ia/cli` | [![npm](https://img.shields.io/npm/v/@var-ia/cli)](https://www.npmjs.com/package/@var-ia/cli) | CLI tool — `wikihistory` command |
+| `@var-ia/eval` | [![npm](https://img.shields.io/npm/v/@var-ia/eval)](https://www.npmjs.com/package/@var-ia/eval) | Evaluation harness with benchmark pages |
 
 ## Quick Start
 
@@ -72,7 +88,7 @@ import { sectionDiffer, citationTracker } from "@var-ia/analyzers";
 ### As a contributor
 
 ```bash
-git clone https://github.com/nextconsensus/varia
+git clone https://github.com/nextconsensus/var-ia
 cd varia
 bun install && bun run build
 bun packages/cli/src/cli.ts analyze "COVID-19 pandemic" --depth detailed
