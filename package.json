@@ -5,7 +5,7 @@
   "private": false,
   "description": "A deterministic observation engine for public revision histories. Evidence, not truth. Made by NextConsensus.",
   "repository": "github:var-ia/var-ia",
-  "homepage": "https://github.com/var-ia/var-ia",
+  "homepage": "https://nextconsensus.com",
   "bugs": "https://github.com/var-ia/var-ia/issues",
   "keywords": [
     "observation-engine",
