@@ -1,5 +1,87 @@
 import type { EvidenceEvent } from "@var-ia/evidence-graph";
 
+// ── L3 Ground Truth Types ──────────────────────────────────────────
+
+export interface OutcomeLabel {
+  id: string;
+  source: "talk_page_consensus" | "rfc_closure" | "arbcom_decision" | "page_protection";
+  pageTitle: string;
+  description: string;
+  observedAt: string;
+  resolution: "keep" | "merge" | "delete" | "no_consensus" | "redirect" | "other";
+  referenceUrl: string;
+  expectedEventTypes: string[];
+  expectedSection?: string;
+}
+
+export interface L3ValidationResult {
+  outcomeId: string;
+  passed: boolean;
+  description: string;
+  signalDetected: boolean;
+  matchedEvents: EvidenceEvent[];
+  expectedEventTypes: string[];
+  precision: number;
+  recall: number;
+}
+
+export interface L3ValidationSummary {
+  totalOutcomes: number;
+  passed: number;
+  failed: number;
+  overallPrecision: number;
+  overallRecall: number;
+  perOutcome: L3ValidationResult[];
+}
+
+export function validateAgainstGroundTruth(
+  outcomes: OutcomeLabel[],
+  events: EvidenceEvent[],
+): L3ValidationSummary {
+  const results: L3ValidationResult[] = outcomes.map((outcome) => {
+    const expected = outcome.expectedEventTypes;
+    const matched = events.filter(
+      (e) =>
+        expected.includes(e.eventType) &&
+        (!outcome.expectedSection || e.section === outcome.expectedSection),
+    );
+
+    const signalDetected = matched.length > 0;
+    const precision = matched.length > 0
+      ? expected.filter((et) => matched.some((m) => m.eventType === et)).length / expected.length
+      : 0;
+    const recall = matched.length > 0 ? 1.0 : 0.0;
+
+    return {
+      outcomeId: outcome.id,
+      passed: signalDetected,
+      description: outcome.description,
+      signalDetected,
+      matchedEvents: matched,
+      expectedEventTypes: expected,
+      precision,
+      recall,
+    };
+  });
+
+  const passed = results.filter((r) => r.passed);
+  const avgPrecision = results.length > 0
+    ? results.reduce((s, r) => s + r.precision, 0) / results.length
+    : 0;
+  const avgRecall = results.length > 0
+    ? results.reduce((s, r) => s + r.recall, 0) / results.length
+    : 0;
+
+  return {
+    totalOutcomes: outcomes.length,
+    passed: passed.length,
+    failed: outcomes.length - passed.length,
+    overallPrecision: avgPrecision,
+    overallRecall: avgRecall,
+    perOutcome: results,
+  };
+}
+
 export interface EvalTestCase {
   id: string;
   description: string;
@@ -207,3 +289,6 @@ export function createEvalHarness(): EvalHarness {
     },
   };
 }
+
+export { GROUND_TRUTH_LABELS, getGroundTruthForPage, getGroundTruthById } from "./ground-truth.js";
+export type { OutcomeLabel, L3ValidationResult, L3ValidationSummary } from "./index.js";

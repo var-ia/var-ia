@@ -269,8 +269,9 @@ const defaultSystemPrompt = `You are a wiki edit classifier. Given a list of evi
 - semanticChange: a concise description of what the change means semantically (e.g., "factual claim removed", "attribution strengthened", "sentence reworded without changing meaning")
 - confidence: a score from 0.0 to 1.0 indicating how certain you are
 - policyDimension (optional): if the change touches a Wikipedia policy, use one of: verifiability, npov, blp, due_weight, protection, edit_warring, notability, copyright, civility
+- discussionType (optional, only for talk_page_correlated events): classify the type of talk page discussion using one of: notability_challenge, sourcing_dispute, neutrality_concern, content_deletion, content_addition, naming_dispute, procedural, other
 
-Return ONLY a JSON array of objects with fields: eventIndex (matching the input array index), semanticChange, confidence, policyDimension.`;
+Return ONLY a JSON array of objects with fields: eventIndex (matching the input array index), semanticChange, confidence, policyDimension, discussionType.`;
 
 function buildUserPrompt(events: EvidenceEvent[], lineage?: LineageContext): string {
   let text = `Evidence events to classify:\n${JSON.stringify(
@@ -327,6 +328,7 @@ function parseInterpretations(raw: string, events: EvidenceEvent[]): Interpreted
     semanticChange: string;
     confidence: number;
     policyDimension?: string;
+    discussionType?: string;
   }>;
 
   try {
@@ -351,6 +353,7 @@ function parseInterpretations(raw: string, events: EvidenceEvent[]): Interpreted
         semanticChange: interp?.semanticChange ?? "unknown",
         confidence: interp?.confidence ?? 0.0,
         policyDimension: interp?.policyDimension as PolicyDimension | undefined,
+        discussionType: interp?.discussionType as ModelInterpretation["discussionType"],
       },
     });
   }

@@ -169,7 +169,8 @@ export async function cli(args: string[]): Promise<void> {
     }
     case "eval": {
       const pageOverride = parseFlag(args, "page");
-      await runEval(pageOverride);
+      const groundTruth = parseFlag(args, "ground-truth");
+      await runEval(pageOverride, groundTruth);
       break;
     }
     case "--help":

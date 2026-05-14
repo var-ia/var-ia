@@ -58,6 +58,15 @@ export interface ModelInterpretation {
   semanticChange: string;
   confidence: number;
   policyDimension?: PolicyDimension;
+  discussionType?:
+    | "notability_challenge"
+    | "sourcing_dispute"
+    | "neutrality_concern"
+    | "content_deletion"
+    | "content_addition"
+    | "naming_dispute"
+    | "procedural"
+    | "other";
 }
 
 export interface EvidenceEvent {
