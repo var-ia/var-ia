@@ -132,13 +132,16 @@ function splitParams(raw: string): string[] {
   let current = "";
   let depth = 0;
 
-  for (const ch of raw) {
-    if (ch === "{" && raw[current.length + 1] === "{") {
+  for (let i = 0; i < raw.length; i++) {
+    const ch = raw[i];
+    if (ch === "{" && raw[i + 1] === "{") {
       depth++;
-      current += ch;
-    } else if (ch === "}" && depth > 0 && raw[current.length - 1] === "{") {
+      current += "{{";
+      i++;
+    } else if (ch === "}" && raw[i + 1] === "}" && depth > 0) {
       depth--;
-      current += ch;
+      current += "}}";
+      i++;
     } else if (ch === "|" && depth === 0) {
       parts.push(current.trim());
       current = "";

@@ -3,18 +3,6 @@ import type { EvidenceEvent } from "@var-ia/evidence-graph";
 import type { ModelConfig } from "@var-ia/interpreter";
 import { runAnalyze } from "./analyze.js";
 
-interface DiffResult {
-  pageTitle: string;
-  wikiA: WikiSummary;
-  wikiB: WikiSummary;
-  comparison: {
-    eventTypeDiffs: { eventType: string; aCount: number; bCount: number; diff: number }[];
-    totalEventsA: number;
-    totalEventsB: number;
-  };
-  generatedAt: string;
-}
-
 interface WikiSummary {
   url: string;
   sections: string[];
@@ -28,37 +16,72 @@ interface WikiSummary {
   };
 }
 
+export interface EventTypeDiff {
+  eventType: string;
+  counts: number[];
+  diffs: number[];
+}
+
+export interface OutlierEntry {
+  wikiIndex: number;
+  wikiLabel: string;
+  eventType: string;
+  count: number;
+  mean: number;
+  stdDev: number;
+  zScore: number;
+}
+
+export interface DiffResult {
+  pageTitle: string;
+  wikis: WikiSummary[];
+  comparison: {
+    eventTypeDiffs: EventTypeDiff[];
+    totalEvents: number[];
+    totalSections: number[];
+  };
+  outliers: OutlierEntry[];
+  generatedAt: string;
+}
+
 export async function runDiff(
   topic: string,
-  wikiAUrl: string,
-  wikiBUrl: string,
+  wikiUrls: string[],
   depth?: string,
   modelConfig?: ModelConfig,
 ): Promise<DiffResult> {
-  console.log(`Diffing "${topic}" across two wikis...\n`);
+  console.log(`Diffing "${topic}" across ${wikiUrls.length} wikis...\n`);
 
   const resolvedDepth = depth ?? "detailed";
   const sharedConfig = modelConfig ? { ...modelConfig } : undefined;
 
-  console.log(`Analyzing wiki A: ${wikiAUrl}`);
-  const { summary: summaryA, events: eventsA } = await buildSummary(topic, wikiAUrl, resolvedDepth, sharedConfig);
+  const labels = wikiUrls.length <= 26
+    ? wikiUrls.map((_, i) => String.fromCharCode(65 + i))
+    : wikiUrls.map((_, i) => `W${i + 1}`);
 
-  console.log(`\nAnalyzing wiki B: ${wikiBUrl}`);
-  const { summary: summaryB, events: eventsB } = await buildSummary(topic, wikiBUrl, resolvedDepth, sharedConfig);
+  for (let i = 0; i < wikiUrls.length; i++) {
+    console.log(`Analyzing wiki ${labels[i]}: ${wikiUrls[i]}`);
+  }
+
+  const results = await Promise.all(
+    wikiUrls.map((url) => buildSummary(topic, url, resolvedDepth, sharedConfig)),
+  );
+  const summaries = results.map((r) => r.summary);
+  const allEvents = results.map((r) => r.events);
 
   const result: DiffResult = {
     pageTitle: topic,
-    wikiA: summaryA,
-    wikiB: summaryB,
+    wikis: summaries,
     comparison: {
-      eventTypeDiffs: buildEventTypeDiffs(summaryA.eventCounts, summaryB.eventCounts),
-      totalEventsA: eventsA.length,
-      totalEventsB: eventsB.length,
+      eventTypeDiffs: buildEventTypeDiffsMatrix(summaries.map((s) => s.eventCounts)),
+      totalEvents: allEvents.map((e) => e.length),
+      totalSections: summaries.map((s) => s.sections.length),
     },
+    outliers: detectOutliers(summaries, labels),
     generatedAt: new Date().toISOString(),
   };
 
-  printDiff(result);
+  printDiff(result, labels);
   return result;
 }
 
@@ -84,7 +107,7 @@ async function buildSummary(
     if (e.section) sections.add(e.section);
   }
 
-  const allContent = revisions.map((r) => r.content).join("\n");
+  const latestContent = revisions.length > 0 ? revisions[revisions.length - 1].content : "";
 
   const eventCounts: Record<string, number> = {};
   let citationCount = 0;
@@ -107,52 +130,116 @@ async function buildSummary(
         citations: citationCount,
         templates: templateCount,
         reverts: revertCount,
-        categories: extractCategories(allContent).length,
-        wikilinks: extractWikilinks(allContent).length,
+        categories: extractCategories(latestContent).length,
+        wikilinks: extractWikilinks(latestContent).length,
       },
     },
     events,
   };
 }
 
-function buildEventTypeDiffs(
-  aCounts: Record<string, number>,
-  bCounts: Record<string, number>,
-): { eventType: string; aCount: number; bCount: number; diff: number }[] {
-  const allTypes = new Set([...Object.keys(aCounts), ...Object.keys(bCounts)]);
-  return [...allTypes]
-    .map((eventType) => {
-      const a = aCounts[eventType] ?? 0;
-      const b = bCounts[eventType] ?? 0;
-      return { eventType, aCount: a, bCount: b, diff: b - a };
-    })
-    .sort((x, y) => Math.abs(y.diff) - Math.abs(x.diff));
+function buildEventTypeDiffsMatrix(
+  allCounts: Record<string, number>[],
+): EventTypeDiff[] {
+  const allTypes = new Set<string>();
+  for (const counts of allCounts) {
+    for (const key of Object.keys(counts)) {
+      allTypes.add(key);
+    }
+  }
+
+  const baseline = allCounts[0];
+  const withSortKey = [...allTypes].map((eventType) => {
+    const counts = allCounts.map((c) => c[eventType] ?? 0);
+    const diffs = counts.map((c) => c - (baseline[eventType] ?? 0));
+    const maxAbs = Math.max(...diffs.map(Math.abs));
+    return { eventType, counts, diffs, maxAbs };
+  });
+  withSortKey.sort((a, b) => b.maxAbs - a.maxAbs);
+  return withSortKey.map(({ eventType, counts, diffs }) => ({ eventType, counts, diffs }));
 }
 
-function printDiff(result: DiffResult): void {
-  const { wikiA, wikiB, comparison } = result;
+function detectOutliers(
+  summaries: WikiSummary[],
+  labels: string[],
+): OutlierEntry[] {
+  const allTypes = new Set<string>();
+  for (const s of summaries) {
+    for (const key of Object.keys(s.eventCounts)) {
+      allTypes.add(key);
+    }
+  }
+
+  const outliers: OutlierEntry[] = [];
+  for (const eventType of allTypes) {
+    const values = summaries.map((s) => s.eventCounts[eventType] ?? 0);
+    const n = values.length;
+    if (n < 3) continue;
+    const mean = values.reduce((a, b) => a + b, 0) / n;
+    const variance = values.reduce((a, b) => a + (b - mean) ** 2, 0) / n;
+    const stdDev = Math.sqrt(variance);
+    if (stdDev === 0) continue;
+
+    for (let i = 0; i < n; i++) {
+      const zScore = (values[i] - mean) / stdDev;
+      if (Math.abs(zScore) > 2) {
+        outliers.push({
+          wikiIndex: i,
+          wikiLabel: labels[i],
+          eventType,
+          count: values[i],
+          mean: Math.round(mean * 100) / 100,
+          stdDev: Math.round(stdDev * 100) / 100,
+          zScore: Math.round(zScore * 100) / 100,
+        });
+      }
+    }
+  }
+
+  return outliers.sort((a, b) => Math.abs(b.zScore) - Math.abs(a.zScore));
+}
+
+function printDiff(result: DiffResult, labels: string[]): void {
+  const { wikis, comparison, outliers } = result;
 
   console.log(`\n=== Cross-Wiki Diff: "${result.pageTitle}" ===`);
-  console.log(`Wiki A: ${wikiA.url}`);
-  console.log(`Wiki B: ${wikiB.url}\n`);
+  for (let i = 0; i < wikis.length; i++) {
+    console.log(`Wiki ${labels[i]}: ${wikis[i].url}`);
+  }
+  console.log();
 
   console.log("── Overview ──");
-  console.log(`  Total events: A=${comparison.totalEventsA}, B=${comparison.totalEventsB}`);
-  console.log(`  Sections:     A=${wikiA.sections.length}, B=${wikiB.sections.length}`);
-  console.log(`  Citations:    A=${wikiA.summary.citations}, B=${wikiB.summary.citations}`);
-  console.log(`  Templates:    A=${wikiA.summary.templates}, B=${wikiB.summary.templates}`);
-  console.log(`  Reverts:      A=${wikiA.summary.reverts}, B=${wikiB.summary.reverts}`);
-  console.log(`  Categories:   A=${wikiA.summary.categories}, B=${wikiB.summary.categories}`);
-  console.log(`  Wikilinks:    A=${wikiA.summary.wikilinks}, B=${wikiB.summary.wikilinks}\n`);
+  const overviewLabels = labels.map((l) => `${l}`.padStart(6));
+  console.log(`  ${"".padEnd(14)} ${overviewLabels.join(" ")}`);
+  console.log(`  ${"Total events".padEnd(14)} ${comparison.totalEvents.map((n) => String(n).padStart(6)).join(" ")}`);
+  console.log(`  ${"Sections".padEnd(14)} ${comparison.totalSections.map((n) => String(n).padStart(6)).join(" ")}`);
+  console.log(`  ${"Citations".padEnd(14)} ${wikis.map((w) => String(w.summary.citations).padStart(6)).join(" ")}`);
+  console.log(`  ${"Templates".padEnd(14)} ${wikis.map((w) => String(w.summary.templates).padStart(6)).join(" ")}`);
+  console.log(`  ${"Reverts".padEnd(14)} ${wikis.map((w) => String(w.summary.reverts).padStart(6)).join(" ")}`);
+  console.log(`  ${"Categories".padEnd(14)} ${wikis.map((w) => String(w.summary.categories).padStart(6)).join(" ")}`);
+  console.log(`  ${"Wikilinks".padEnd(14)} ${wikis.map((w) => String(w.summary.wikilinks).padStart(6)).join(" ")}`);
+  console.log();
 
-  if (comparison.eventTypeDiffs.length > 0) {
+  const eventRows = comparison.eventTypeDiffs.map((d) => [
+    d.eventType,
+    ...d.counts.map((c) => String(c)),
+  ]);
+  if (eventRows.length > 0) {
     console.log("── Event Type Breakdown ──");
-    console.log("  Event Type                  A    B    Δ");
-    console.log("  ─────────────────────────────────────");
-    for (const d of comparison.eventTypeDiffs) {
-      const label = d.eventType.padEnd(28);
-      const sign = d.diff > 0 ? "+" : "";
-      console.log(`  ${label} ${String(d.aCount).padStart(4)} ${String(d.bCount).padStart(4)} ${sign}${d.diff}`);
+    console.log(eventRows.map((row) => {
+      const label = row[0].padEnd(28);
+      const values = row.slice(1).map((v) => {
+        const num = Number(v);
+        return num === 0 ? "-" : v;
+      });
+      return `  ${label} ${values.map((v) => v.padStart(5)).join(" ")}`;
+    }).join("\n"));
+  }
+
+  if (outliers.length > 0) {
+    console.log("\n── Outliers (|z-score| > 2) ──");
+    for (const o of outliers) {
+      console.log(`  Wiki ${o.wikiLabel}: ${o.eventType} = ${o.count} (mean=${o.mean}, z=${o.zScore > 0 ? "+" : ""}${o.zScore})`);
     }
   }
 }

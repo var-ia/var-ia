@@ -164,31 +164,45 @@ export class MediaWikiClient implements RevisionFetcher, RevisionSource, DiffFet
   }
 
   async fetchPageMoves(pageTitle: string): Promise<PageMove[]> {
-    const params = new URLSearchParams({
-      action: "query",
-      list: "logevents",
-      letype: "move",
-      letitle: pageTitle,
-      lelimit: "50",
-      format: "json",
-      formatversion: "2",
-    });
-
-    const url = `${this.apiUrl}?${params.toString()}`;
-    const response = await this.fetch(url);
-    const data: LogEventResponse = await response.json();
     const moves: PageMove[] = [];
+    let lecontinue: string | undefined;
 
-    if (!data.query?.logevents) return moves;
-
-    for (const entry of data.query.logevents) {
-      moves.push({
-        oldTitle: entry.title,
-        newTitle: entry.params?.target_title ?? "",
-        timestamp: entry.timestamp,
-        revId: entry.logid,
-        comment: entry.comment ?? "",
+    while (true) {
+      const params = new URLSearchParams({
+        action: "query",
+        list: "logevents",
+        letype: "move",
+        letitle: pageTitle,
+        lelimit: "50",
+        format: "json",
+        formatversion: "2",
       });
+
+      if (lecontinue) params.set("lecontinue", lecontinue);
+
+      const url = `${this.apiUrl}?${params.toString()}`;
+      const response = await this.fetch(url);
+      const data = (await response.json()) as LogEventResponse & {
+        continue?: { lecontinue: string };
+      };
+
+      if (!data.query?.logevents) break;
+
+      for (const entry of data.query.logevents) {
+        moves.push({
+          oldTitle: entry.title,
+          newTitle: entry.params?.target_title ?? "",
+          timestamp: entry.timestamp,
+          revId: entry.logid,
+          comment: entry.comment ?? "",
+        });
+      }
+
+      if (data.continue?.lecontinue) {
+        lecontinue = data.continue.lecontinue;
+      } else {
+        break;
+      }
     }
 
     return moves;
@@ -222,7 +236,9 @@ export class MediaWikiClient implements RevisionFetcher, RevisionSource, DiffFet
             timestamp: string;
             comment: string;
             action: string;
-            params?: { duration?: string; expiry?: string };
+            params?: {
+              detail?: Array<{ level?: string; expiry?: string }>;
+            };
           }>;
         };
         continue?: { lecontinue: string };
@@ -230,12 +246,14 @@ export class MediaWikiClient implements RevisionFetcher, RevisionSource, DiffFet
 
       if (data.query?.logevents) {
         for (const entry of data.query.logevents) {
+          const level = entry.params?.detail?.[0]?.level;
           events.push({
             logId: entry.logid,
             pageTitle: entry.title,
             timestamp: entry.timestamp,
             comment: entry.comment ?? "",
             action: entry.action as "protect" | "unprotect" | "modify",
+            level,
           });
         }
       }
@@ -279,20 +297,43 @@ export class MediaWikiClient implements RevisionFetcher, RevisionSource, DiffFet
     };
   }
 
-  private async fetch(url: string): Promise<Response> {
-    await this.rateLimiter.acquire();
-    const response = await fetch(url, {
-      headers: {
-        "User-Agent": this.userAgent,
-        Accept: "application/json",
-      },
-    });
+  private async fetch(url: string, retries = 3): Promise<Response> {
+    for (let attempt = 0; attempt < retries; attempt++) {
+      await this.rateLimiter.acquire();
+      const response = await fetch(url, {
+        headers: {
+          "User-Agent": this.userAgent,
+          Accept: "application/json",
+          "Accept-Encoding": "gzip",
+        },
+      });
 
-    if (!response.ok) {
-      throw new Error(`MediaWiki API error: ${response.status} ${response.statusText} for ${url}`);
+      if (response.ok) return response;
+
+      if (response.status === 429) {
+        const retryAfter = response.headers.get("Retry-After");
+        const waitMs = retryAfter ? parseInt(retryAfter, 10) * 1000 : 1000;
+        if (attempt < retries - 1) {
+          await this.sleep(waitMs);
+          continue;
+        }
+      }
+
+      if (response.status >= 500 && attempt < retries - 1) {
+        await this.sleep(2 ** attempt * 1000);
+        continue;
+      }
+
+      throw new Error(
+        `MediaWiki API error: ${response.status} ${response.statusText} for ${url}`,
+      );
     }
 
-    return response;
+    throw new Error(`MediaWiki API request failed after ${retries} retries for ${url}`);
+  }
+
+  private sleep(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   async *revisions(pageTitle: string, options?: RevisionOptions): AsyncIterable<Revision> {
@@ -318,8 +359,10 @@ export class MediaWikiClient implements RevisionFetcher, RevisionSource, DiffFet
 }
 
 function formatTimestamp(date: Date): string {
-  return date.toISOString().replace(/\.\d{3}Z$/, "Z");
+  const iso = date.toISOString();
+  return `${iso.slice(0, -5)}Z`;
 }
+
 
 function parseUnifiedDiff(diffText: string): DiffLine[] {
   const lines: DiffLine[] = [];

@@ -1,6 +1,6 @@
 ---
 id: INFRA-02
-status: ready
+status: done
 priority: 11
 dependencies: [L1-07]
 packages: [cli, persistence]

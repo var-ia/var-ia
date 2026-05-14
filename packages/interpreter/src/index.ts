@@ -288,7 +288,7 @@ function buildUserPrompt(events: EvidenceEvent[], lineage?: LineageContext): str
       deterministicFacts: e.deterministicFacts,
     })),
     null,
-    2,
+    0,
   )}`;
 
   if (lineage) {

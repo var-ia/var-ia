@@ -1,4 +1,4 @@
-import { Database } from "bun:sqlite";
+import { Database, type Statement, type QueryBuilder } from "bun:sqlite";
 import type { ClaimObject, Revision } from "@var-ia/evidence-graph";
 
 export interface PersistenceConfig {
@@ -10,6 +10,7 @@ export interface PersistenceAdapter {
   insertRevisions(revisions: Revision[]): void;
   getRevisions(pageTitle: string, options?: { limit?: number; direction?: "newer" | "older" }): Revision[];
   hasRevision(revId: number): boolean;
+  getLatestTimestamp(pageTitle: string): string | undefined;
   insertClaim(claim: ClaimObject): void;
   getClaims(pageTitle: string): Array<{
     claim_id: string;
@@ -24,12 +25,58 @@ export interface PersistenceAdapter {
 
 export class Persistence implements PersistenceAdapter {
   private db: Database;
+  private insertRevStmt: Statement;
+  private insertClaimStmt: Statement;
+  private getRevisionsAsc: QueryBuilder;
+  private getRevisionsDesc: QueryBuilder;
+  private hasRevisionQuery: QueryBuilder;
+  private latestTimestampQuery: QueryBuilder;
+  private getClaimsQuery: QueryBuilder;
 
   constructor(config: PersistenceConfig) {
     this.db = new Database(config.dbPath);
     this.db.run("PRAGMA journal_mode=WAL");
     this.db.run("PRAGMA synchronous=NORMAL");
+    this.db.run("PRAGMA cache_size=-64000");
+    this.db.run("PRAGMA mmap_size=268435456");
+    this.db.run("PRAGMA busy_timeout=5000");
     this.migrate();
+
+    this.insertRevStmt = this.db.prepare(`
+      INSERT OR REPLACE INTO revisions
+        (rev_id, page_id, page_title, timestamp, comment, content, size, minor)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+    this.insertClaimStmt = this.db.prepare(`
+      INSERT OR REPLACE INTO claims
+        (claim_id, identity_key, page_title, page_id, current_state,
+         proposition_type, first_seen_rev_id, first_seen_at,
+         last_seen_rev_id, last_seen_at, phase)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+    this.getRevisionsAsc = this.db.query(`
+      SELECT rev_id, page_id, page_title, timestamp, comment, content, size, minor
+      FROM revisions
+      WHERE page_title = ?
+      ORDER BY timestamp ASC
+      LIMIT ?
+    `);
+    this.getRevisionsDesc = this.db.query(`
+      SELECT rev_id, page_id, page_title, timestamp, comment, content, size, minor
+      FROM revisions
+      WHERE page_title = ?
+      ORDER BY timestamp DESC
+      LIMIT ?
+    `);
+    this.hasRevisionQuery = this.db.query("SELECT 1 FROM revisions WHERE rev_id = ? LIMIT 1");
+    this.latestTimestampQuery = this.db.query(
+      "SELECT MAX(timestamp) as latest FROM revisions WHERE page_title = ?",
+    );
+    this.getClaimsQuery = this.db.query(`
+      SELECT claim_id, identity_key, current_state, proposition_type,
+             first_seen_rev_id, first_seen_at
+      FROM claims WHERE page_title = ?
+    `);
   }
 
   private migrate(): void {
@@ -76,12 +123,7 @@ export class Persistence implements PersistenceAdapter {
   }
 
   insertRevision(rev: Revision): void {
-    const stmt = this.db.prepare(`
-      INSERT OR REPLACE INTO revisions
-        (rev_id, page_id, page_title, timestamp, comment, content, size, minor)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    `);
-    stmt.run(
+    this.insertRevStmt.run(
       rev.revId,
       rev.pageId,
       rev.pageTitle,
@@ -94,14 +136,9 @@ export class Persistence implements PersistenceAdapter {
   }
 
   insertRevisions(revisions: Revision[]): void {
-    const insert = this.db.prepare(`
-      INSERT OR REPLACE INTO revisions
-        (rev_id, page_id, page_title, timestamp, comment, content, size, minor)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    `);
     this.db.transaction(() => {
       for (const rev of revisions) {
-        insert.run(
+        this.insertRevStmt.run(
           rev.revId,
           rev.pageId,
           rev.pageTitle,
@@ -116,17 +153,9 @@ export class Persistence implements PersistenceAdapter {
   }
 
   getRevisions(pageTitle: string, options?: { limit?: number; direction?: "newer" | "older" }): Revision[] {
-    const dir = options?.direction === "newer" ? "ASC" : "DESC";
+    const dir = options?.direction === "newer" ? this.getRevisionsAsc : this.getRevisionsDesc;
     const limit = options?.limit ?? 100;
-    const rows = this.db
-      .query(
-        `SELECT rev_id, page_id, page_title, timestamp, comment, content, size, minor
-         FROM revisions
-         WHERE page_title = ?
-         ORDER BY timestamp ${dir}
-         LIMIT ?`,
-      )
-      .all(pageTitle, limit) as Array<{
+    const rows = dir.all(pageTitle, limit) as Array<{
       rev_id: number;
       page_id: number;
       page_title: string;
@@ -150,19 +179,17 @@ export class Persistence implements PersistenceAdapter {
   }
 
   hasRevision(revId: number): boolean {
-    const row = this.db.query("SELECT 1 FROM revisions WHERE rev_id = ? LIMIT 1").get(revId);
+    const row = this.hasRevisionQuery.get(revId);
     return row !== null;
   }
 
+  getLatestTimestamp(pageTitle: string): string | undefined {
+    const row = this.latestTimestampQuery.get(pageTitle) as { latest: string | null } | undefined;
+    return row?.latest ?? undefined;
+  }
+
   insertClaim(claim: ClaimObject): void {
-    const stmt = this.db.prepare(`
-      INSERT OR REPLACE INTO claims
-        (claim_id, identity_key, page_title, page_id, current_state,
-         proposition_type, first_seen_rev_id, first_seen_at,
-         last_seen_rev_id, last_seen_at, phase)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
-    stmt.run(
+    this.insertClaimStmt.run(
       claim.identity.claimId,
       claim.identity.identityKey,
       claim.identity.pageTitle,
@@ -185,13 +212,7 @@ export class Persistence implements PersistenceAdapter {
     first_seen_rev_id: number;
     first_seen_at: string;
   }> {
-    return this.db
-      .query(
-        `SELECT claim_id, identity_key, current_state, proposition_type,
-                first_seen_rev_id, first_seen_at
-         FROM claims WHERE page_title = ?`,
-      )
-      .all(pageTitle) as Array<{
+    return this.getClaimsQuery.all(pageTitle) as Array<{
       claim_id: string;
       identity_key: string;
       current_state: string;

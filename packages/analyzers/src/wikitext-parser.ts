@@ -48,8 +48,15 @@ export function countKeywordMentions(
   for (const phrase of phrases) {
     const normalized = phrase.trim().toLowerCase();
     if (!normalized) continue;
-    const count = lowered.split(normalized).length - 1;
-    totalMentions += Math.max(count, 0);
+    let count = 0;
+    let fromIndex = 0;
+    while (fromIndex < lowered.length) {
+      const idx = lowered.indexOf(normalized, fromIndex);
+      if (idx === -1) break;
+      count++;
+      fromIndex = idx + normalized.length;
+    }
+    totalMentions += count;
     if (count > 0) matchedPhrases += 1;
   }
   return { totalMentions, matchedPhrases };

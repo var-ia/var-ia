@@ -1,29 +1,26 @@
 export class RateLimiter {
-  private lastRequestTime = 0;
-  private queue: Array<() => void> = [];
-  private processing = false;
+  private nextSlot: number;
 
-  constructor(private minDelayMs: number = 100) {}
-
-  async acquire(): Promise<void> {
-    return new Promise<void>((resolve) => {
-      this.queue.push(resolve);
-      if (!this.processing) this.process();
-    });
+  constructor(private minDelayMs: number = 100) {
+    this.nextSlot = Date.now();
   }
 
-  private async process(): Promise<void> {
-    this.processing = true;
-    while (this.queue.length > 0) {
-      const elapsed = Date.now() - this.lastRequestTime;
-      if (elapsed < this.minDelayMs) {
-        await this.sleep(this.minDelayMs - elapsed);
-      }
-      this.lastRequestTime = Date.now();
-      const next = this.queue.shift()!;
-      next();
+  async acquire(): Promise<void> {
+    const now = Date.now();
+    let slot: number;
+
+    if (this.nextSlot <= now) {
+      slot = now;
+      this.nextSlot = now + this.minDelayMs;
+    } else {
+      slot = this.nextSlot;
+      this.nextSlot += this.minDelayMs;
     }
-    this.processing = false;
+
+    const waitMs = slot - now;
+    if (waitMs > 0) {
+      await this.sleep(waitMs);
+    }
   }
 
   private sleep(ms: number): Promise<void> {

@@ -2,9 +2,10 @@ import { classifyClaimChange } from "@var-ia/analyzers";
 import type { ClaimState, EvidenceEvent, Revision } from "@var-ia/evidence-graph";
 import { createClaimIdentity } from "@var-ia/evidence-graph";
 import { MediaWikiClient } from "@var-ia/ingestion";
+import type { RevisionOptions } from "@var-ia/ingestion";
 import type { ModelConfig } from "@var-ia/interpreter";
 import { createAdapter } from "@var-ia/interpreter";
-import { loadCachedRevisions, saveRevisions } from "./cache.js";
+import { loadCachedRevisions, loadLatestCachedTimestamp, saveRevisions } from "./cache.js";
 
 export async function runClaim(
   pageTitle: string,
@@ -21,10 +22,24 @@ export async function runClaim(
   let revisions: Revision[] = [];
 
   if (useCache) {
-    const cached = loadCachedRevisions(pageTitle, 50, cacheDir);
+    const cached = loadCachedRevisions(pageTitle, 500, cacheDir);
     if (cached.length > 0) {
       console.log(`Loaded ${cached.length} revisions from cache.`);
       revisions = cached;
+
+      const latestTs = loadLatestCachedTimestamp(pageTitle, cacheDir);
+      if (latestTs) {
+        const deltaOpts: RevisionOptions = { direction: "newer", start: new Date(latestTs) };
+        const newRevisions = await client.fetchRevisions(pageTitle, deltaOpts);
+        const uniqueNew = newRevisions.filter((r) => !revisions.some((cr) => cr.revId === r.revId));
+        if (uniqueNew.length > 0) {
+          console.log(`Fetched ${uniqueNew.length} new revisions since ${latestTs}.`);
+          revisions = [...revisions, ...uniqueNew];
+          saveRevisions(uniqueNew, cacheDir);
+        } else {
+          console.log("Cache is up to date.");
+        }
+      }
     }
   }
 
@@ -43,20 +58,22 @@ export async function runClaim(
     return;
   }
 
-  const sortedRevs = [...revisions].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+  const withTs = [...revisions].map((r) => ({ r, ts: new Date(r.timestamp).getTime() }));
+  withTs.sort((a, b) => a.ts - b.ts);
+  const revs = withTs.map((x) => x.r);
 
   const identity = createClaimIdentity({
     text: claimText,
     section: "",
     pageTitle,
-    pageId: sortedRevs[0].pageId,
+    pageId: revs[0].pageId,
   });
 
   const variants: Array<{ revisionId: number; text: string; section: string; observedAt: string }> = [];
   let lastKnownText = "";
   let currentState: ClaimState = "absent";
 
-  for (const rev of sortedRevs) {
+  for (const rev of revs) {
     const plainText = stripWikitext(rev.content);
     const foundText = fuzzyFindClaim(claimText, plainText);
 
@@ -168,9 +185,9 @@ export function stripWikitext(wikitext: string): string {
   return text.trim();
 }
 
-export function fuzzyFindClaim(claimText: string, plainText: string): string {
+export function fuzzyFindClaim(claimText: string, plainText: string, preNormalized?: string): string {
   const normalized = claimText.toLowerCase().replace(/\s+/g, " ").trim();
-  const searchText = plainText.toLowerCase().replace(/\s+/g, " ");
+  const searchText = preNormalized ?? plainText.toLowerCase().replace(/\s+/g, " ");
 
   if (searchText.includes(normalized)) {
     const idx = searchText.indexOf(normalized);
@@ -188,16 +205,26 @@ export function fuzzyFindClaim(claimText: string, plainText: string): string {
   return "";
 }
 
-export function findSectionForText(wikitext: string, plainText: string): string {
+export function findSectionForText(wikitext: string, plainText: string, preStripped?: string, sectionCharMap?: Array<{ charOffset: number; section: string }>): string {
+  const strippedBase = preStripped ?? stripWikitext(wikitext);
+  const stripped = strippedBase.toLowerCase().replace(/\s+/g, " ");
+  const targetIdx = stripped.indexOf(plainText.toLowerCase().replace(/\s+/g, " ").trim());
+
+  if (targetIdx < 0) return "(lead)";
+
+  if (sectionCharMap) {
+    for (let i = sectionCharMap.length - 1; i >= 0; i--) {
+      if (sectionCharMap[i].charOffset <= targetIdx) {
+        return sectionCharMap[i].section;
+      }
+    }
+    return "(lead)";
+  }
+
   const headerRegex = /^(=+)\s*([^=]+?)\s*\1$/gm;
   const lines = wikitext.split("\n");
   let currentSection = "(lead)";
   let charCount = 0;
-
-  const stripped = stripWikitext(wikitext).toLowerCase().replace(/\s+/g, " ");
-  const targetIdx = stripped.indexOf(plainText.toLowerCase().replace(/\s+/g, " ").trim());
-
-  if (targetIdx < 0) return currentSection;
 
   for (const line of lines) {
     const match = headerRegex.exec(line);
@@ -209,4 +236,19 @@ export function findSectionForText(wikitext: string, plainText: string): string 
   }
 
   return currentSection;
+}
+
+export function buildSectionCharMap(wikitext: string): Array<{ charOffset: number; section: string }> {
+  const lines = wikitext.split("\n");
+  const headerRegex = /^(=+)\s*([^=]+?)\s*\1$/;
+  const map: Array<{ charOffset: number; section: string }> = [{ charOffset: 0, section: "(lead)" }];
+  let charCount = 0;
+  for (const line of lines) {
+    const match = headerRegex.exec(line);
+    if (match) {
+      map.push({ charOffset: charCount, section: match[2].trim() });
+    }
+    charCount += line.length + 1;
+  }
+  return map;
 }

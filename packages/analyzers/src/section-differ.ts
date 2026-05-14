@@ -6,6 +6,19 @@ export const sectionDiffer: SectionDiffer = {
     const sections: Section[] = [];
     const lines = wikitext.split("\n");
     const headerRegex = /^(=+)\s*([^=]+?)\s*\1$/;
+
+    // Pre-compute byte offsets of each line from a single TextEncoder pass
+    const bytes = new TextEncoder().encode(wikitext);
+    const lineByteOffsets = [0];
+    for (let i = 0, lineIdx = 0; i < bytes.length; i++) {
+      if (bytes[i] === 0x0a) {
+        lineByteOffsets[++lineIdx] = i + 1;
+      }
+    }
+    while (lineByteOffsets.length <= lines.length) {
+      lineByteOffsets.push(bytes.length);
+    }
+
     const headerMatches: Array<{
       index: number;
       offset: number;
@@ -13,19 +26,16 @@ export const sectionDiffer: SectionDiffer = {
       title: string;
     }> = [];
 
-    let currentOffset = 0;
     for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
-      const match = headerRegex.exec(line);
+      const match = headerRegex.exec(lines[i]);
       if (match) {
         headerMatches.push({
           index: i,
-          offset: currentOffset,
+          offset: lineByteOffsets[i],
           level: match[1].length,
           title: match[2].trim(),
         });
       }
-      currentOffset += Buffer.byteLength(line, "utf8") + 1; // +1 for newline
     }
 
     if (headerMatches.length === 0) {
@@ -52,9 +62,10 @@ export const sectionDiffer: SectionDiffer = {
     for (let i = 0; i < headerMatches.length; i++) {
       const header = headerMatches[i];
       const nextOffset =
-        i + 1 < headerMatches.length ? headerMatches[i + 1].offset : Buffer.byteLength(wikitext, "utf8");
-      const headerLine = lines[header.index];
-      const headerEnd = header.offset + Buffer.byteLength(headerLine, "utf8") + 1;
+        i + 1 < headerMatches.length
+          ? headerMatches[i + 1].offset
+          : bytes.length;
+      const headerEnd = lineByteOffsets[header.index + 1] ?? bytes.length;
       const content = wikitext.slice(headerEnd, nextOffset).trim();
 
       sections.push({
@@ -147,9 +158,11 @@ export function buildSectionLineage(
 ): SectionLineage[] {
   if (revisions.length === 0) return [];
 
+  const allSections = revisions.map((r) => sectionDiffer.extractSections(r.content));
+
   const lineages = new Map<string, SectionLineage>();
 
-  const firstSections = sectionDiffer.extractSections(revisions[0].content);
+  const firstSections = allSections[0];
   for (const section of firstSections) {
     const key = sectionKey(section);
     lineages.set(key, {
@@ -175,8 +188,8 @@ export function buildSectionLineage(
     const prevRev = revisions[i];
     const currRev = revisions[i + 1];
 
-    const prevSections = sectionDiffer.extractSections(prevRev.content);
-    const currSections = sectionDiffer.extractSections(currRev.content);
+    const prevSections = allSections[i];
+    const currSections = allSections[i + 1];
 
     const prevByKey = new Map<string, Section>();
     const currByKey = new Map<string, Section>();
@@ -190,13 +203,16 @@ export function buildSectionLineage(
     const addedKeys = [...currKeys].filter((k) => !prevKeys.has(k));
 
     const renamedFromTo = new Map<string, string>();
+    const contentToAddKey = new Map<string, string>();
+    for (const addKey of addedKeys) {
+      const section = currByKey.get(addKey)!;
+      contentToAddKey.set(section.content, addKey);
+    }
     for (const remKey of removedKeys) {
       const remSection = prevByKey.get(remKey)!;
-      for (const addKey of addedKeys) {
-        if (remSection.content === currByKey.get(addKey)?.content) {
-          renamedFromTo.set(remKey, addKey);
-          break;
-        }
+      const addKey = contentToAddKey.get(remSection.content);
+      if (addKey) {
+        renamedFromTo.set(remKey, addKey);
       }
     }
 

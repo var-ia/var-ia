@@ -112,11 +112,12 @@ export function buildSourceLineage(revisions: { revId: number; timestamp: string
     return sourceId;
   }
 
+  const allCitations = revisions.map((r) => citationTracker.extractCitations(r.content));
+
   // Seed sources from the first revision
   if (revisions.length > 0) {
-    const first = revisions[0];
-    for (const ref of citationTracker.extractCitations(first.content)) {
-      ensureSource(ref, first.revId, first.timestamp);
+    for (const ref of allCitations[0]) {
+      ensureSource(ref, revisions[0].revId, revisions[0].timestamp);
     }
   }
 
@@ -124,8 +125,8 @@ export function buildSourceLineage(revisions: { revId: number; timestamp: string
     const before = revisions[i];
     const after = revisions[i + 1];
 
-    const beforeRefs = citationTracker.extractCitations(before.content);
-    const afterRefs = citationTracker.extractCitations(after.content);
+    const beforeRefs = allCitations[i];
+    const afterRefs = allCitations[i + 1];
     const changes = citationTracker.diffCitations(beforeRefs, afterRefs);
 
     for (const change of changes) {

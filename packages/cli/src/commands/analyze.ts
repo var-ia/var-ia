@@ -2,6 +2,8 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import type { TemplateType } from "@var-ia/analyzers";
+import type { Section } from "@var-ia/evidence-graph";
+import type { CitationRef, Template } from "@var-ia/analyzers";
 import {
   buildPageMoveEvents,
   buildParamChangeEvents,
@@ -14,18 +16,25 @@ import {
   diffWikilinks,
   extractCategories,
   extractWikilinks,
-  protectionTracker,
   revertDetector,
   sectionDiffer,
   templateTracker,
 } from "@var-ia/analyzers";
 import type { DeterministicFact, EvidenceEvent, EvidenceLayer, Revision } from "@var-ia/evidence-graph";
-import type { PageMove, ProtectionLogEvent, RevisionOptions } from "@var-ia/ingestion";
+import type { RevisionOptions } from "@var-ia/ingestion";
 import { MediaWikiClient } from "@var-ia/ingestion";
 import type { ModelConfig } from "@var-ia/interpreter";
 import { createAdapter, ModelRouter } from "@var-ia/interpreter";
-import { loadCachedRevisions, saveRevisions } from "./cache.js";
-import { findSectionForText, fuzzyFindClaim, stripWikitext } from "./claim.js";
+import { loadCachedRevisions, loadLatestCachedTimestamp, saveRevisions } from "./cache.js";
+import { findSectionForText, fuzzyFindClaim, stripWikitext, buildSectionCharMap } from "./claim.js";
+
+interface ParsedContent {
+  sections: Section[];
+  citations: CitationRef[];
+  wikilinks: string[];
+  categories: string[];
+  templates: Template[];
+}
 
 interface BatchPageResult {
   pageTitle: string;
@@ -92,10 +101,25 @@ export async function runAnalyze(
   let revisions: Revision[] = [];
 
   if (useCache) {
-    const cached = loadCachedRevisions(pageTitle, 20, cacheDir);
+    const cached = loadCachedRevisions(pageTitle, 500, cacheDir);
     if (cached.length > 0) {
       console.log(`Loaded ${cached.length} revisions from cache.`);
       revisions = cached;
+
+      const latestTs = loadLatestCachedTimestamp(pageTitle, cacheDir);
+      if (latestTs && !fromTimestamp && revisions.length < 500) {
+        const deltaOpts: RevisionOptions = { direction: "newer", start: new Date(latestTs) };
+        if (_toRevId) deltaOpts.endRevId = _toRevId;
+        const newRevisions = await client.fetchRevisions(pageTitle, deltaOpts);
+        const uniqueNew = newRevisions.filter((r) => !revisions.some((cr) => cr.revId === r.revId));
+        if (uniqueNew.length > 0) {
+          console.log(`Fetched ${uniqueNew.length} new revisions since ${latestTs}.`);
+          revisions = [...revisions, ...uniqueNew];
+          saveRevisions(uniqueNew, cacheDir);
+        } else {
+          console.log("Cache is up to date.");
+        }
+      }
     }
   }
 
@@ -129,15 +153,58 @@ export async function runAnalyze(
   }
 
   const events: EvidenceEvent[] = [];
-  const sortedRevs = [...revisions].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+  const withTs = revisions.map((r) => ({ r, ts: new Date(r.timestamp).getTime() }));
+  withTs.sort((a, b) => a.ts - b.ts);
+  const sortedRevs = withTs.map((x) => x.r);
 
   const allSeenSentences = new Set<string>();
+  const strippedCache = new Map<number, string>();
+  const sectionCharMapCache = new Map<number, Array<{ charOffset: number; section: string }>>();
 
-  const pageMoves: PageMove[] = await client.fetchPageMoves(pageTitle);
+  const getStripped = (rev: Revision): string => {
+    const cached = strippedCache.get(rev.revId);
+    if (cached !== undefined) return cached;
+    const result = stripWikitext(rev.content);
+    strippedCache.set(rev.revId, result);
+    return result;
+  };
+
+  const getSectionCharMap = (rev: Revision): Array<{ charOffset: number; section: string }> => {
+    const cached = sectionCharMapCache.get(rev.revId);
+    if (cached) return cached;
+    const map = buildSectionCharMap(rev.content);
+    sectionCharMapCache.set(rev.revId, map);
+    return map;
+  };
+
+  const parsedCache = new Map<number, ParsedContent>();
+
+  const getParsed = (rev: Revision): ParsedContent => {
+    const cached = parsedCache.get(rev.revId);
+    if (cached) return cached;
+    const result: ParsedContent = {
+      sections: sectionDiffer.extractSections(rev.content),
+      citations: citationTracker.extractCitations(rev.content),
+      wikilinks: extractWikilinks(rev.content),
+      categories: extractCategories(rev.content),
+      templates: templateTracker.extractTemplates(rev.content),
+    };
+    parsedCache.set(rev.revId, result);
+    return result;
+  };
+
+  const [pageMoves, protectionLogs, talkRevs] = await Promise.all([
+    client.fetchPageMoves(pageTitle),
+    client.fetchProtectionLogs(pageTitle),
+    client.fetchTalkRevisions(pageTitle, { direction: "newer", limit: 10 }),
+  ]);
   const pageMoveEvents = buildPageMoveEvents(pageMoves);
   events.push(...pageMoveEvents);
 
-  const protectionLogs: ProtectionLogEvent[] = await client.fetchProtectionLogs(pageTitle);
+  const protectionLogsWithTs = protectionLogs.map((l) => ({
+    l,
+    ts: new Date(l.timestamp).getTime(),
+  }));
 
   for (let i = 1; i < sortedRevs.length; i++) {
     const before = sortedRevs[i - 1];
@@ -152,25 +219,14 @@ export async function runAnalyze(
         ]
       : [];
 
-    const beforeSections = sectionDiffer.extractSections(before.content);
-    const afterSections = sectionDiffer.extractSections(after.content);
-    const sectionChanges = sectionDiffer.diffSections(beforeSections, afterSections);
+    const beforeParsed = getParsed(before);
+    const afterParsed = getParsed(after);
 
-    const beforeCitations = citationTracker.extractCitations(before.content);
-    const afterCitations = citationTracker.extractCitations(after.content);
-    const citationChanges = citationTracker.diffCitations(beforeCitations, afterCitations);
-
-    const beforeWikilinks = extractWikilinks(before.content);
-    const afterWikilinks = extractWikilinks(after.content);
-    const wikilinkChanges = diffWikilinks(beforeWikilinks, afterWikilinks);
-
-    const beforeCategories = extractCategories(before.content);
-    const afterCategories = extractCategories(after.content);
-    const categoryChanges = diffCategories(beforeCategories, afterCategories);
-
-    const beforeTemplates = templateTracker.extractTemplates(before.content);
-    const afterTemplates = templateTracker.extractTemplates(after.content);
-    const templateChanges = templateTracker.diffTemplates(beforeTemplates, afterTemplates);
+    const sectionChanges = sectionDiffer.diffSections(beforeParsed.sections, afterParsed.sections);
+    const citationChanges = citationTracker.diffCitations(beforeParsed.citations, afterParsed.citations);
+    const wikilinkChanges = diffWikilinks(beforeParsed.wikilinks, afterParsed.wikilinks);
+    const categoryChanges = diffCategories(beforeParsed.categories, afterParsed.categories);
+    const templateChanges = templateTracker.diffTemplates(beforeParsed.templates, afterParsed.templates);
 
     const isRevRevert = revertDetector.isRevert(after.comment);
 
@@ -295,8 +351,8 @@ export async function runAnalyze(
     }
 
     const paramChangeEvents = buildParamChangeEvents(
-      beforeTemplates,
-      afterTemplates,
+      beforeParsed.templates,
+      afterParsed.templates,
       before.revId,
       after.revId,
       after.timestamp,
@@ -336,7 +392,11 @@ export async function runAnalyze(
       });
     }
 
-    const protectionLogsInRange = protectionTracker.findLogsBetween(protectionLogs, before.timestamp, after.timestamp);
+    const fromTs = new Date(before.timestamp).getTime();
+    const toTs = new Date(after.timestamp).getTime();
+    const protectionLogsInRange = protectionLogsWithTs
+      .filter(({ ts }) => ts > fromTs && ts <= toTs)
+      .map(({ l }) => l);
     for (const log of protectionLogsInRange) {
       events.push({
         eventType: "protection_changed",
@@ -405,20 +465,26 @@ export async function runAnalyze(
       }
     }
 
-    const beforePlain = stripWikitext(before.content);
-    const afterPlain = stripWikitext(after.content);
+    const beforePlain = getStripped(before);
+    const afterPlain = getStripped(after);
 
     const beforeSentences = beforePlain.split(/[.!?]\s+/).filter((s) => s.trim().length > 20);
     const afterSentences = afterPlain.split(/[.!?]\s+/).filter((s) => s.trim().length > 20);
 
+    const beforeNorm = beforePlain.toLowerCase().replace(/\s+/g, " ");
+    const afterNorm = afterPlain.toLowerCase().replace(/\s+/g, " ");
+
+    const beforeSecMap = getSectionCharMap(before);
+    const afterSecMap = getSectionCharMap(after);
+
     for (const sentence of afterSentences) {
       const trimmed = sentence.trim();
       if (!trimmed) continue;
-      const foundInBefore = fuzzyFindClaim(trimmed, beforePlain);
+      const foundInBefore = fuzzyFindClaim(trimmed, beforePlain, beforeNorm);
       if (!foundInBefore) {
         const normalized = trimmed.toLowerCase().replace(/\s+/g, " ");
         const wasSeenBefore = allSeenSentences.has(normalized);
-        const section = findSectionForText(after.content, trimmed);
+        const section = findSectionForText(after.content, trimmed, afterPlain, afterSecMap);
         events.push({
           eventType: wasSeenBefore ? "claim_reintroduced" : "claim_first_seen",
           fromRevisionId: before.revId,
@@ -434,8 +500,8 @@ export async function runAnalyze(
         const oldLen = foundInBefore.length;
         const newLen = trimmed.length;
         if (Math.abs(newLen - oldLen) > oldLen * 0.2) {
-          const section = findSectionForText(after.content, trimmed);
-          const beforeSection = findSectionForText(before.content, foundInBefore);
+          const section = findSectionForText(after.content, trimmed, afterPlain, afterSecMap);
+          const beforeSection = findSectionForText(before.content, foundInBefore, beforePlain, beforeSecMap);
           const changeType = classifyClaimChange(foundInBefore, trimmed, beforeSection, section);
           events.push({
             eventType:
@@ -465,9 +531,9 @@ export async function runAnalyze(
     for (const sentence of beforeSentences) {
       const trimmed = sentence.trim();
       if (!trimmed) continue;
-      const foundInAfter = fuzzyFindClaim(trimmed, afterPlain);
+      const foundInAfter = fuzzyFindClaim(trimmed, afterPlain, afterNorm);
       if (!foundInAfter) {
-        const section = findSectionForText(before.content, trimmed);
+        const section = findSectionForText(before.content, trimmed, beforePlain, beforeSecMap);
         events.push({
           eventType: "claim_removed",
           fromRevisionId: before.revId,
@@ -488,7 +554,6 @@ export async function runAnalyze(
     }
   }
 
-  const talkRevs = await client.fetchTalkRevisions(pageTitle, { direction: "newer", limit: 10 });
   if (talkRevs.length > 0) {
     const talkEvents = correlateTalkRevisions(sortedRevs, talkRevs);
     events.push(...talkEvents);
@@ -588,32 +653,37 @@ async function runBatch(
 
   console.log(`Batch mode: ${titles.length} pages from ${pagesFile}\n`);
 
-  const pages: BatchPageResult[] = [];
+  const BATCH_CONCURRENCY = 4;
+  const pageResults: BatchPageResult[] = [];
   const allEvents: EvidenceEvent[] = [];
 
-  for (const title of titles) {
-    console.log(`--- Page ${pages.length + 1}/${titles.length}: ${title} ---`);
-    const { events } = await runAnalyze(
-      title,
-      depth,
-      fromRevId,
-      toRevId,
-      fromTimestamp,
-      useCache,
-      modelConfig,
-      apiUrl,
-      undefined,
-      cacheDir,
-      useRouter,
+  for (let i = 0; i < titles.length; i += BATCH_CONCURRENCY) {
+    const chunk = titles.slice(i, i + BATCH_CONCURRENCY);
+    const chunkResults = await Promise.all(
+      chunk.map(async (title, j) => {
+        const idx = i + j + 1;
+        console.log(`--- Page ${idx}/${titles.length}: ${title} ---`);
+        const { events } = await runAnalyze(
+          title,
+          depth,
+          fromRevId,
+          toRevId,
+          fromTimestamp,
+          useCache,
+          modelConfig,
+          apiUrl,
+          undefined,
+          cacheDir,
+          useRouter,
+        );
+        return { pageTitle: title, pageId: 0, eventCount: events.length, events };
+      }),
     );
-    pages.push({
-      pageTitle: title,
-      pageId: 0,
-      eventCount: events.length,
-      events,
-    });
-    allEvents.push(...events);
+    pageResults.push(...chunkResults);
+    for (const r of chunkResults) allEvents.push(...r.events);
   }
+
+  const pages = pageResults;
 
   const result: BatchResult = {
     mode: "batch",

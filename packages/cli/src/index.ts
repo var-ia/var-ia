@@ -1,12 +1,14 @@
 import { Command } from "commander";
 import type { ModelConfig } from "@var-ia/interpreter";
 import { runAnalyze } from "./commands/analyze.js";
-import { runClaim } from "./commands/claim.js";
+import { runCron } from "./commands/cron.js";
 import { runDiff } from "./commands/diff.js";
+import type { DiffResult } from "./commands/diff.js";
+import { runClaim } from "./commands/claim.js";
 import { runEval } from "./commands/eval.js";
 import { runExport } from "./commands/export.js";
 import { runWatch } from "./commands/watch.js";
-import { bold, cyan, dim, formatEvent, gray, green, heading, red, success, table } from "./render.js";
+import { bold, cyan, dim, formatEvent, gray, green, heading, red, success } from "./render.js";
 
 function withModel(cmd: Command): Command {
   return cmd
@@ -166,52 +168,98 @@ watchCmd.action(async (page, opts) => {
   await runWatch(page, opts.section as string | undefined, opts.api as string | undefined, opts.interval as number | undefined);
 });
 
+// ── cron ──
+const cronCmd = program
+  .command("cron <pages-file>")
+  .description("one-shot re-observation for cron (exits 1 if new events detected)")
+  .option("-i, --interval <hours>", "lookback window in hours (default: from last observation)", parseInt);
+withGlobal(cronCmd);
+cronCmd.action(async (pagesFile, opts) => {
+  const result = await runCron(
+    pagesFile,
+    opts.interval as number | undefined,
+    opts.api as string | undefined,
+    opts.cacheDir as string | undefined,
+  );
+  if (result.totalNewEvents > 0) {
+    process.exit(1);
+  }
+});
+
 // ── diff ──
 const diffCmd = program
   .command("diff <topic>")
-  .description("cross-wiki comparison of the same topic")
+  .description("cross-wiki comparison of the same topic (2+ wikis)")
   .requiredOption("--wiki-a <url>", "first wiki API URL")
   .requiredOption("--wiki-b <url>", "second wiki API URL")
+  .option("--wiki-c <url>", "third wiki API URL (optional)")
+  .option("--wiki-d <url>", "fourth wiki API URL (optional)")
+  .option("--wiki-e <url>", "fifth wiki API URL (optional)")
+  .option("--wiki-f <url>", "sixth wiki API URL (optional)")
   .option("-d, --depth <depth>", "analysis depth: brief, detailed, forensic", "detailed");
 withModel(diffCmd);
 diffCmd.action(async (topic, opts) => {
-  const result = await runDiff(
-    topic,
+  const wikiUrls = [
     opts.wikiA as string,
     opts.wikiB as string,
-    opts.depth as string,
-    extractModel(opts),
-  );
+    ...(opts.wikiC ? [opts.wikiC as string] : []),
+    ...(opts.wikiD ? [opts.wikiD as string] : []),
+    ...(opts.wikiE ? [opts.wikiE as string] : []),
+    ...(opts.wikiF ? [opts.wikiF as string] : []),
+  ];
+
+  const result = await runDiff(topic, wikiUrls, opts.depth as string, extractModel(opts));
+  printUserFacingDiff(result);
+});
+
+function printUserFacingDiff(result: DiffResult): void {
+  const { wikis, comparison, outliers } = result;
+  const labels = wikis.length <= 26
+    ? wikis.map((_, i) => String.fromCharCode(65 + i))
+    : wikis.map((_, i) => `W${i + 1}`);
 
   console.log(heading(`Cross-Wiki Diff: "${result.pageTitle}"`));
-  console.log(`  ${bold("Wiki A:")} ${dim(result.wikiA.url)}`);
-  console.log(`  ${bold("Wiki B:")} ${dim(result.wikiB.url)}`);
+  for (let i = 0; i < wikis.length; i++) {
+    console.log(`  ${bold(`Wiki ${labels[i]}:`)} ${dim(wikis[i].url)}`);
+  }
   console.log();
 
   console.log(bold("── Overview ──"));
-  console.log(`  Total events: A=${cyan(String(result.comparison.totalEventsA))}, B=${cyan(String(result.comparison.totalEventsB))}`);
-  console.log(`  Sections:     A=${result.wikiA.sections.length}, B=${result.wikiB.sections.length}`);
-  console.log(`  Citations:    A=${result.wikiA.summary.citations}, B=${result.wikiB.summary.citations}`);
-  console.log(`  Templates:    A=${result.wikiA.summary.templates}, B=${result.wikiB.summary.templates}`);
-  console.log(`  Reverts:      A=${result.wikiA.summary.reverts}, B=${result.wikiB.summary.reverts}`);
-  console.log(`  Categories:   A=${result.wikiA.summary.categories}, B=${result.wikiB.summary.categories}`);
-  console.log(`  Wikilinks:    A=${result.wikiA.summary.wikilinks}, B=${result.wikiB.summary.wikilinks}`);
-  console.log();
+  console.log(`  ${"Total events".padEnd(14)} ${comparison.totalEvents.map((n) => cyan(String(n).padStart(6))).join(" ")}`);
+  console.log(`  ${"Sections".padEnd(14)} ${comparison.totalSections.map((n) => String(n).padStart(6)).join(" ")}`);
+  console.log(`  ${"Citations".padEnd(14)} ${wikis.map((w) => String(w.summary.citations).padStart(6)).join(" ")}`);
+  console.log(`  ${"Templates".padEnd(14)} ${wikis.map((w) => String(w.summary.templates).padStart(6)).join(" ")}`);
+  console.log(`  ${"Reverts".padEnd(14)} ${wikis.map((w) => String(w.summary.reverts).padStart(6)).join(" ")}`);
+  console.log(`  ${"Categories".padEnd(14)} ${wikis.map((w) => String(w.summary.categories).padStart(6)).join(" ")}`);
+  console.log(`  ${"Wikilinks".padEnd(14)} ${wikis.map((w) => String(w.summary.wikilinks).padStart(6)).join(" ")}`);
 
-  if (result.comparison.eventTypeDiffs.length > 0) {
-    console.log(bold("── Event Type Breakdown ──"));
-    const rows = result.comparison.eventTypeDiffs.map((d) => {
-      const sign = d.diff > 0 ? "+" : "";
-      return [
-        d.eventType,
-        String(d.aCount),
-        String(d.bCount),
-        d.diff === 0 ? gray(String(d.diff)) : d.diff > 0 ? green(`${sign}${d.diff}`) : red(`${d.diff}`),
-      ];
-    });
-    console.log(table(["Event Type", "A", "B", "\u0394"], rows, ["left", "right", "right", "right"]));
+  if (comparison.eventTypeDiffs.length > 0) {
+    console.log(bold("\n── Event Type Breakdown ──"));
+    const headerLabels = labels.map((l) => l.padStart(5));
+    console.log(`  ${"Event Type".padEnd(28)} ${headerLabels.join(" ")}`);
+    console.log(`  ${"─".repeat(28)} ${"─".repeat(6 * labels.length - 1)}`);
+    for (const d of comparison.eventTypeDiffs) {
+      const label = d.eventType.padEnd(28);
+      const values = d.counts.map((c, i) => {
+        const str = String(c).padStart(5);
+        const baselineZero = i === 0;
+        if (!baselineZero && c !== d.counts[0]) {
+          return c > d.counts[0] ? green(str) : red(str);
+        }
+        return str;
+      });
+      console.log(`  ${label} ${values.join(" ")}`);
+    }
   }
-});
+
+  if (outliers.length > 0) {
+    console.log(bold("\n── Outliers (|z-score| > 2) ──"));
+    for (const o of outliers) {
+      const sign = o.zScore > 0 ? "+" : "";
+      console.log(`  Wiki ${o.wikiLabel}: ${o.eventType} = ${cyan(String(o.count))} (mean=${o.mean}, z=${sign}${o.zScore})`);
+    }
+  }
+}
 
 // ── eval ──
 const evalCmd = program
@@ -231,4 +279,4 @@ export async function cli(args: string[]): Promise<void> {
   await program.parseAsync(args, { from: "user" });
 }
 
-export { parseFlag } from "./parse-flag.js";
+

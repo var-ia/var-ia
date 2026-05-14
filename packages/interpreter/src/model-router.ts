@@ -62,16 +62,20 @@ export class ModelRouter implements ModelAdapter {
   private async getOrCreateAdapter(): Promise<ConsensusAdapter> {
     if (this.cachedAdapter) return this.cachedAdapter;
 
-    const reachable: ModelRoute[] = [];
+    const results = await Promise.allSettled(
+      this.routes.map((route) =>
+        this.probeEndpoint
+          ? probeModel(route.endpoint ?? "http://localhost:11434").then(
+              (ok): ModelRoute | null => (ok ? route : null),
+            )
+          : Promise.resolve(route),
+      ),
+    );
 
-    for (const route of this.routes) {
-      if (this.probeEndpoint) {
-        try {
-          const ok = await probeModel(route.endpoint ?? "http://localhost:11434");
-          if (ok) reachable.push(route);
-        } catch {}
-      } else {
-        reachable.push(route);
+    const reachable: ModelRoute[] = [];
+    for (const result of results) {
+      if (result.status === "fulfilled" && result.value !== null) {
+        reachable.push(result.value);
       }
     }
 

@@ -19,25 +19,29 @@ export function correlateTalkRevisions(
 
   if (articleRevs.length === 0 || talkRevs.length === 0) return events;
 
-  const sortedTalk = [...talkRevs].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+  const sortedTalk = [...talkRevs].map((r) => ({ r, ts: new Date(r.timestamp).getTime() }));
+  sortedTalk.sort((a, b) => a.ts - b.ts);
 
-  for (const article of articleRevs) {
-    const articleTime = new Date(article.timestamp).getTime();
+  const articleTimes = articleRevs.map((r) => new Date(r.timestamp).getTime());
+
+  for (let a = 0; a < articleRevs.length; a++) {
+    const article = articleRevs[a];
+    const articleTime = articleTimes[a];
     const windowStart = articleTime - windowBefore;
     const windowEnd = articleTime + windowAfter;
 
     let closest: Revision | null = null;
     let closestDelta = Infinity;
 
-    for (const talk of sortedTalk) {
-      const talkTime = new Date(talk.timestamp).getTime();
+    for (let t = 0; t < sortedTalk.length; t++) {
+      const talkTime = sortedTalk[t].ts;
       if (talkTime < windowStart) continue;
       if (talkTime > windowEnd) break;
 
       const delta = Math.abs(talkTime - articleTime);
       if (delta < closestDelta) {
         closestDelta = delta;
-        closest = talk;
+        closest = sortedTalk[t].r;
       }
     }
 

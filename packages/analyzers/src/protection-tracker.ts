@@ -26,9 +26,10 @@ export interface ProtectionTracker {
 export const protectionTracker: ProtectionTracker = {
   buildState(logs: ProtectionLogRecord[]): Map<string, ProtectionState> {
     const state = new Map<string, ProtectionState>();
-    const sorted = [...logs].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+    const sorted = [...logs].map((l) => ({ l, ts: new Date(l.timestamp).getTime() }));
+    sorted.sort((a, b) => a.ts - b.ts);
 
-    for (const log of sorted) {
+    for (const { l: log } of sorted) {
       if (log.action === "protect" || log.action === "modify") {
         state.set(log.pageTitle, {
           level: log.action === "protect" ? "protected" : "modified",

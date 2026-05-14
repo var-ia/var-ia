@@ -52,9 +52,13 @@ export class ConsensusAdapter implements ModelAdapter {
         }
       }
 
-      const consensus = [...groups.values()]
-        .filter((g) => g.count >= this.minConsensus)
-        .sort((a, b) => b.count - a.count)[0];
+      let bestGroup: { count: number; avgConfidence: number; sample: ModelInterpretation } | null = null;
+      for (const group of groups.values()) {
+        if (group.count >= this.minConsensus && (!bestGroup || group.count > bestGroup.count)) {
+          bestGroup = group;
+        }
+      }
+      const consensus = bestGroup;
 
       if (consensus) {
         consolidated.push({

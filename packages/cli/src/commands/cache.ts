@@ -48,6 +48,16 @@ export function saveRevisions(revisions: Revision[], cacheDir?: string): void {
   }
 }
 
+export function loadLatestCachedTimestamp(pageTitle: string, cacheDir?: string): string | undefined {
+  configureCache(cacheDir);
+  try {
+    const db = getPersistence();
+    return db.getLatestTimestamp(pageTitle);
+  } catch {
+    return undefined;
+  }
+}
+
 export function closePersistence(): void {
   if (_instance) {
     _instance.close();
