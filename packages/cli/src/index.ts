@@ -1,5 +1,6 @@
 import { runAnalyze } from "./commands/analyze.js";
 import { runClaim } from "./commands/claim.js";
+import { runDiff } from "./commands/diff.js";
 import { runEval } from "./commands/eval.js";
 import { runExport } from "./commands/export.js";
 import { runWatch } from "./commands/watch.js";
@@ -14,6 +15,7 @@ Usage:
   wikihistory claim <page> --text "<claim text>" [--cache] [--model <provider>]
   wikihistory export <page> --format json|csv [--bundle] [--model <provider>]
   wikihistory watch <page> [--section <name>]
+  wikihistory diff <topic> --wiki-a <url> --wiki-b <url> [--depth brief|detailed|forensic] [--model <provider>]
   wikihistory eval [--page <title>]
 
 Options:
@@ -129,6 +131,19 @@ export async function cli(args: string[]): Promise<void> {
       const section = parseFlag(args, "section");
       const apiUrl = parseFlag(args, "api");
       await runWatch(pageTitle, section, apiUrl);
+      break;
+    }
+    case "diff": {
+      const topic = args[1];
+      const wikiA = parseFlag(args, "wiki-a");
+      const wikiB = parseFlag(args, "wiki-b");
+      if (!topic || !wikiA || !wikiB) {
+        console.error("Usage: wikihistory diff <topic> --wiki-a <url> --wiki-b <url> [--depth brief|detailed|forensic] [--model <provider>]");
+        process.exit(1);
+      }
+      const depth = parseFlag(args, "depth") ?? "detailed";
+      const modelConfig = parseModelConfig(args);
+      await runDiff(topic, wikiA, wikiB, depth, modelConfig);
       break;
     }
     case "eval": {

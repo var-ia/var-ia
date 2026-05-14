@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "type": "module",
   "private": false,
-  "description": "A deterministic claim-provenance engine for Wikipedia page histories. Show what changed, not what is true.",
+  "description": "A deterministic claim-provenance engine for Wikipedia page histories. Evidence, not truth.",
   "repository": "github:nextconsensus/var-ia",
   "homepage": "https://nextconsensus.com",
   "bugs": "https://github.com/nextconsensus/var-ia/issues",

@@ -67,6 +67,10 @@ export { revertDetector } from "./revert-detector.js";
 export { templateTracker } from "./template-tracker.js";
 export { classifyHeuristic } from "./heuristic-classifier.js";
 export type { HeuristicKind } from "./heuristic-classifier.js";
+export { extractWikilinks, diffWikilinks, buildWikilinkEvents } from "./wikilink-extractor.js";
+export { buildPageMoveEvents } from "./page-move-detector.js";
+export { extractCategories, diffCategories, buildCategoryEvents } from "./category-tracker.js";
+export { classifyClaimChange } from "./claim-differ.js";
 export {
   sanitizeWikitext,
   extractHeadingMap,

@@ -1,8 +1,9 @@
 import { readFileSync } from "node:fs";
 import { MediaWikiClient } from "@var-ia/ingestion";
 import type { RevisionOptions } from "@var-ia/ingestion";
-import { sectionDiffer, citationTracker, revertDetector, templateTracker } from "@var-ia/analyzers";
+import { sectionDiffer, citationTracker, revertDetector, templateTracker, extractWikilinks, diffWikilinks, buildPageMoveEvents, extractCategories, diffCategories, classifyClaimChange, buildSectionLineage } from "@var-ia/analyzers";
 import type { TemplateType } from "@var-ia/analyzers";
+import type { PageMove } from "@var-ia/ingestion";
 import type { EvidenceEvent, EvidenceLayer, Revision, DeterministicFact } from "@var-ia/evidence-graph";
 import { createAdapter } from "@var-ia/interpreter";
 import type { ModelConfig } from "@var-ia/interpreter";
@@ -94,6 +95,10 @@ export async function runAnalyze(
 
   const allSeenSentences = new Set<string>();
 
+  const pageMoves: PageMove[] = await client.fetchPageMoves(pageTitle);
+  const pageMoveEvents = buildPageMoveEvents(pageMoves);
+  events.push(...pageMoveEvents);
+
   for (let i = 1; i < sortedRevs.length; i++) {
     const before = sortedRevs[i - 1];
     const after = sortedRevs[i];
@@ -114,6 +119,14 @@ export async function runAnalyze(
     const beforeCitations = citationTracker.extractCitations(before.content);
     const afterCitations = citationTracker.extractCitations(after.content);
     const citationChanges = citationTracker.diffCitations(beforeCitations, afterCitations);
+
+    const beforeWikilinks = extractWikilinks(before.content);
+    const afterWikilinks = extractWikilinks(after.content);
+    const wikilinkChanges = diffWikilinks(beforeWikilinks, afterWikilinks);
+
+    const beforeCategories = extractCategories(before.content);
+    const afterCategories = extractCategories(after.content);
+    const categoryChanges = diffCategories(beforeCategories, afterCategories);
 
     const beforeTemplates = templateTracker.extractTemplates(before.content);
     const afterTemplates = templateTracker.extractTemplates(after.content);
@@ -136,6 +149,74 @@ export async function runAnalyze(
           ...extraFacts,
         ],
         layer,
+        timestamp: after.timestamp,
+      });
+    }
+
+    for (const link of wikilinkChanges.added) {
+      events.push({
+        eventType: "wikilink_added",
+        fromRevisionId: before.revId,
+        toRevisionId: after.revId,
+        section: "body",
+        before: "",
+        after: isBrief ? "" : link,
+        deterministicFacts: [
+          { fact: "wikilink_added", detail: `target=${link}` },
+          ...extraFacts,
+        ],
+        layer: "observed",
+        timestamp: after.timestamp,
+      });
+    }
+
+    for (const link of wikilinkChanges.removed) {
+      events.push({
+        eventType: "wikilink_removed",
+        fromRevisionId: before.revId,
+        toRevisionId: after.revId,
+        section: "body",
+        before: isBrief ? "" : link,
+        after: "",
+        deterministicFacts: [
+          { fact: "wikilink_removed", detail: `target=${link}` },
+          ...extraFacts,
+        ],
+        layer: "observed",
+        timestamp: after.timestamp,
+      });
+    }
+
+    for (const cat of categoryChanges.added) {
+      events.push({
+        eventType: "category_added",
+        fromRevisionId: before.revId,
+        toRevisionId: after.revId,
+        section: "",
+        before: "",
+        after: isBrief ? "" : cat,
+        deterministicFacts: [
+          { fact: "category_added", detail: `category=${cat}` },
+          ...extraFacts,
+        ],
+        layer: "observed",
+        timestamp: after.timestamp,
+      });
+    }
+
+    for (const cat of categoryChanges.removed) {
+      events.push({
+        eventType: "category_removed",
+        fromRevisionId: before.revId,
+        toRevisionId: after.revId,
+        section: "",
+        before: isBrief ? "" : cat,
+        after: "",
+        deterministicFacts: [
+          { fact: "category_removed", detail: `category=${cat}` },
+          ...extraFacts,
+        ],
+        layer: "observed",
         timestamp: after.timestamp,
       });
     }
@@ -301,15 +382,17 @@ export async function runAnalyze(
         const newLen = trimmed.length;
         if (Math.abs(newLen - oldLen) > oldLen * 0.2) {
           const section = findSectionForText(after.content, trimmed);
+          const beforeSection = findSectionForText(before.content, foundInBefore);
+          const changeType = classifyClaimChange(foundInBefore, trimmed, beforeSection, section);
           events.push({
-            eventType: "claim_reworded",
+            eventType: changeType === "moved" ? "claim_moved" : changeType === "softened" ? "claim_softened" : changeType === "strengthened" ? "claim_strengthened" : "claim_reworded",
             fromRevisionId: before.revId,
             toRevisionId: after.revId,
             section,
             before: isBrief ? "" : foundInBefore,
             after: isBrief ? "" : trimmed,
             deterministicFacts: [
-              { fact: "claim_reworded", detail: `old_length=${oldLen} new_length=${newLen}` },
+              { fact: "claim_changed", detail: `change=${changeType} old_length=${oldLen} new_length=${newLen}` },
               ...extraFacts,
             ],
             layer: "observed",
@@ -351,7 +434,17 @@ export async function runAnalyze(
   if (modelConfig && events.length > 0) {
     const adapter = createAdapter(modelConfig);
     console.log(`Interpreting ${events.length} events with ${modelConfig.provider}...`);
-    const interpreted = await adapter.interpret(events);
+
+    const sectionLineage = buildSectionLineage(sortedRevs);
+    const lineage = {
+      sectionLineages: sectionLineage.map((s) => ({
+        sectionName: s.sectionName,
+        events: s.events.map((e) => `${e.eventType} in rev ${e.revisionId}`),
+        isActive: s.isActive,
+      })),
+    };
+
+    const interpreted = await adapter.interpret(events, lineage);
     for (let i = 0; i < interpreted.length; i++) {
       interpreted[i].layer = events[i].layer;
     }

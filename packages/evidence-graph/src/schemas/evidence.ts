@@ -20,12 +20,23 @@ export type EventType =
   | "lead_promotion"
   | "lead_demotion"
   | "page_moved"
+  | "wikilink_added"
+  | "wikilink_removed"
+  | "category_added"
+  | "category_removed"
   | "protection_changed"
   | "talk_page_correlated";
 
+export interface FactProvenance {
+  analyzer: string;
+  version: string;
+  inputHashes: string[];
+}
+
 export interface DeterministicFact {
-  fact: string;              // e.g., "text_changed", "attribution_added", "same_section"
+  fact: string;
   detail?: string;
+  provenance?: FactProvenance;
 }
 
 export interface ModelInterpretation {

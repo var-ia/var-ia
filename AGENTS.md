@@ -92,6 +92,14 @@ Conventional Commits: `feat:`, `fix:`, `refactor:`, `chore:`, `docs:`, `test:`.
 - Model prompt changes must include before/after confidence scores on 3 sample pages
 - Architecture changes require an ARCHITECTURE.md update in the same PR
 
+## Roadmap & Work Queue
+
+- **ROADMAP.md** — prioritized items by layer, with status table and dependency graph
+- **`.github/workqueue/{ID}.md`** — self-contained task prompts for agents to pick up
+- `ready` = unblocked, can be started; `blocked` = waiting on dependencies
+- After completing a task: (1) run gate, (2) update task status to `done`, (3) update ROADMAP.md to unblock dependents
+- Task file format: YAML frontmatter (id, status, priority, dependencies, packages, layer, effort) followed by What/Why/Context/Implementation/Invariants/Acceptance sections
+
 ## Forbidden Contributions
 
 Features that: target individual editors, do sentiment/toxicity scoring, predict/forecast, automate Wikipedia editing, make truth/accuracy claims about content, or use healthcare-specific vocabulary.

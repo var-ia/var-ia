@@ -6,7 +6,7 @@ license: AGPL-3.0
 
 # Varia
 
-Deterministic claim-provenance engine for Wikipedia page histories. Shows what changed, not what is true.
+Deterministic claim-provenance engine for Wikipedia page histories. Evidence, not truth.
 
 ## When to Use
 

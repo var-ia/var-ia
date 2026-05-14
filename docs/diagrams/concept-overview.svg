@@ -24,7 +24,7 @@
   <rect width="840" height="340" fill="#fafbfc" rx="8"/>
 
   <!-- Header -->
-  <text x="420" y="42" text-anchor="middle" class="hero-title">Show what changed. Not what is true.</text>
+  <text x="420" y="42" text-anchor="middle" class="hero-title">Evidence, not truth.</text>
   <text x="420" y="66" text-anchor="middle" class="hero-sub">A deterministic claim-provenance engine for Wikipedia page histories</text>
 
   <line x1="200" y1="80" x2="640" y2="80" stroke="#e5e7eb" stroke-width="1"/>

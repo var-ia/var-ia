@@ -1,6 +1,7 @@
 import { MediaWikiClient } from "@var-ia/ingestion";
 import { createClaimIdentity } from "@var-ia/evidence-graph";
 import type { ClaimState, EvidenceEvent, Revision } from "@var-ia/evidence-graph";
+import { classifyClaimChange } from "@var-ia/analyzers";
 import { createAdapter } from "@var-ia/interpreter";
 import type { ModelConfig } from "@var-ia/interpreter";
 import { loadCachedRevisions, saveRevisions } from "./cache.js";
@@ -70,8 +71,11 @@ export async function runClaim(
         const oldLen = lastKnownText.length;
         const newLen = foundText.length;
         if (Math.abs(newLen - oldLen) > oldLen * 0.2) {
+          const section = findSectionForText(rev.content, foundText);
+          const prevSection = variants.length > 0 ? variants[variants.length - 1].section : section;
+          const changeType = classifyClaimChange(lastKnownText, foundText, prevSection, section);
           currentState = "contested";
-          console.log(`[${rev.timestamp}] REWORDED (rev ${rev.revId})`);
+          console.log(`[${rev.timestamp}] ${changeType.toUpperCase()} (rev ${rev.revId})`);
           console.log(`  State: → contested`);
           console.log(`  Previous: "${lastKnownText.slice(0, 150)}"`);
           console.log(`  Current:  "${foundText.slice(0, 150)}"`);

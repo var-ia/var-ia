@@ -5,7 +5,7 @@
 
 **Wikipedia page histories, reconstructed as evidence graphs.**
 
-> Show what changed. Not what is true.
+> Evidence, not truth.
 
 A deterministic claim-provenance engine for Wikipedia page histories. This tool reconstructs how claims moved through Wikipedia's editorial system — when they appeared, how they changed, what sources supported them, and what policy signals surrounded each change. It does not determine truth, judge editors, or predict outcomes.
 

@@ -12,6 +12,18 @@ export interface DiffFetcher {
   fetchDiff(fromRevId: number, toRevId: number): Promise<DiffResult>;
 }
 
+export interface MoveFetcher {
+  fetchPageMoves(pageTitle: string): Promise<PageMove[]>;
+}
+
+export interface PageMove {
+  oldTitle: string;
+  newTitle: string;
+  timestamp: string;
+  revId: number;
+  comment: string;
+}
+
 export interface RevisionOptions {
   limit?: number;
   start?: Date;

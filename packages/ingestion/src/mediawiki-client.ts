@@ -1,5 +1,5 @@
 import type { Revision, DiffResult, DiffLine } from "@var-ia/evidence-graph";
-import type { RevisionFetcher, RevisionSource, DiffFetcher, RevisionOptions } from "./index.js";
+import type { RevisionFetcher, RevisionSource, DiffFetcher, MoveFetcher, RevisionOptions, PageMove } from "./index.js";
 import { RateLimiter } from "./rate-limiter.js";
 
 const DEFAULT_API_URL = "https://en.wikipedia.org/w/api.php";
@@ -39,6 +39,20 @@ interface RevisionQueryResponse {
   };
 }
 
+interface LogEventResponse {
+  query?: {
+    logevents?: {
+      logid: number;
+      title: string;
+      timestamp: string;
+      comment: string;
+      params?: {
+        target_title: string;
+      };
+    }[];
+  };
+}
+
 interface CompareResponse {
   compare?: {
     fromrevid: number;
@@ -49,7 +63,7 @@ interface CompareResponse {
   };
 }
 
-export class MediaWikiClient implements RevisionFetcher, RevisionSource, DiffFetcher {
+export class MediaWikiClient implements RevisionFetcher, RevisionSource, DiffFetcher, MoveFetcher {
   private rateLimiter: RateLimiter;
   private userAgent: string;
   private apiUrl: string;
@@ -58,6 +72,12 @@ export class MediaWikiClient implements RevisionFetcher, RevisionSource, DiffFet
     this.apiUrl = options?.apiUrl ?? DEFAULT_API_URL;
     this.userAgent = options?.userAgent ?? DEFAULT_USER_AGENT;
     this.rateLimiter = new RateLimiter(options?.minDelayMs ?? 100);
+  }
+
+  async fetchTalkRevisions(pageTitle: string, options?: RevisionOptions, talkPrefix?: string): Promise<Revision[]> {
+    const prefix = talkPrefix ?? "Talk:";
+    const talkTitle = `${prefix}${pageTitle}`;
+    return this.fetchRevisions(talkTitle, options);
   }
 
   async fetchRevisions(pageTitle: string, options?: RevisionOptions): Promise<Revision[]> {
@@ -130,6 +150,37 @@ export class MediaWikiClient implements RevisionFetcher, RevisionSource, DiffFet
     }
 
     return revisions;
+  }
+
+  async fetchPageMoves(pageTitle: string): Promise<PageMove[]> {
+    const params = new URLSearchParams({
+      action: "query",
+      list: "logevents",
+      letype: "move",
+      letitle: pageTitle,
+      lelimit: "50",
+      format: "json",
+      formatversion: "2",
+    });
+
+    const url = `${this.apiUrl}?${params.toString()}`;
+    const response = await this.fetch(url);
+    const data: LogEventResponse = await response.json();
+    const moves: PageMove[] = [];
+
+    if (!data.query?.logevents) return moves;
+
+    for (const entry of data.query.logevents) {
+      moves.push({
+        oldTitle: entry.title,
+        newTitle: entry.params?.target_title ?? "",
+        timestamp: entry.timestamp,
+        revId: entry.logid,
+        comment: entry.comment ?? "",
+      });
+    }
+
+    return moves;
   }
 
   async fetchDiff(fromRevId: number, toRevId: number): Promise<DiffResult> {

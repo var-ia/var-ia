@@ -1,7 +1,27 @@
 import type { EvidenceEvent, ModelInterpretation } from "@var-ia/evidence-graph";
 
+// Lineage types used by the interpreter but defined here to avoid
+// coupling the interpreter to the analyzers package. The shape is
+// deliberately minimal — just enough for prompt enrichment.
+export interface SectionLineageSummary {
+  sectionName: string;
+  events: string[];
+  isActive: boolean;
+}
+
+export interface ClaimLineageSummary {
+  firstSeenRevisionId: number;
+  variants: number;
+}
+
+export interface LineageContext {
+  sectionLineages?: SectionLineageSummary[];
+  claimLineages?: ClaimLineageSummary[];
+  summaryText?: string;
+}
+
 export interface ModelAdapter {
-  interpret(events: EvidenceEvent[]): Promise<InterpretedEvent[]>;
+  interpret(events: EvidenceEvent[], lineage?: LineageContext): Promise<InterpretedEvent[]>;
 }
 
 export interface InterpretedEvent extends EvidenceEvent {
@@ -14,6 +34,9 @@ export interface ModelConfig {
   model?: string;
   endpoint?: string;
 }
+
+export { ConsensusAdapter } from "./consensus-adapter.js";
+export type { ConsensusConfig } from "./consensus-adapter.js";
 
 export function createAdapter(config: ModelConfig): ModelAdapter {
   switch (config.provider) {
@@ -39,36 +62,36 @@ function createOpenAIAdapter(config: ModelConfig): ModelAdapter {
   if (!apiKey) throw new Error("OpenAI adapter requires apiKey or OPENAI_API_KEY env var");
 
   return {
-    async interpret(events: EvidenceEvent[]): Promise<InterpretedEvent[]> {
-      const response = await fetch(`${endpoint}/chat/completions`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          model,
-          messages: [
-            { role: "system", content: buildSystemPrompt() },
-            { role: "user", content: buildUserPrompt(events) },
-          ],
-          temperature: 0.1,
-        }),
-      });
+      async interpret(events: EvidenceEvent[], lineage?: LineageContext): Promise<InterpretedEvent[]> {
+        const response = await fetch(`${endpoint}/chat/completions`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify({
+            model,
+            messages: [
+              { role: "system", content: buildSystemPrompt() },
+              { role: "user", content: buildUserPrompt(events, lineage) },
+            ],
+            temperature: 0.1,
+          }),
+        });
 
-      if (!response.ok) {
-        const err = await response.text();
-        throw new Error(`OpenAI API error ${response.status}: ${err.slice(0, 300)}`);
-      }
+        if (!response.ok) {
+          const err = await response.text();
+          throw new Error(`OpenAI API error ${response.status}: ${err.slice(0, 300)}`);
+        }
 
-      const data = await response.json() as {
-        choices?: Array<{ message?: { content?: string } }>;
-      };
-      const content = data.choices?.[0]?.message?.content;
-      if (!content) throw new Error("OpenAI returned empty response");
+        const data = await response.json() as {
+          choices?: Array<{ message?: { content?: string } }>;
+        };
+        const content = data.choices?.[0]?.message?.content;
+        if (!content) throw new Error("OpenAI returned empty response");
 
-      return parseInterpretations(content, events);
-    },
+        return parseInterpretations(content, events);
+      },
   };
 }
 
@@ -79,23 +102,23 @@ function createAnthropicAdapter(config: ModelConfig): ModelAdapter {
   if (!apiKey) throw new Error("Anthropic adapter requires apiKey or ANTHROPIC_API_KEY env var");
 
   return {
-    async interpret(events: EvidenceEvent[]): Promise<InterpretedEvent[]> {
-      const response = await fetch(`${endpoint}/messages`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": apiKey,
-          "anthropic-version": "2023-06-01",
-        },
-        body: JSON.stringify({
-          model,
-          max_tokens: 4096,
-          system: buildSystemPrompt(),
-          messages: [
-            { role: "user", content: buildUserPrompt(events) },
-          ],
-        }),
-      });
+      async interpret(events: EvidenceEvent[], lineage?: LineageContext): Promise<InterpretedEvent[]> {
+        const response = await fetch(`${endpoint}/messages`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": apiKey,
+            "anthropic-version": "2023-06-01",
+          },
+          body: JSON.stringify({
+            model,
+            max_tokens: 4096,
+            system: buildSystemPrompt(),
+            messages: [
+              { role: "user", content: buildUserPrompt(events, lineage) },
+            ],
+          }),
+        });
 
       if (!response.ok) {
         const err = await response.text();
@@ -120,7 +143,7 @@ function createDeepSeekAdapter(config: ModelConfig): ModelAdapter {
   if (!apiKey) throw new Error("DeepSeek adapter requires apiKey or DEEPSEEK_API_KEY env var");
 
   return {
-    async interpret(events: EvidenceEvent[]): Promise<InterpretedEvent[]> {
+    async interpret(events: EvidenceEvent[], lineage?: LineageContext): Promise<InterpretedEvent[]> {
       const response = await fetch(`${endpoint}/chat/completions`, {
         method: "POST",
         headers: {
@@ -131,7 +154,7 @@ function createDeepSeekAdapter(config: ModelConfig): ModelAdapter {
           model,
           messages: [
             { role: "system", content: buildSystemPrompt() },
-            { role: "user", content: buildUserPrompt(events) },
+            { role: "user", content: buildUserPrompt(events, lineage) },
           ],
           temperature: 0.1,
         }),
@@ -158,15 +181,15 @@ function createLocalAdapter(config: ModelConfig): ModelAdapter {
   const model = config.model ?? "llama3";
 
   return {
-    async interpret(events: EvidenceEvent[]): Promise<InterpretedEvent[]> {
-      const response = await fetch(`${endpoint}/api/chat`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model,
-          messages: [
-            { role: "system", content: buildSystemPrompt() },
-            { role: "user", content: buildUserPrompt(events) },
+      async interpret(events: EvidenceEvent[], lineage?: LineageContext): Promise<InterpretedEvent[]> {
+        const response = await fetch(`${endpoint}/api/chat`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model,
+            messages: [
+              { role: "system", content: buildSystemPrompt() },
+              { role: "user", content: buildUserPrompt(events, lineage) },
           ],
           stream: false,
           format: "json",
@@ -195,22 +218,22 @@ function createByokAdapter(config: ModelConfig): ModelAdapter {
   if (!apiKey) throw new Error("BYOK adapter requires apiKey or BYOK_API_KEY env var");
 
   return {
-    async interpret(events: EvidenceEvent[]): Promise<InterpretedEvent[]> {
-      const response = await fetch(`${endpoint}/chat/completions`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          model,
-          messages: [
-            { role: "system", content: buildSystemPrompt() },
-            { role: "user", content: buildUserPrompt(events) },
-          ],
-          temperature: 0.1,
-        }),
-      });
+      async interpret(events: EvidenceEvent[], lineage?: LineageContext): Promise<InterpretedEvent[]> {
+        const response = await fetch(`${endpoint}/chat/completions`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify({
+            model,
+            messages: [
+              { role: "system", content: buildSystemPrompt() },
+              { role: "user", content: buildUserPrompt(events, lineage) },
+            ],
+            temperature: 0.1,
+          }),
+        });
 
       if (!response.ok) {
         const err = await response.text();
@@ -237,8 +260,8 @@ function buildSystemPrompt(): string {
 Return ONLY a JSON array of objects with fields: eventIndex (matching the input array index), semanticChange, confidence, policyDimension.`;
 }
 
-function buildUserPrompt(events: EvidenceEvent[]): string {
-  return `Evidence events to classify:\n${JSON.stringify(
+function buildUserPrompt(events: EvidenceEvent[], lineage?: LineageContext): string {
+  let text = `Evidence events to classify:\n${JSON.stringify(
     events.map((e, i) => ({
       index: i,
       eventType: e.eventType,
@@ -250,6 +273,40 @@ function buildUserPrompt(events: EvidenceEvent[]): string {
     null,
     2,
   )}`;
+
+  if (lineage) {
+    if (lineage.summaryText) {
+      text += `\n\nLineage context:\n${lineage.summaryText}`;
+    } else {
+      const summary = buildLineageSummary(lineage);
+      if (summary) {
+        text += `\n\nLineage context:\n${summary}`;
+      }
+    }
+  }
+
+  return text;
+}
+
+function buildLineageSummary(lineage: LineageContext): string {
+  const parts: string[] = [];
+
+  if (lineage.sectionLineages && lineage.sectionLineages.length > 0) {
+    parts.push("Section history:");
+    for (const s of lineage.sectionLineages) {
+      const status = s.isActive ? "active" : "removed";
+      parts.push(`  - "${s.sectionName}" (${status}, ${s.events.length} changes)`);
+    }
+  }
+
+  if (lineage.claimLineages && lineage.claimLineages.length > 0) {
+    parts.push("Claim history:");
+    for (const c of lineage.claimLineages) {
+      parts.push(`  - ${c.variants} variant(s), first seen in rev ${c.firstSeenRevisionId}`);
+    }
+  }
+
+  return parts.join("\n");
 }
 
 function parseInterpretations(raw: string, events: EvidenceEvent[]): InterpretedEvent[] {
