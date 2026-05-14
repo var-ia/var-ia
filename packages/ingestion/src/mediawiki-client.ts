@@ -12,7 +12,7 @@ import type {
 import { RateLimiter } from "./rate-limiter.js";
 
 const DEFAULT_API_URL = "https://en.wikipedia.org/w/api.php";
-const DEFAULT_USER_AGENT = "Varia/0.1.0 (https://github.com/anomalyco/varia; varia@anomaly.co)";
+const DEFAULT_USER_AGENT = "Varia/0.1.0 (https://github.com/var-ia/var-ia; varia@nextconsensus.com)";
 const MAX_REVISIONS_PER_REQUEST = 500;
 
 interface PageInfo {
