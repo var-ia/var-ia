@@ -1,8 +1,8 @@
 import type { EvidenceEvent, PolicyDimension } from "@var-ia/evidence-graph";
-import type { ModelAdapter, InterpretedEvent, LineageContext } from "./index.js";
-import { createAdapter } from "./index.js";
-import { ConsensusAdapter } from "./consensus-adapter.js";
 import type { ConsensusConfig } from "./consensus-adapter.js";
+import { ConsensusAdapter } from "./consensus-adapter.js";
+import type { InterpretedEvent, LineageContext, ModelAdapter } from "./index.js";
+import { createAdapter } from "./index.js";
 
 export interface ModelRoute {
   model: string;
@@ -54,10 +54,7 @@ export class ModelRouter implements ModelAdapter {
     this.probeEndpoint = config?.probeEndpoint ?? true;
   }
 
-  async interpret(
-    events: EvidenceEvent[],
-    lineage?: LineageContext,
-  ): Promise<InterpretedEvent[]> {
+  async interpret(events: EvidenceEvent[], lineage?: LineageContext): Promise<InterpretedEvent[]> {
     const adapter = await this.getOrCreateAdapter();
     return adapter.interpret(events, lineage);
   }
@@ -72,18 +69,14 @@ export class ModelRouter implements ModelAdapter {
         try {
           const ok = await probeModel(route.endpoint ?? "http://localhost:11434");
           if (ok) reachable.push(route);
-        } catch {
-          continue;
-        }
+        } catch {}
       } else {
         reachable.push(route);
       }
     }
 
     if (reachable.length === 0) {
-      throw new Error(
-        "No reachable local models found. Start Ollama: ollama serve && ollama pull qwen2.5:7b",
-      );
+      throw new Error("No reachable local models found. Start Ollama: ollama serve && ollama pull qwen2.5:7b");
     }
 
     const adapters: ModelAdapter[] = reachable.map((r) =>

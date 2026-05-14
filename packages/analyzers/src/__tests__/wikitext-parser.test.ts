@@ -1,11 +1,11 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
-  sanitizeWikitext,
-  extractHeadingMap,
-  deriveSectionHeading,
   countCitations,
   countKeywordMentions,
+  deriveSectionHeading,
   extractAnchorSnippet,
+  extractHeadingMap,
+  sanitizeWikitext,
 } from "../wikitext-parser.js";
 
 const SAMPLE = `'''Bold text''' and ''italic''.
@@ -66,7 +66,6 @@ describe("extractHeadingMap", () => {
     expect(map.length).toBeGreaterThanOrEqual(3);
     expect(map[0].heading).toBe("First section");
   });
-
 });
 
 describe("deriveSectionHeading", () => {
@@ -126,7 +125,7 @@ describe("extractAnchorSnippet", () => {
     const text = "The Earth is the third planet from the Sun and the only known planet to support life.";
     const snippet = extractAnchorSnippet(text, ["Earth"]);
     expect(snippet).toBeTruthy();
-    expect(snippet!.length).toBeGreaterThan(0);
+    expect(snippet?.length).toBeGreaterThan(0);
   });
 
   it("returns null if keyword not found", () => {
@@ -135,9 +134,9 @@ describe("extractAnchorSnippet", () => {
   });
 
   it("respects radius parameter", () => {
-    const text = "A".repeat(100) + "TARGET" + "B".repeat(100);
+    const text = `${"A".repeat(100)}TARGET${"B".repeat(100)}`;
     const snippet = extractAnchorSnippet(text, ["TARGET"], 10);
     expect(snippet).toBeTruthy();
-    expect(snippet!.length).toBeLessThan(50);
+    expect(snippet?.length).toBeLessThan(50);
   });
 });

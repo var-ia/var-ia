@@ -23,8 +23,8 @@ export type ClaimState =
   | "reintroduced";
 
 export interface ClaimIdentity {
-  claimId: string;           // Deterministic hash from identity key
-  identityKey: string;       // Canonical claim text + section + page
+  claimId: string; // Deterministic hash from identity key
+  identityKey: string; // Canonical claim text + section + page
   pageTitle: string;
   pageId: number;
 }
@@ -33,12 +33,12 @@ export interface ClaimVariant {
   revisionId: number;
   text: string;
   section: string;
-  observedAt: string;        // ISO 8601
+  observedAt: string; // ISO 8601
 }
 
 export interface ClaimLineage {
   firstSeenRevisionId: number;
-  firstSeenAt: string;       // ISO 8601
+  firstSeenAt: string; // ISO 8601
   lastSeenRevisionId?: number;
   lastSeenAt?: string;
   variants: ClaimVariant[];
@@ -53,6 +53,6 @@ export interface ClaimObject {
   lineage: ClaimLineage;
   currentState: ClaimState;
   propositionType: PropositionType;
-  sourceLineage: string[];   // SourceRecord IDs
-  phase: string;             // Phase tag: Phase 0 | Phase 1b | Phase 2a | Phase 2b
+  sourceLineage: string[]; // SourceRecord IDs
+  phase: string; // Phase tag: Phase 0 | Phase 1b | Phase 2a | Phase 2b
 }

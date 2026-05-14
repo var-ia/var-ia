@@ -32,17 +32,16 @@
   ],
   "scripts": {
     "build": "tsc -b",
-    "lint": "eslint packages/",
+    "lint": "biome lint packages/",
+    "format": "biome format --write packages/",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "clean": "rm -rf packages/*/dist"
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
-    "@types/node": "^20.12.0",
-    "eslint": "^10.3.0",
-    "typescript": "^5.4.0",
-    "typescript-eslint": "^8.59.3",
-    "vitest": "^1.6.0"
+    "@biomejs/biome": "^2.4.15",
+    "@types/node": "^22.15.3",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.6"
   }
 }

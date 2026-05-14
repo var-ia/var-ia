@@ -41,51 +41,44 @@ export interface TemplateTracker {
 }
 
 export interface Template {
-  name: string;              // e.g., "Citation needed", "NPOV", "BLP"
+  name: string; // e.g., "Citation needed", "NPOV", "BLP"
   type: TemplateType;
   params?: Record<string, string>;
 }
 
-export type TemplateType =
-  | "citation"
-  | "neutrality"
-  | "blp"
-  | "dispute"
-  | "cleanup"
-  | "protection"
-  | "other";
+export type TemplateType = "citation" | "neutrality" | "blp" | "dispute" | "cleanup" | "protection" | "other";
 
 export interface TemplateChange {
   type: "added" | "removed" | "unchanged";
   template: Template;
 }
 
-export { sectionDiffer, buildSectionLineage } from "./section-differ.js";
-export type { SectionEvent, SectionLineage } from "./section-differ.js";
-export { citationTracker, buildSourceLineage, buildSourceId } from "./citation-tracker.js";
-export { revertDetector } from "./revert-detector.js";
-export { templateTracker, diffTemplateParams, buildParamChangeEvents } from "./template-tracker.js";
-export type { ParamChange } from "./template-tracker.js";
-export { classifyHeuristic } from "./heuristic-classifier.js";
-export type { HeuristicKind, HeuristicOptions } from "./heuristic-classifier.js";
-export { extractWikilinks, diffWikilinks, buildWikilinkEvents } from "./wikilink-extractor.js";
-export { buildPageMoveEvents } from "./page-move-detector.js";
-export { extractCategories, diffCategories, buildCategoryEvents } from "./category-tracker.js";
+export { buildCategoryEvents, diffCategories, extractCategories } from "./category-tracker.js";
+export { buildSourceId, buildSourceLineage, citationTracker } from "./citation-tracker.js";
 export { classifyClaimChange } from "./claim-differ.js";
-export { protectionTracker } from "./protection-tracker.js";
-export type { ProtectionTracker, ProtectionChange } from "./protection-tracker.js";
-export { correlateTalkRevisions } from "./talk-correlator.js";
-export type { TalkCorrelationOptions } from "./talk-correlator.js";
-export { parseTalkThreads, diffTalkThreads, buildTalkThreadEvents } from "./talk-section-parser.js";
-export type { TalkThread, TalkReply, TalkThreadChange } from "./talk-section-parser.js";
-export { diffObservations } from "./observation-differ.js";
+export type { HeuristicKind, HeuristicOptions } from "./heuristic-classifier.js";
+export { classifyHeuristic } from "./heuristic-classifier.js";
 export type { ObservationDiff } from "./observation-differ.js";
+export { diffObservations } from "./observation-differ.js";
+export { buildPageMoveEvents } from "./page-move-detector.js";
+export type { ProtectionChange, ProtectionTracker } from "./protection-tracker.js";
+export { protectionTracker } from "./protection-tracker.js";
+export { revertDetector } from "./revert-detector.js";
+export type { SectionEvent, SectionLineage } from "./section-differ.js";
+export { buildSectionLineage, sectionDiffer } from "./section-differ.js";
+export type { TalkCorrelationOptions } from "./talk-correlator.js";
+export { correlateTalkRevisions } from "./talk-correlator.js";
+export type { TalkReply, TalkThread, TalkThreadChange } from "./talk-section-parser.js";
+export { buildTalkThreadEvents, diffTalkThreads, parseTalkThreads } from "./talk-section-parser.js";
+export type { ParamChange } from "./template-tracker.js";
+export { buildParamChangeEvents, diffTemplateParams, templateTracker } from "./template-tracker.js";
+export { buildWikilinkEvents, diffWikilinks, extractWikilinks } from "./wikilink-extractor.js";
+export type { HeadingPosition } from "./wikitext-parser.js";
 export {
-  sanitizeWikitext,
-  extractHeadingMap,
-  deriveSectionHeading,
   countCitations,
   countKeywordMentions,
+  deriveSectionHeading,
   extractAnchorSnippet,
+  extractHeadingMap,
+  sanitizeWikitext,
 } from "./wikitext-parser.js";
-export type { HeadingPosition } from "./wikitext-parser.js";

@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
 import type { EvidenceEvent, EvidenceLayer, ModelInterpretation } from "@var-ia/evidence-graph";
+import { describe, expect, it } from "vitest";
 
 function makeTalkCorrelatedEvent(revId: number, detail: string): EvidenceEvent {
   const layer: EvidenceLayer = "observed";
@@ -10,9 +10,7 @@ function makeTalkCorrelatedEvent(revId: number, detail: string): EvidenceEvent {
     section: "",
     before: "",
     after: "",
-    deterministicFacts: [
-      { fact: "talk_page_correlated", detail },
-    ],
+    deterministicFacts: [{ fact: "talk_page_correlated", detail }],
     layer,
     timestamp: "2026-01-01T00:00:00Z",
   };
@@ -34,7 +32,7 @@ function makeEditEvent(revId: number, eventType: EvidenceEvent["eventType"] = "c
 }
 
 function buildUserPrompt(events: EvidenceEvent[]): string {
-    const text = `Evidence events to classify:\n${JSON.stringify(
+  const text = `Evidence events to classify:\n${JSON.stringify(
     events.map((e, i) => ({
       index: i,
       eventType: e.eventType,
@@ -108,8 +106,8 @@ Return ONLY a JSON array of objects with fields: eventIndex (matching the input 
     const events = [makeTalkCorrelatedEvent(1, "time_delta_hours=6 talk_comment=BLP concern")];
 
     const containsWikitext = events.some((e) =>
-      e.deterministicFacts.some((f) =>
-        f.detail && (f.detail.includes("\n==") || f.detail.includes("{{") || f.detail.includes("[[")),
+      e.deterministicFacts.some(
+        (f) => f.detail && (f.detail.includes("\n==") || f.detail.includes("{{") || f.detail.includes("[[")),
       ),
     );
     expect(containsWikitext).toBe(false);

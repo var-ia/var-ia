@@ -1,4 +1,4 @@
-import type { Revision, DiffResult } from "@var-ia/evidence-graph";
+import type { DiffResult, Revision } from "@var-ia/evidence-graph";
 
 export interface RevisionFetcher {
   fetchRevisions(pageTitle: string, options?: RevisionOptions): Promise<Revision[]>;

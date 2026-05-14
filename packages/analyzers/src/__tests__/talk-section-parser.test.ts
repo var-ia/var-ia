@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
-import { parseTalkThreads, diffTalkThreads, buildTalkThreadEvents } from "../talk-section-parser.js";
+import { describe, expect, it } from "vitest";
+import { buildTalkThreadEvents, diffTalkThreads, parseTalkThreads } from "../talk-section-parser.js";
 
 const SAMPLE_TALK = `
 == Proposal for merger ==
@@ -34,13 +34,13 @@ describe("parseTalkThreads", () => {
     const threads = parseTalkThreads(SAMPLE_TALK);
     const merger = threads.find((t) => t.heading === "Proposal for merger");
     expect(merger).toBeDefined();
-    expect(merger!.replies.length).toBeGreaterThanOrEqual(3);
+    expect(merger?.replies.length).toBeGreaterThanOrEqual(3);
   });
 
   it("extracts participants from User links", () => {
     const threads = parseTalkThreads(SAMPLE_TALK);
     const merger = threads.find((t) => t.heading === "Proposal for merger");
-    expect(merger!.participants.length).toBeGreaterThanOrEqual(1);
+    expect(merger?.participants.length).toBeGreaterThanOrEqual(1);
   });
 
   it("returns empty array for pages with no thread headings", () => {

@@ -1,11 +1,23 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 vi.mock("bun:sqlite", () => {
-  class MockDB { run() {} query() { return { all: () => [], get: () => null }; } prepare() { return { run: () => {} }; } transaction(fn: () => void) { fn(); } close() {} }
+  class MockDB {
+    run() {}
+    query() {
+      return { all: () => [], get: () => null };
+    }
+    prepare() {
+      return { run: () => {} };
+    }
+    transaction(fn: () => void) {
+      fn();
+    }
+    close() {}
+  }
   return { Database: MockDB };
 });
 
-import { stripWikitext, fuzzyFindClaim, findSectionForText } from "../commands/claim.js";
+import { findSectionForText, fuzzyFindClaim, stripWikitext } from "../commands/claim.js";
 
 describe("stripWikitext", () => {
   it("strips HTML comments", () => {
@@ -42,7 +54,7 @@ describe("fuzzyFindClaim", () => {
   it("finds exact match", () => {
     const result = fuzzyFindClaim("Earth is the third planet", "Earth is the third planet from the Sun.");
     expect(result).toBeTruthy();
-    expect(result!.length).toBeGreaterThan(0);
+    expect(result?.length).toBeGreaterThan(0);
   });
 
   it("finds case-insensitive match", () => {
@@ -63,7 +75,7 @@ describe("fuzzyFindClaim", () => {
   it("handles empty claim text (returns source text since empty is always found)", () => {
     const result = fuzzyFindClaim("", "Some text.");
     expect(result).toBeTruthy();
-    expect(result!.length).toBeGreaterThan(0);
+    expect(result?.length).toBeGreaterThan(0);
   });
 });
 

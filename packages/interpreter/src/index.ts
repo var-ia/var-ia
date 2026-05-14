@@ -37,10 +37,10 @@ export interface ModelConfig {
   systemPrompt?: string;
 }
 
-export { ConsensusAdapter } from "./consensus-adapter.js";
 export type { ConsensusConfig } from "./consensus-adapter.js";
-export { ModelRouter } from "./model-router.js";
+export { ConsensusAdapter } from "./consensus-adapter.js";
 export type { ModelRoute, RouterConfig } from "./model-router.js";
+export { ModelRouter } from "./model-router.js";
 
 export function createAdapter(config: ModelConfig): ModelAdapter {
   switch (config.provider) {
@@ -68,36 +68,36 @@ function createOpenAIAdapter(config: ModelConfig): ModelAdapter {
   if (!apiKey) throw new Error("OpenAI adapter requires apiKey or OPENAI_API_KEY env var");
 
   return {
-      async interpret(events: EvidenceEvent[], lineage?: LineageContext): Promise<InterpretedEvent[]> {
-        const response = await fetch(`${endpoint}/chat/completions`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${apiKey}`,
-          },
-          body: JSON.stringify({
-            model,
-            messages: [
-              { role: "system", content: systemPrompt },
-              { role: "user", content: buildUserPrompt(events, lineage) },
-            ],
-            temperature,
-          }),
-        });
+    async interpret(events: EvidenceEvent[], lineage?: LineageContext): Promise<InterpretedEvent[]> {
+      const response = await fetch(`${endpoint}/chat/completions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model,
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: buildUserPrompt(events, lineage) },
+          ],
+          temperature,
+        }),
+      });
 
-        if (!response.ok) {
-          const err = await response.text();
-          throw new Error(`OpenAI API error ${response.status}: ${err.slice(0, 300)}`);
-        }
+      if (!response.ok) {
+        const err = await response.text();
+        throw new Error(`OpenAI API error ${response.status}: ${err.slice(0, 300)}`);
+      }
 
-        const data = await response.json() as {
-          choices?: Array<{ message?: { content?: string } }>;
-        };
-        const content = data.choices?.[0]?.message?.content;
-        if (!content) throw new Error("OpenAI returned empty response");
+      const data = (await response.json()) as {
+        choices?: Array<{ message?: { content?: string } }>;
+      };
+      const content = data.choices?.[0]?.message?.content;
+      if (!content) throw new Error("OpenAI returned empty response");
 
-        return parseInterpretations(content, events);
-      },
+      return parseInterpretations(content, events);
+    },
   };
 }
 
@@ -110,31 +110,29 @@ function createAnthropicAdapter(config: ModelConfig): ModelAdapter {
   if (!apiKey) throw new Error("Anthropic adapter requires apiKey or ANTHROPIC_API_KEY env var");
 
   return {
-      async interpret(events: EvidenceEvent[], lineage?: LineageContext): Promise<InterpretedEvent[]> {
-        const response = await fetch(`${endpoint}/messages`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-api-key": apiKey,
-            "anthropic-version": "2023-06-01",
-          },
-          body: JSON.stringify({
-            model,
-            max_tokens: 4096,
-            temperature,
-            system: systemPrompt,
-            messages: [
-              { role: "user", content: buildUserPrompt(events, lineage) },
-            ],
-          }),
-        });
+    async interpret(events: EvidenceEvent[], lineage?: LineageContext): Promise<InterpretedEvent[]> {
+      const response = await fetch(`${endpoint}/messages`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": apiKey,
+          "anthropic-version": "2023-06-01",
+        },
+        body: JSON.stringify({
+          model,
+          max_tokens: 4096,
+          temperature,
+          system: systemPrompt,
+          messages: [{ role: "user", content: buildUserPrompt(events, lineage) }],
+        }),
+      });
 
       if (!response.ok) {
         const err = await response.text();
         throw new Error(`Anthropic API error ${response.status}: ${err.slice(0, 300)}`);
       }
 
-      const data = await response.json() as {
+      const data = (await response.json()) as {
         content?: Array<{ type: string; text?: string }>;
       };
       const content = data.content?.find((c) => c.type === "text")?.text;
@@ -159,7 +157,7 @@ function createDeepSeekAdapter(config: ModelConfig): ModelAdapter {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${apiKey}`,
+          Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
           model,
@@ -176,7 +174,7 @@ function createDeepSeekAdapter(config: ModelConfig): ModelAdapter {
         throw new Error(`DeepSeek API error ${response.status}: ${err.slice(0, 300)}`);
       }
 
-      const data = await response.json() as {
+      const data = (await response.json()) as {
         choices?: Array<{ message?: { content?: string } }>;
       };
       const content = data.choices?.[0]?.message?.content;
@@ -194,15 +192,15 @@ function createLocalAdapter(config: ModelConfig): ModelAdapter {
   const systemPrompt = config.systemPrompt ?? defaultSystemPrompt;
 
   return {
-      async interpret(events: EvidenceEvent[], lineage?: LineageContext): Promise<InterpretedEvent[]> {
-        const response = await fetch(`${endpoint}/api/chat`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            model,
-            messages: [
-              { role: "system", content: systemPrompt },
-              { role: "user", content: buildUserPrompt(events, lineage) },
+    async interpret(events: EvidenceEvent[], lineage?: LineageContext): Promise<InterpretedEvent[]> {
+      const response = await fetch(`${endpoint}/api/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model,
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: buildUserPrompt(events, lineage) },
           ],
           stream: false,
           format: "json",
@@ -214,7 +212,7 @@ function createLocalAdapter(config: ModelConfig): ModelAdapter {
         throw new Error(`Ollama API error: ${response.status} ${response.statusText}`);
       }
 
-      const data = await response.json() as { message?: { content?: string } };
+      const data = (await response.json()) as { message?: { content?: string } };
       const content = data.message?.content;
       if (!content) throw new Error("Ollama returned empty response");
 
@@ -234,29 +232,29 @@ function createByokAdapter(config: ModelConfig): ModelAdapter {
   if (!apiKey) throw new Error("BYOK adapter requires apiKey or BYOK_API_KEY env var");
 
   return {
-      async interpret(events: EvidenceEvent[], lineage?: LineageContext): Promise<InterpretedEvent[]> {
-        const response = await fetch(`${endpoint}/chat/completions`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${apiKey}`,
-          },
-          body: JSON.stringify({
-            model,
-            messages: [
-              { role: "system", content: systemPrompt },
-              { role: "user", content: buildUserPrompt(events, lineage) },
-            ],
-            temperature,
-          }),
-        });
+    async interpret(events: EvidenceEvent[], lineage?: LineageContext): Promise<InterpretedEvent[]> {
+      const response = await fetch(`${endpoint}/chat/completions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model,
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: buildUserPrompt(events, lineage) },
+          ],
+          temperature,
+        }),
+      });
 
       if (!response.ok) {
         const err = await response.text();
         throw new Error(`BYOK API error ${response.status}: ${err.slice(0, 300)}`);
       }
 
-      const data = await response.json() as {
+      const data = (await response.json()) as {
         choices?: Array<{ message?: { content?: string } }>;
       };
       const content = data.choices?.[0]?.message?.content;

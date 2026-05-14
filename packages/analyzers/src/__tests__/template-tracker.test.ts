@@ -1,6 +1,6 @@
-import { describe, it, expect } from "vitest";
-import { templateTracker, diffTemplateParams, buildParamChangeEvents } from "../template-tracker.js";
+import { describe, expect, it } from "vitest";
 import type { Template } from "../index.js";
+import { buildParamChangeEvents, diffTemplateParams, templateTracker } from "../template-tracker.js";
 
 const TMPL_A: Template = {
   name: "Infobox character",
@@ -33,7 +33,7 @@ describe("extractTemplates", () => {
     const templates = templateTracker.extractTemplates(wikitext);
     expect(templates).toHaveLength(1);
     expect(templates[0].params).toBeDefined();
-    expect(templates[0].params!.name).toBe("John");
+    expect(templates[0].params?.name).toBe("John");
   });
 
   it("extracts multiple templates", () => {
@@ -107,8 +107,8 @@ describe("diffTemplateParams", () => {
     const changes = diffTemplateParams([before], [after]);
     const added = changes.find((c) => c.paramName === "newparam");
     expect(added).toBeDefined();
-    expect(added!.oldValue).toBeUndefined();
-    expect(added!.newValue).toBe("value");
+    expect(added?.oldValue).toBeUndefined();
+    expect(added?.newValue).toBe("value");
   });
 
   it("detects a parameter removed", () => {
@@ -118,8 +118,8 @@ describe("diffTemplateParams", () => {
     const changes = diffTemplateParams([before], [after]);
     const removed = changes.find((c) => c.paramName === "oldparam");
     expect(removed).toBeDefined();
-    expect(removed!.oldValue).toBe("value");
-    expect(removed!.newValue).toBeUndefined();
+    expect(removed?.oldValue).toBe("value");
+    expect(removed?.newValue).toBeUndefined();
   });
 
   it("returns empty when no params changed", () => {

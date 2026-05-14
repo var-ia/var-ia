@@ -1,9 +1,9 @@
-import { MediaWikiClient } from "@var-ia/ingestion";
-import { createClaimIdentity } from "@var-ia/evidence-graph";
-import type { ClaimState, EvidenceEvent, Revision } from "@var-ia/evidence-graph";
 import { classifyClaimChange } from "@var-ia/analyzers";
-import { createAdapter } from "@var-ia/interpreter";
+import type { ClaimState, EvidenceEvent, Revision } from "@var-ia/evidence-graph";
+import { createClaimIdentity } from "@var-ia/evidence-graph";
+import { MediaWikiClient } from "@var-ia/ingestion";
 import type { ModelConfig } from "@var-ia/interpreter";
+import { createAdapter } from "@var-ia/interpreter";
 import { loadCachedRevisions, saveRevisions } from "./cache.js";
 
 export async function runClaim(
@@ -43,9 +43,7 @@ export async function runClaim(
     return;
   }
 
-  const sortedRevs = [...revisions].sort(
-    (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
-  );
+  const sortedRevs = [...revisions].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
   const identity = createClaimIdentity({
     text: claimText,
@@ -117,21 +115,23 @@ export async function runClaim(
         section: variants[i].section,
         before: variants[i - 1].text,
         after: variants[i].text,
-        deterministicFacts: [
-          { fact: "claim_variant_compared", detail: `pair=${i}` },
-        ],
+        deterministicFacts: [{ fact: "claim_variant_compared", detail: `pair=${i}` }],
         layer: "observed",
         timestamp: variants[i].observedAt,
       });
     }
 
     if (comparisonEvents.length > 0) {
-      console.log(`\nSemantically comparing ${comparisonEvents.length} claim variant pairs with ${modelConfig.provider}...`);
+      console.log(
+        `\nSemantically comparing ${comparisonEvents.length} claim variant pairs with ${modelConfig.provider}...`,
+      );
       const interpreted = await adapter.interpret(comparisonEvents);
       for (const ie of interpreted) {
         const conf = ie.modelInterpretation.confidence;
         const label = conf >= 0.7 ? "similar" : conf >= 0.4 ? "moderate change" : "substantial change";
-        console.log(`[rev ${ie.fromRevisionId}→${ie.toRevisionId}] ${label} (confidence: ${conf.toFixed(2)}) — ${ie.modelInterpretation.semanticChange}`);
+        console.log(
+          `[rev ${ie.fromRevisionId}→${ie.toRevisionId}] ${label} (confidence: ${conf.toFixed(2)}) — ${ie.modelInterpretation.semanticChange}`,
+        );
       }
     }
   }
@@ -146,7 +146,9 @@ export async function runClaim(
   console.log(`Variants:    ${variants.length}`);
   console.log(`State:       ${currentState}`);
   console.log(`First seen:  ${variants[0].observedAt} (rev ${variants[0].revisionId})`);
-  console.log(`Last seen:   ${variants[variants.length - 1].observedAt} (rev ${variants[variants.length - 1].revisionId})`);
+  console.log(
+    `Last seen:   ${variants[variants.length - 1].observedAt} (rev ${variants[variants.length - 1].revisionId})`,
+  );
 }
 
 export { runClaim as runClaimCommand };

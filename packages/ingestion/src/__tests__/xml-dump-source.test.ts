@@ -1,8 +1,8 @@
-import { describe, it, expect } from "vitest";
-import { XmlDumpRevisionSource } from "../xml-dump-source.js";
-import { writeFileSync, mkdtempSync, rmSync } from "node:fs";
-import { join } from "node:path";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { describe, expect, it } from "vitest";
+import { XmlDumpRevisionSource } from "../xml-dump-source.js";
 
 const SAMPLE_DUMP = `<?xml version="1.0"?>
 <mediawiki xmlns="http://www.mediawiki.org/xml/export-0.11/">
@@ -145,7 +145,7 @@ describe("XmlDumpRevisionSource", () => {
 
     expect(revs).toHaveLength(1);
     expect(revs[0].revId).toBe(40);
-    expect(revs[0].content).toBe('Text with <tags> & entities.');
-    expect(revs[0].comment).toBe('with & entities');
+    expect(revs[0].content).toBe("Text with <tags> & entities.");
+    expect(revs[0].comment).toBe("with & entities");
   });
 });

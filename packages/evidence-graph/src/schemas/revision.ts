@@ -4,10 +4,10 @@ export interface Revision {
   revId: number;
   pageId: number;
   pageTitle: string;
-  timestamp: string;         // ISO 8601
-  comment: string;           // Edit summary
-  content: string;           // Full wikitext
-  size: number;              // Bytes
+  timestamp: string; // ISO 8601
+  comment: string; // Edit summary
+  content: string; // Full wikitext
+  size: number; // Bytes
   minor: boolean;
 }
 
@@ -27,7 +27,7 @@ export interface DiffLine {
 
 export interface Section {
   title: string;
-  level: number;             // 1 = lead, 2 = == Section ==, 3 = === Subsection ===
+  level: number; // 1 = lead, 2 = == Section ==, 3 = === Subsection ===
   content: string;
   byteOffset: number;
 }

@@ -1,5 +1,5 @@
+import { createEvalHarness, GROUND_TRUTH_LABELS, validateAgainstGroundTruth } from "@var-ia/eval";
 import type { EvidenceEvent } from "@var-ia/evidence-graph";
-import { createEvalHarness, validateAgainstGroundTruth, GROUND_TRUTH_LABELS } from "@var-ia/eval";
 import { runAnalyze } from "./analyze.js";
 
 export async function runEval(pageTitleOverride?: string, groundTruthPath?: string): Promise<void> {
@@ -11,9 +11,7 @@ export async function runEval(pageTitleOverride?: string, groundTruthPath?: stri
   const harness = createEvalHarness();
   const testCases = harness.benchmarkPages();
 
-  const filtered = pageTitleOverride
-    ? testCases.filter(t => t.pageTitle === pageTitleOverride)
-    : testCases;
+  const filtered = pageTitleOverride ? testCases.filter((t) => t.pageTitle === pageTitleOverride) : testCases;
 
   console.log(`Running ${filtered.length} benchmark tests...\n`);
 
@@ -25,7 +23,9 @@ export async function runEval(pageTitleOverride?: string, groundTruthPath?: stri
       const result = harness.evaluate(test, events);
       results.push(result);
       const icon = result.passed ? "PASS" : "FAIL";
-      console.log(`  ${icon} precision=${result.precision.toFixed(2)} events=${result.eventCount.actual}/${result.eventCount.expected}`);
+      console.log(
+        `  ${icon} precision=${result.precision.toFixed(2)} events=${result.eventCount.actual}/${result.eventCount.expected}`,
+      );
     } catch (err) {
       console.log(`  ERROR: ${err}`);
       results.push({
@@ -34,7 +34,7 @@ export async function runEval(pageTitleOverride?: string, groundTruthPath?: stri
         precision: 0,
         eventCount: { expected: test.expectedEvents.length, actual: 0 },
         matches: [],
-        misses: test.expectedEvents.map(e => ({ expected: e })),
+        misses: test.expectedEvents.map((e) => ({ expected: e })),
         falsePositives: [],
       });
     }
@@ -92,7 +92,9 @@ async function runGroundTruth(path: string): Promise<void> {
   for (const result of allResults) {
     const r = result.perOutcome[0];
     const icon = r.passed ? "PASS" : "FAIL";
-    console.log(`  [${icon}] ${r.outcomeId}: prec=${r.precision.toFixed(2)} recall=${r.recall.toFixed(2)} matched=${r.matchedEvents.length}`);
+    console.log(
+      `  [${icon}] ${r.outcomeId}: prec=${r.precision.toFixed(2)} recall=${r.recall.toFixed(2)} matched=${r.matchedEvents.length}`,
+    );
     if (r.passed) totalPassed++;
     else totalFailed++;
     totalPrecision += r.precision;
@@ -101,6 +103,6 @@ async function runGroundTruth(path: string): Promise<void> {
 
   const count = allResults.length;
   console.log(`\n  Total: ${totalPassed}/${count} passed (${totalFailed} failed)`);
-  console.log(`  Avg precision: ${(totalPrecision / count * 100).toFixed(1)}%`);
-  console.log(`  Avg recall: ${(totalRecall / count * 100).toFixed(1)}%`);
+  console.log(`  Avg precision: ${((totalPrecision / count) * 100).toFixed(1)}%`);
+  console.log(`  Avg recall: ${((totalRecall / count) * 100).toFixed(1)}%`);
 }

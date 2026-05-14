@@ -1,5 +1,5 @@
-import { sectionDiffer, buildSectionLineage } from "../section-differ.js";
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
+import { buildSectionLineage, sectionDiffer } from "../section-differ.js";
 
 describe("buildSectionLineage", () => {
   it("tracks section creation and modification across revisions", () => {
@@ -12,11 +12,11 @@ describe("buildSectionLineage", () => {
     const lineage = buildSectionLineage(revisions);
     expect(lineage.length).toBeGreaterThan(0);
 
-    const history = lineage.find(l => l.sectionName === "History");
+    const history = lineage.find((l) => l.sectionName === "History");
     expect(history).toBeDefined();
-    expect(history!.firstSeenRevisionId).toBe(2);
-    expect(history!.events.length).toBeGreaterThanOrEqual(2);
-    expect(history!.isActive).toBe(true);
+    expect(history?.firstSeenRevisionId).toBe(2);
+    expect(history?.events.length).toBeGreaterThanOrEqual(2);
+    expect(history?.isActive).toBe(true);
   });
 
   it("detects section removal", () => {
@@ -26,10 +26,10 @@ describe("buildSectionLineage", () => {
     ];
 
     const lineage = buildSectionLineage(revisions);
-    const removedB = lineage.find(l => l.sectionName === "B");
+    const removedB = lineage.find((l) => l.sectionName === "B");
     expect(removedB).toBeDefined();
-    expect(removedB!.isActive).toBe(false);
-    expect(removedB!.events.some(e => e.eventType === "removed")).toBe(true);
+    expect(removedB?.isActive).toBe(false);
+    expect(removedB?.events.some((e) => e.eventType === "removed")).toBe(true);
   });
 
   it("returns empty array for no revisions", () => {
@@ -43,10 +43,10 @@ describe("buildSectionLineage", () => {
     ];
 
     const lineage = buildSectionLineage(revisions);
-    const renamed = lineage.find(l => l.sectionName === "Background");
+    const renamed = lineage.find((l) => l.sectionName === "Background");
     expect(renamed).toBeDefined();
-    expect(renamed!.events.some(e => e.eventType === "renamed")).toBe(true);
-    expect(renamed!.firstSeenRevisionId).toBe(1);
+    expect(renamed?.events.some((e) => e.eventType === "renamed")).toBe(true);
+    expect(renamed?.firstSeenRevisionId).toBe(1);
   });
 
   it("sorts lineages by section name", () => {
@@ -74,7 +74,7 @@ describe("extractSections", () => {
     expect(sections.length).toBeGreaterThanOrEqual(3);
     const history = sections.find((s) => s.title === "History");
     expect(history).toBeDefined();
-    expect(history!.content).toContain("Old history");
+    expect(history?.content).toContain("Old history");
   });
 
   it("parses heading levels", () => {
@@ -82,7 +82,7 @@ describe("extractSections", () => {
     const sections = sectionDiffer.extractSections(wikitext);
     const level3 = sections.find((s) => s.title === "Level 3");
     expect(level3).toBeDefined();
-    expect(level3!.level).toBe(3);
+    expect(level3?.level).toBe(3);
   });
 });
 
@@ -93,7 +93,7 @@ describe("diffSections", () => {
     const changes = sectionDiffer.diffSections(before, after);
     const added = changes.find((c) => c.changeType === "added");
     expect(added).toBeDefined();
-    expect(added!.section).toBe("New");
+    expect(added?.section).toBe("New");
   });
 
   it("detects removed sections", () => {

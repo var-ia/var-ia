@@ -1,6 +1,6 @@
-import { describe, it, expect } from "vitest";
-import { revertDetector } from "../revert-detector.js";
 import type { Revision } from "@var-ia/evidence-graph";
+import { describe, expect, it } from "vitest";
+import { revertDetector } from "../revert-detector.js";
 
 function makeRev(revId: number, comment: string, content = ""): Revision {
   return {
@@ -54,29 +54,18 @@ describe("isRevert", () => {
 
 describe("detectRevertChain", () => {
   it("detects a single revert edit", () => {
-    const revs = [
-      makeRev(1, "added content"),
-      makeRev(2, "reverted"),
-    ];
+    const revs = [makeRev(1, "added content"), makeRev(2, "reverted")];
     const chains = revertDetector.detectRevertChain(revs);
     expect(chains.length).toBeGreaterThanOrEqual(1);
   });
 
   it("returns empty for no reverts", () => {
-    const revs = [
-      makeRev(1, "added content"),
-      makeRev(2, "fixed typo"),
-      makeRev(3, "expanded"),
-    ];
+    const revs = [makeRev(1, "added content"), makeRev(2, "fixed typo"), makeRev(3, "expanded")];
     expect(revertDetector.detectRevertChain(revs)).toEqual([]);
   });
 
   it("detects a multi-edit revert chain", () => {
-    const revs = [
-      makeRev(1, "good edit"),
-      makeRev(2, "revert"),
-      makeRev(3, "re-revert"),
-    ];
+    const revs = [makeRev(1, "good edit"), makeRev(2, "revert"), makeRev(3, "re-revert")];
     const chains = revertDetector.detectRevertChain(revs);
     expect(chains.length).toBeGreaterThanOrEqual(1);
   });

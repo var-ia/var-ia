@@ -1,6 +1,5 @@
 import { Database } from "bun:sqlite";
-import type { Revision } from "@var-ia/evidence-graph";
-import type { ClaimObject } from "@var-ia/evidence-graph";
+import type { ClaimObject, Revision } from "@var-ia/evidence-graph";
 
 export interface PersistenceConfig {
   dbPath: string;
@@ -116,10 +115,7 @@ export class Persistence implements PersistenceAdapter {
     })();
   }
 
-  getRevisions(
-    pageTitle: string,
-    options?: { limit?: number; direction?: "newer" | "older" },
-  ): Revision[] {
+  getRevisions(pageTitle: string, options?: { limit?: number; direction?: "newer" | "older" }): Revision[] {
     const dir = options?.direction === "newer" ? "ASC" : "DESC";
     const limit = options?.limit ?? 100;
     const rows = this.db
@@ -154,9 +150,7 @@ export class Persistence implements PersistenceAdapter {
   }
 
   hasRevision(revId: number): boolean {
-    const row = this.db
-      .query("SELECT 1 FROM revisions WHERE rev_id = ? LIMIT 1")
-      .get(revId);
+    const row = this.db.query("SELECT 1 FROM revisions WHERE rev_id = ? LIMIT 1").get(revId);
     return row !== null;
   }
 

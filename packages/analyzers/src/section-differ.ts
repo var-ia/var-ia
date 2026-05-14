@@ -51,9 +51,8 @@ export const sectionDiffer: SectionDiffer = {
 
     for (let i = 0; i < headerMatches.length; i++) {
       const header = headerMatches[i];
-      const nextOffset = i + 1 < headerMatches.length
-        ? headerMatches[i + 1].offset
-        : Buffer.byteLength(wikitext, "utf8");
+      const nextOffset =
+        i + 1 < headerMatches.length ? headerMatches[i + 1].offset : Buffer.byteLength(wikitext, "utf8");
       const headerLine = lines[header.index];
       const headerEnd = header.offset + Buffer.byteLength(headerLine, "utf8") + 1;
       const content = wikitext.slice(headerEnd, nextOffset).trim();
@@ -160,12 +159,14 @@ export function buildSectionLineage(
       firstSeenAt: revisions[0].timestamp,
       lastSeenRevisionId: revisions[0].revId,
       lastSeenAt: revisions[0].timestamp,
-      events: [{
-        revisionId: revisions[0].revId,
-        timestamp: revisions[0].timestamp,
-        eventType: "created",
-        content: section.content,
-      }],
+      events: [
+        {
+          revisionId: revisions[0].revId,
+          timestamp: revisions[0].timestamp,
+          eventType: "created",
+          content: section.content,
+        },
+      ],
       isActive: true,
     });
   }
@@ -185,14 +186,14 @@ export function buildSectionLineage(
     const prevKeys = new Set(prevByKey.keys());
     const currKeys = new Set(currByKey.keys());
 
-    const removedKeys = [...prevKeys].filter(k => !currKeys.has(k));
-    const addedKeys = [...currKeys].filter(k => !prevKeys.has(k));
+    const removedKeys = [...prevKeys].filter((k) => !currKeys.has(k));
+    const addedKeys = [...currKeys].filter((k) => !prevKeys.has(k));
 
     const renamedFromTo = new Map<string, string>();
     for (const remKey of removedKeys) {
       const remSection = prevByKey.get(remKey)!;
       for (const addKey of addedKeys) {
-        if (remSection.content === currByKey.get(addKey)!.content) {
+        if (remSection.content === currByKey.get(addKey)?.content) {
           renamedFromTo.set(remKey, addKey);
           break;
         }
@@ -251,12 +252,14 @@ export function buildSectionLineage(
           firstSeenAt: currRev.timestamp,
           lastSeenRevisionId: currRev.revId,
           lastSeenAt: currRev.timestamp,
-          events: [{
-            revisionId: currRev.revId,
-            timestamp: currRev.timestamp,
-            eventType: "created",
-            content: section.content,
-          }],
+          events: [
+            {
+              revisionId: currRev.revId,
+              timestamp: currRev.timestamp,
+              eventType: "created",
+              content: section.content,
+            },
+          ],
           isActive: true,
         };
         lineages.set(key, lineage);

@@ -8,7 +8,8 @@ export const GROUND_TRUTH_LABELS: OutcomeLabel[] = [
     description: "RFC closed with consensus to keep the article, rejecting a merge proposal",
     observedAt: "2022-03-15T00:00:00Z",
     resolution: "keep",
-    referenceUrl: "https://en.wikipedia.org/wiki/Talk:COVID-19_vaccine_mandates_in_the_United_States/Archive_1#RFC_on_merger",
+    referenceUrl:
+      "https://en.wikipedia.org/wiki/Talk:COVID-19_vaccine_mandates_in_the_United_States/Archive_1#RFC_on_merger",
     expectedEventTypes: ["claim_first_seen", "revert_detected"],
     expectedSection: "body",
   },
@@ -16,7 +17,8 @@ export const GROUND_TRUTH_LABELS: OutcomeLabel[] = [
     id: "darth-vader-lightsaber-merge",
     source: "talk_page_consensus",
     pageTitle: "Darth Vader",
-    description: "Discussion about merging Lightsaber combat sections into main article reached consensus for reorganization",
+    description:
+      "Discussion about merging Lightsaber combat sections into main article reached consensus for reorganization",
     observedAt: "2021-11-20T00:00:00Z",
     resolution: "merge",
     referenceUrl: "https://starwars.fandom.com/wiki/Talk:Darth_Vader?oldid=12345",
@@ -38,7 +40,8 @@ export const GROUND_TRUTH_LABELS: OutcomeLabel[] = [
     id: "trump-biographical-rfc",
     source: "rfc_closure",
     pageTitle: "Donald Trump",
-    description: "RFC on whether to include detailed biographical information in the lead section ended with no consensus to remove",
+    description:
+      "RFC on whether to include detailed biographical information in the lead section ended with no consensus to remove",
     observedAt: "2023-08-01T00:00:00Z",
     resolution: "no_consensus",
     referenceUrl: "https://en.wikipedia.org/wiki/Talk:Donald_Trump/Archive_50#RFC_on_lead_biography_length",
@@ -59,9 +62,7 @@ export const GROUND_TRUTH_LABELS: OutcomeLabel[] = [
 ];
 
 export function getGroundTruthForPage(pageTitle: string): OutcomeLabel[] {
-  return GROUND_TRUTH_LABELS.filter(
-    (label) => label.pageTitle.toLowerCase() === pageTitle.toLowerCase(),
-  );
+  return GROUND_TRUTH_LABELS.filter((label) => label.pageTitle.toLowerCase() === pageTitle.toLowerCase());
 }
 
 export function getGroundTruthById(id: string): OutcomeLabel | undefined {

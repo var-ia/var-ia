@@ -1,9 +1,9 @@
-import { Persistence } from "@var-ia/persistence";
-import type { PersistenceAdapter } from "@var-ia/persistence";
-import type { Revision } from "@var-ia/evidence-graph";
 import { existsSync, mkdirSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import type { Revision } from "@var-ia/evidence-graph";
+import type { PersistenceAdapter } from "@var-ia/persistence";
+import { Persistence } from "@var-ia/persistence";
 
 const DEFAULT_CACHE_DIR = join(homedir(), ".wikihistory");
 

@@ -1,7 +1,7 @@
-import { describe, it, expect } from "vitest";
-import { createAdapter, ConsensusAdapter } from "../index.js";
 import type { EvidenceEvent, EvidenceLayer, ModelInterpretation } from "@var-ia/evidence-graph";
+import { describe, expect, it } from "vitest";
 import type { ModelAdapter, ModelConfig } from "../index.js";
+import { ConsensusAdapter, createAdapter } from "../index.js";
 
 function makeEvent(eventType = "revert_detected"): EvidenceEvent {
   const layer: EvidenceLayer = "observed";
@@ -120,7 +120,10 @@ describe("ConsensusAdapter", () => {
 });
 
 describe("parseInterpretations", () => {
-  function parseInterpretations(raw: string, events: EvidenceEvent[]): Array<EvidenceEvent & { modelInterpretation: ModelInterpretation }> {
+  function parseInterpretations(
+    raw: string,
+    events: EvidenceEvent[],
+  ): Array<EvidenceEvent & { modelInterpretation: ModelInterpretation }> {
     const interpretations = JSON.parse(raw);
     return events.map((e, i) => {
       const interp = interpretations.find((x: { eventIndex: number }) => x.eventIndex === i);

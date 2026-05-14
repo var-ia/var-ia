@@ -24,11 +24,7 @@ const DEFAULT_MAJOR_REMOVAL = -2000;
 const DEFAULT_COSMETIC = 20;
 const DEFAULT_MINOR = 100;
 
-export function classifyHeuristic(
-  comment: string,
-  sizeDelta: number,
-  options?: HeuristicOptions,
-): HeuristicKind {
+export function classifyHeuristic(comment: string, sizeDelta: number, options?: HeuristicOptions): HeuristicKind {
   const norm = comment.toLowerCase().trim();
 
   if (REVERT_PATTERNS.test(norm)) {

@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
-import { extractWikilinks, diffWikilinks, buildWikilinkEvents } from "../wikilink-extractor.js";
+import { describe, expect, it } from "vitest";
+import { buildWikilinkEvents, diffWikilinks, extractWikilinks } from "../wikilink-extractor.js";
 
 describe("extractWikilinks", () => {
   it("extracts standard wikilinks", () => {

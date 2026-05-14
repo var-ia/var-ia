@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
-import { extractCategories, diffCategories, buildCategoryEvents } from "../category-tracker.js";
+import { describe, expect, it } from "vitest";
+import { buildCategoryEvents, diffCategories, extractCategories } from "../category-tracker.js";
 
 describe("extractCategories", () => {
   it("extracts multiple categories", () => {

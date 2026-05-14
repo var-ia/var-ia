@@ -1,20 +1,40 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("bun:sqlite", () => {
   const store = { revisions: [] as Record<string, unknown>[], claims: [] as Record<string, unknown>[] };
 
   class MockDB {
-    constructor(_path: string) { }
     run(sql: string, ...params: unknown[]) {
       if (sql.includes("INSERT OR REPLACE INTO revisions")) {
         const idx = store.revisions.findIndex((r) => r.rev_id === params[0]);
-        const row = { rev_id: params[0], page_id: params[1], page_title: params[2], timestamp: params[3], comment: params[4], content: params[5], size: params[6], minor: params[7] };
+        const row = {
+          rev_id: params[0],
+          page_id: params[1],
+          page_title: params[2],
+          timestamp: params[3],
+          comment: params[4],
+          content: params[5],
+          size: params[6],
+          minor: params[7],
+        };
         if (idx >= 0) store.revisions[idx] = row;
         else store.revisions.push(row);
       }
       if (sql.includes("INSERT OR REPLACE INTO claims")) {
         const idx = store.claims.findIndex((c) => c.claim_id === params[0]);
-        const row = { claim_id: params[0], identity_key: params[1], page_title: params[2], page_id: params[3], current_state: params[4], proposition_type: params[5], first_seen_rev_id: params[6], first_seen_at: params[7], last_seen_rev_id: params[8], last_seen_at: params[9], phase: params[10] };
+        const row = {
+          claim_id: params[0],
+          identity_key: params[1],
+          page_title: params[2],
+          page_id: params[3],
+          current_state: params[4],
+          proposition_type: params[5],
+          first_seen_rev_id: params[6],
+          first_seen_at: params[7],
+          last_seen_rev_id: params[8],
+          last_seen_at: params[9],
+          phase: params[10],
+        };
         if (idx >= 0) store.claims[idx] = row;
         else store.claims.push(row);
       }
@@ -23,7 +43,9 @@ vi.mock("bun:sqlite", () => {
       return {
         all: (...params: unknown[]) => {
           if (_sql.includes("FROM revisions")) {
-            const rows = _sql.includes("WHERE page_title = ?") ? store.revisions.filter((r) => r.page_title === params[0]) : [...store.revisions];
+            const rows = _sql.includes("WHERE page_title = ?")
+              ? store.revisions.filter((r) => r.page_title === params[0])
+              : [...store.revisions];
             if (_sql.includes("ORDER BY timestamp")) {
               const dir = _sql.includes("DESC") ? -1 : 1;
               rows.sort((a, b) => dir * String(a.timestamp).localeCompare(String(b.timestamp)));
@@ -37,9 +59,7 @@ vi.mock("bun:sqlite", () => {
           return [];
         },
         get: (...params: unknown[]) => {
-          const idx = _sql.includes("FROM revisions")
-            ? store.revisions.findIndex((r) => r.rev_id === params[0])
-            : -1;
+          const idx = _sql.includes("FROM revisions") ? store.revisions.findIndex((r) => r.rev_id === params[0]) : -1;
           return idx >= 0 ? store.revisions[idx] : null;
         },
       };
@@ -47,17 +67,22 @@ vi.mock("bun:sqlite", () => {
     prepare(sql: string) {
       return { run: (...params: unknown[]) => this.run(sql, ...params) };
     }
-    transaction(fn: () => void) { return fn; }
-    close() { store.revisions = []; store.claims = []; }
+    transaction(fn: () => void) {
+      return fn;
+    }
+    close() {
+      store.revisions = [];
+      store.claims = [];
+    }
   }
   return { Database: MockDB };
 });
 
-import { Persistence } from "../index.js";
-import { unlinkSync, existsSync } from "node:fs";
-import { join } from "node:path";
+import { existsSync, unlinkSync } from "node:fs";
 import { tmpdir } from "node:os";
-import type { Revision, ClaimObject, ClaimState, PropositionType } from "@var-ia/evidence-graph";
+import { join } from "node:path";
+import type { ClaimObject, ClaimState, PropositionType, Revision } from "@var-ia/evidence-graph";
+import { Persistence } from "../index.js";
 
 const dbPath = join(tmpdir(), `varia-test-${Date.now()}.db`);
 
@@ -87,9 +112,7 @@ function makeClaim(pageTitle = "Test"): ClaimObject {
       firstSeenAt: "2026-01-01T00:00:00Z",
       lastSeenRevisionId: 2,
       lastSeenAt: "2026-01-02T00:00:00Z",
-      variants: [
-        { revisionId: 1, text: "original text", section: "body", observedAt: "2026-01-01T00:00:00Z" },
-      ],
+      variants: [{ revisionId: 1, text: "original text", section: "body", observedAt: "2026-01-01T00:00:00Z" }],
     },
     currentState: "emerging" as ClaimState,
     propositionType: "factual_claim" as PropositionType,
@@ -108,7 +131,11 @@ describe("Persistence", () => {
 
   afterEach(() => {
     db.close();
-    try { if (existsSync(dbPath)) unlinkSync(dbPath); } catch { /* file may not exist */ }
+    try {
+      if (existsSync(dbPath)) unlinkSync(dbPath);
+    } catch {
+      /* file may not exist */
+    }
   });
 
   describe("revisions", () => {

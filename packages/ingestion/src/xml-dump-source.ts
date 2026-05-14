@@ -1,6 +1,6 @@
-import type { Revision } from "@var-ia/evidence-graph";
-import type { RevisionSource, RevisionOptions } from "./index.js";
 import { readFileSync } from "node:fs";
+import type { Revision } from "@var-ia/evidence-graph";
+import type { RevisionOptions, RevisionSource } from "./index.js";
 
 function decodeXmlEntities(text: string): string {
   return text
@@ -15,6 +15,7 @@ function decodeXmlEntities(text: string): string {
 function extractPageXml(text: string, title: string): string | null {
   const pattern = /<page>([\s\S]*?)<\/page>/g;
   let match: RegExpExecArray | null;
+  // biome-ignore lint/suspicious/noAssignInExpressions: Standard regex loop pattern
   while ((match = pattern.exec(text)) !== null) {
     const titleMatch = match[1].match(/<title>(.*?)<\/title>/);
     if (titleMatch && decodeXmlEntities(titleMatch[1]) === title) {
@@ -24,16 +25,12 @@ function extractPageXml(text: string, title: string): string | null {
   return null;
 }
 
-function extractRevisions(
-  pageXml: string,
-  pageTitle: string,
-  pageId: number,
-  options?: RevisionOptions,
-): Revision[] {
+function extractRevisions(pageXml: string, pageTitle: string, pageId: number, options?: RevisionOptions): Revision[] {
   const revs: Revision[] = [];
   const re = /<revision>([\s\S]*?)<\/revision>/g;
   let match: RegExpExecArray | null;
 
+  // biome-ignore lint/suspicious/noAssignInExpressions: Standard regex loop pattern
   while ((match = re.exec(pageXml)) !== null) {
     const xml = match[1];
     const idMatch = xml.match(/<id>(\d+)<\/id>/);

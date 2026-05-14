@@ -34,22 +34,18 @@ export interface L3ValidationSummary {
   perOutcome: L3ValidationResult[];
 }
 
-export function validateAgainstGroundTruth(
-  outcomes: OutcomeLabel[],
-  events: EvidenceEvent[],
-): L3ValidationSummary {
+export function validateAgainstGroundTruth(outcomes: OutcomeLabel[], events: EvidenceEvent[]): L3ValidationSummary {
   const results: L3ValidationResult[] = outcomes.map((outcome) => {
     const expected = outcome.expectedEventTypes;
     const matched = events.filter(
-      (e) =>
-        expected.includes(e.eventType) &&
-        (!outcome.expectedSection || e.section === outcome.expectedSection),
+      (e) => expected.includes(e.eventType) && (!outcome.expectedSection || e.section === outcome.expectedSection),
     );
 
     const signalDetected = matched.length > 0;
-    const precision = matched.length > 0
-      ? expected.filter((et) => matched.some((m) => m.eventType === et)).length / expected.length
-      : 0;
+    const precision =
+      matched.length > 0
+        ? expected.filter((et) => matched.some((m) => m.eventType === et)).length / expected.length
+        : 0;
     const recall = matched.length > 0 ? 1.0 : 0.0;
 
     return {
@@ -65,12 +61,8 @@ export function validateAgainstGroundTruth(
   });
 
   const passed = results.filter((r) => r.passed);
-  const avgPrecision = results.length > 0
-    ? results.reduce((s, r) => s + r.precision, 0) / results.length
-    : 0;
-  const avgRecall = results.length > 0
-    ? results.reduce((s, r) => s + r.recall, 0) / results.length
-    : 0;
+  const avgPrecision = results.length > 0 ? results.reduce((s, r) => s + r.precision, 0) / results.length : 0;
+  const avgRecall = results.length > 0 ? results.reduce((s, r) => s + r.recall, 0) / results.length : 0;
 
   return {
     totalOutcomes: outcomes.length,
@@ -149,9 +141,7 @@ export function createEvalHarness(): EvalHarness {
       const falsePositives: UnexpectedEvent[] = [];
 
       for (const expected of test.expectedEvents) {
-        const found = events.find(
-          (e) => e.eventType === expected.eventType && e.section === expected.section,
-        );
+        const found = events.find((e) => e.eventType === expected.eventType && e.section === expected.section);
         if (found) {
           matches.push({ expected, actual: found });
         } else {
@@ -167,22 +157,14 @@ export function createEvalHarness(): EvalHarness {
 
       const matchedCount = matches.length;
       const totalExpected = test.expectedEvents.length;
-      const precision =
-        totalExpected > 0
-          ? matchedCount / totalExpected
-          : events.length === 0
-            ? 1.0
-            : 0.0;
+      const precision = totalExpected > 0 ? matchedCount / totalExpected : events.length === 0 ? 1.0 : 0.0;
 
       const tolerance = test.tolerance ?? {};
       const minEventCount = tolerance.minEventCount ?? 0;
       const maxEventCount = tolerance.maxEventCount ?? Infinity;
       const minPrecision = tolerance.minPrecision ?? 0.5;
 
-      const passed =
-        precision >= minPrecision &&
-        events.length >= minEventCount &&
-        events.length <= maxEventCount;
+      const passed = precision >= minPrecision && events.length >= minEventCount && events.length <= maxEventCount;
 
       return {
         testId: test.id,
@@ -203,9 +185,7 @@ export function createEvalHarness(): EvalHarness {
           pageTitle: "Earth",
           pageId: 9228,
           revisionRange: { from: 0, to: 0 },
-          expectedEvents: [
-            { eventType: "section_reorganized", section: "(lead)" },
-          ],
+          expectedEvents: [{ eventType: "section_reorganized", section: "(lead)" }],
           tolerance: { minEventCount: 1, minPrecision: 0.0 },
         },
         {
@@ -214,9 +194,7 @@ export function createEvalHarness(): EvalHarness {
           pageTitle: "Donald_Trump",
           pageId: 4848272,
           revisionRange: { from: 0, to: 0 },
-          expectedEvents: [
-            { eventType: "revert_detected", section: "" },
-          ],
+          expectedEvents: [{ eventType: "revert_detected", section: "" }],
           tolerance: { minEventCount: 1, minPrecision: 0.0 },
         },
         {
@@ -225,9 +203,7 @@ export function createEvalHarness(): EvalHarness {
           pageTitle: "COVID-19_pandemic",
           pageId: 58899562,
           revisionRange: { from: 0, to: 0 },
-          expectedEvents: [
-            { eventType: "template_added", section: "body" },
-          ],
+          expectedEvents: [{ eventType: "template_added", section: "body" }],
           tolerance: { minEventCount: 5, minPrecision: 0.0 },
         },
         {
@@ -260,9 +236,7 @@ export function createEvalHarness(): EvalHarness {
           pageTitle: "Albert_Einstein",
           pageId: 736,
           revisionRange: { from: 0, to: 0 },
-          expectedEvents: [
-            { eventType: "citation_added", section: "body" },
-          ],
+          expectedEvents: [{ eventType: "citation_added", section: "body" }],
           tolerance: { minEventCount: 2, minPrecision: 0.0 },
         },
       ];
@@ -270,10 +244,7 @@ export function createEvalHarness(): EvalHarness {
 
     computeScores(results) {
       const passed = results.filter((r) => r.passed);
-      const totalPrecision =
-        results.length > 0
-          ? results.reduce((sum, r) => sum + r.precision, 0) / results.length
-          : 0;
+      const totalPrecision = results.length > 0 ? results.reduce((sum, r) => sum + r.precision, 0) / results.length : 0;
 
       return {
         overallPrecision: totalPrecision,
@@ -290,4 +261,4 @@ export function createEvalHarness(): EvalHarness {
   };
 }
 
-export { GROUND_TRUTH_LABELS, getGroundTruthForPage, getGroundTruthById } from "./ground-truth.js";
+export { GROUND_TRUTH_LABELS, getGroundTruthById, getGroundTruthForPage } from "./ground-truth.js";

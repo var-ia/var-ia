@@ -1,7 +1,7 @@
-import { runAnalyze } from "./analyze.js";
-import type { ModelConfig } from "@var-ia/interpreter";
-import { extractWikilinks, extractCategories } from "@var-ia/analyzers";
+import { extractCategories, extractWikilinks } from "@var-ia/analyzers";
 import type { EvidenceEvent } from "@var-ia/evidence-graph";
+import type { ModelConfig } from "@var-ia/interpreter";
+import { runAnalyze } from "./analyze.js";
 
 interface DiffResult {
   pageTitle: string;
@@ -38,9 +38,7 @@ export async function runDiff(
   console.log(`Diffing "${topic}" across two wikis...\n`);
 
   const resolvedDepth = depth ?? "detailed";
-  const sharedConfig = modelConfig
-    ? { ...modelConfig }
-    : undefined;
+  const sharedConfig = modelConfig ? { ...modelConfig } : undefined;
 
   console.log(`Analyzing wiki A: ${wikiAUrl}`);
   const { summary: summaryA, events: eventsA } = await buildSummary(topic, wikiAUrl, resolvedDepth, sharedConfig);

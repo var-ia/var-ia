@@ -1,8 +1,8 @@
 import { createHash } from "node:crypto";
-import { runAnalyze } from "./analyze.js";
+import type { EvidenceEvent, PolicySignal, Report, Revision } from "@var-ia/evidence-graph";
 import { createEventIdentity } from "@var-ia/evidence-graph";
-import type { EvidenceEvent, Report, PolicySignal, Revision } from "@var-ia/evidence-graph";
 import type { ModelConfig } from "@var-ia/interpreter";
+import { runAnalyze } from "./analyze.js";
 
 interface EvidenceBundle {
   format: "varia-evidence-bundle/v1";
@@ -22,13 +22,31 @@ export async function runExport(
   bundle?: boolean,
 ): Promise<void> {
   if (bundle) {
-    const { events, revisions } = await runAnalyze(pageTitle, "detailed", undefined, undefined, undefined, false, modelConfig, apiUrl);
+    const { events, revisions } = await runAnalyze(
+      pageTitle,
+      "detailed",
+      undefined,
+      undefined,
+      undefined,
+      false,
+      modelConfig,
+      apiUrl,
+    );
     const bundleData = buildBundle(pageTitle, events, revisions);
     console.log(JSON.stringify(bundleData, null, 2));
     return;
   }
 
-  const { events } = await runAnalyze(pageTitle, "detailed", undefined, undefined, undefined, false, modelConfig, apiUrl);
+  const { events } = await runAnalyze(
+    pageTitle,
+    "detailed",
+    undefined,
+    undefined,
+    undefined,
+    false,
+    modelConfig,
+    apiUrl,
+  );
 
   if (events.length === 0) {
     console.log("No events to export.");
@@ -42,10 +60,12 @@ export async function runExport(
     console.log(toCSV(events));
   } else if (format === "ndjson") {
     for (const event of events) {
-      console.log(JSON.stringify({
-        ...event,
-        eventId: event.eventId ?? createEventIdentity(event),
-      }));
+      console.log(
+        JSON.stringify({
+          ...event,
+          eventId: event.eventId ?? createEventIdentity(event),
+        }),
+      );
     }
   } else {
     console.log(JSON.stringify(events, null, 2));
@@ -70,9 +90,7 @@ function buildBundle(pageTitle: string, events: EvidenceEvent[], revisions: Revi
     outputEvents: taggedEvents,
   };
 
-  const bundleHash = createHash("sha256")
-    .update(JSON.stringify(bundle))
-    .digest("hex");
+  const bundleHash = createHash("sha256").update(JSON.stringify(bundle)).digest("hex");
 
   return { ...bundle, bundleHash };
 }
@@ -85,12 +103,24 @@ function buildReport(pageTitle: string, events: EvidenceEvent[]): Report {
   const policyCount = events.filter((e) => e.layer === "policy_coded").length;
   const modelCount = events.filter((e) => e.modelInterpretation != null).length;
 
-  const layers: Report["layers"] = [{ label: "observed", description: "Deterministic", events: observedCount, reproducible: true }];
+  const layers: Report["layers"] = [
+    { label: "observed", description: "Deterministic", events: observedCount, reproducible: true },
+  ];
   if (policyCount > 0) {
-    layers.push({ label: "policy_coded", description: "Wikipedia policy signals", events: policyCount, reproducible: true });
+    layers.push({
+      label: "policy_coded",
+      description: "Wikipedia policy signals",
+      events: policyCount,
+      reproducible: true,
+    });
   }
   if (modelCount > 0) {
-    layers.push({ label: "model_interpretation", description: "Model-assisted semantic interpretation", events: modelCount, reproducible: false });
+    layers.push({
+      label: "model_interpretation",
+      description: "Model-assisted semantic interpretation",
+      events: modelCount,
+      reproducible: false,
+    });
   }
 
   const hasModel = modelCount > 0;
@@ -132,9 +162,7 @@ function buildReport(pageTitle: string, events: EvidenceEvent[]): Report {
 
 function extractPolicySignals(events: EvidenceEvent[]): PolicySignal[] {
   const signalMap = new Map<string, PolicySignal>();
-  const sortedEvents = [...events].sort(
-    (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
-  );
+  const sortedEvents = [...events].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
   for (const event of sortedEvents) {
     if (event.layer !== "policy_coded") continue;

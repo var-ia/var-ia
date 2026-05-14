@@ -1,10 +1,10 @@
+import type { ModelConfig } from "@var-ia/interpreter";
 import { runAnalyze } from "./commands/analyze.js";
 import { runClaim } from "./commands/claim.js";
 import { runDiff } from "./commands/diff.js";
 import { runEval } from "./commands/eval.js";
 import { runExport } from "./commands/export.js";
 import { runWatch } from "./commands/watch.js";
-import type { ModelConfig } from "@var-ia/interpreter";
 
 const HELP = `
 wikihistory — Wikipedia edit history analysis
@@ -77,7 +77,9 @@ export async function cli(args: string[]): Promise<void> {
         console.log(`\nBatch complete. Total events: ${events.length}`);
       } else {
         if (!pageTitle) {
-          console.error("Usage: wikihistory analyze <page> [--depth brief|detailed|forensic] [--cache] [--model <provider>]");
+          console.error(
+            "Usage: wikihistory analyze <page> [--depth brief|detailed|forensic] [--cache] [--model <provider>]",
+          );
           process.exit(1);
         }
         const { events } = await runAnalyze(
@@ -110,7 +112,9 @@ export async function cli(args: string[]): Promise<void> {
             console.log(`  • ${fact.fact}${fact.detail ? `: ${fact.detail}` : ""}`);
           }
           if (event.modelInterpretation) {
-            console.log(`  ↳ ${event.modelInterpretation.semanticChange} (confidence: ${event.modelInterpretation.confidence.toFixed(2)})`);
+            console.log(
+              `  ↳ ${event.modelInterpretation.semanticChange} (confidence: ${event.modelInterpretation.confidence.toFixed(2)})`,
+            );
             if (event.modelInterpretation.policyDimension) {
               console.log(`  ↳ policy: ${event.modelInterpretation.policyDimension}`);
             }
@@ -130,7 +134,7 @@ export async function cli(args: string[]): Promise<void> {
       const modelConfig = parseModelConfig(args);
       const apiUrl = parseFlag(args, "api");
       const cacheDir = parseFlag(args, "cache-dir");
-      await runClaim(pageTitle, claimText, useCache, modelConfig, apiUrl, cacheDir);
+      await runClaim(pageTitle!, claimText!, useCache, modelConfig, apiUrl, cacheDir);
       break;
     }
     case "export": {
@@ -164,12 +168,14 @@ export async function cli(args: string[]): Promise<void> {
       const wikiA = parseFlag(args, "wiki-a");
       const wikiB = parseFlag(args, "wiki-b");
       if (!topic || !wikiA || !wikiB) {
-        console.error("Usage: wikihistory diff <topic> --wiki-a <url> --wiki-b <url> [--depth brief|detailed|forensic] [--model <provider>]");
+        console.error(
+          "Usage: wikihistory diff <topic> --wiki-a <url> --wiki-b <url> [--depth brief|detailed|forensic] [--model <provider>]",
+        );
         process.exit(1);
       }
       const depth = parseFlag(args, "depth") ?? "detailed";
       const modelConfig = parseModelConfig(args);
-      await runDiff(topic, wikiA, wikiB, depth, modelConfig);
+      await runDiff(topic!, wikiA!, wikiB!, depth, modelConfig);
       break;
     }
     case "eval": {
@@ -178,8 +184,6 @@ export async function cli(args: string[]): Promise<void> {
       await runEval(pageOverride, groundTruth);
       break;
     }
-    case "--help":
-    case "-h":
     default:
       console.log(HELP);
       break;

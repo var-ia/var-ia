@@ -20,7 +20,6 @@
       "label": "lint",
       "type": "shell",
       "command": "bun run lint",
-      "problemMatcher": ["$eslint-stylish"],
       "presentation": { "reveal": "silent" }
     },
     {
@@ -48,7 +47,7 @@
       "type": "shell",
       "command": "bun run build && bun run lint && bun run typecheck && bun run test",
       "group": { "kind": "test", "isDefault": false },
-      "problemMatcher": ["$tsc", "$eslint-stylish"],
+      "problemMatcher": ["$tsc"],
       "presentation": { "reveal": "always" },
       "dependsOrder": "sequence"
     }

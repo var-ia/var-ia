@@ -46,10 +46,7 @@ export function buildMerkleTree(hashes: string[]): string[][] {
   return levels;
 }
 
-export function getMerkleProof(
-  levels: string[][],
-  leafIndex: number,
-): MerkleProof {
+export function getMerkleProof(levels: string[][], leafIndex: number): MerkleProof {
   const leafHash = levels[0][leafIndex];
   if (!leafHash) throw new Error(`Leaf index ${leafIndex} out of range`);
   const siblings: string[] = [];
@@ -86,13 +83,9 @@ export function createReplayManifest(params: {
   events: EvidenceEvent[];
   generatedAt?: string;
 }): ReplayManifest {
-  const inputHashes = params.revisions.map((r) =>
-    createHash("sha256").update(r.content).digest("hex"),
-  );
+  const inputHashes = params.revisions.map((r) => createHash("sha256").update(r.content).digest("hex"));
 
-  const outputHashes = params.events.map((e) =>
-    e.eventId ?? createEventIdentity(e),
-  );
+  const outputHashes = params.events.map((e) => e.eventId ?? createEventIdentity(e));
 
   const merkleRoot = buildMerkleTree(outputHashes).at(-1)?.[0] ?? "";
 
@@ -106,17 +99,12 @@ export function createReplayManifest(params: {
     merkleRoot,
   };
 
-  const manifestHash = createHash("sha256")
-    .update(JSON.stringify(partial))
-    .digest("hex");
+  const manifestHash = createHash("sha256").update(JSON.stringify(partial)).digest("hex");
 
   return { ...partial, manifestHash };
 }
 
-export function singleEventProof(
-  manifest: ReplayManifest,
-  eventIndex: number,
-): MerkleProof {
+export function singleEventProof(manifest: ReplayManifest, eventIndex: number): MerkleProof {
   const levels = buildMerkleTree(manifest.outputEventHashes);
   return getMerkleProof(levels, eventIndex);
 }

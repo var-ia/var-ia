@@ -10,7 +10,7 @@ import type { EvidenceEvent } from "@varia/evidence-graph";
 import { sectionDiffer } from "@varia/analyzers";
 ```
 
-Always use `import type` for type-only imports. `@typescript-eslint/consistent-type-imports` enforces this.
+Always use `import type` for type-only imports. Biome's `useImportType` rule enforces this.
 
 ## Intra-package
 ```ts

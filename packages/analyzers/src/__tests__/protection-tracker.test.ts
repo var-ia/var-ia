@@ -1,6 +1,6 @@
-import { describe, it, expect } from "vitest";
-import { protectionTracker } from "../protection-tracker.js";
+import { describe, expect, it } from "vitest";
 import type { ProtectionLogRecord } from "../protection-tracker.js";
+import { protectionTracker } from "../protection-tracker.js";
 
 describe("protectionTracker", () => {
   describe("buildState", () => {

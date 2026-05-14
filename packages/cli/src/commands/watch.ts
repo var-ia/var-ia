@@ -1,6 +1,6 @@
-import { MediaWikiClient } from "@var-ia/ingestion";
-import { sectionDiffer, citationTracker, templateTracker, revertDetector } from "@var-ia/analyzers";
+import { citationTracker, revertDetector, sectionDiffer, templateTracker } from "@var-ia/analyzers";
 import type { EvidenceEvent, EvidenceLayer } from "@var-ia/evidence-graph";
+import { MediaWikiClient } from "@var-ia/ingestion";
 
 const DEFAULT_POLL_INTERVAL_MS = 60_000;
 
@@ -23,7 +23,7 @@ export async function runWatch(
       if (revisions.length === 0) return;
 
       const sortedRevs = [...revisions].sort(
-        (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+        (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
       );
 
       const newRevs = sortedRevs.filter((r) => r.revId > lastSeenRevId);
@@ -31,7 +31,9 @@ export async function runWatch(
 
       if (lastSeenRevId === 0) {
         const latest = sortedRevs[sortedRevs.length - 1];
-        console.log(`[${new Date().toISOString()}] Initial watch — latest revision: ${latest.revId} (${latest.timestamp})`);
+        console.log(
+          `[${new Date().toISOString()}] Initial watch — latest revision: ${latest.revId} (${latest.timestamp})`,
+        );
         lastSeenRevId = latest.revId;
         return;
       }
@@ -51,7 +53,12 @@ export async function runWatch(
           for (const cit of citeChanges) {
             if (cit.type === "unchanged") continue;
             events.push({
-              eventType: cit.type === "added" ? "citation_added" : cit.type === "removed" ? "citation_removed" : "citation_replaced",
+              eventType:
+                cit.type === "added"
+                  ? "citation_added"
+                  : cit.type === "removed"
+                    ? "citation_removed"
+                    : "citation_replaced",
               fromRevisionId: before.revId,
               toRevisionId: rev.revId,
               section: "body",

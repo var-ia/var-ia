@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
-import { citationTracker, buildSourceLineage, buildSourceId } from "../citation-tracker.js";
+import { describe, expect, it } from "vitest";
+import { buildSourceId, buildSourceLineage, citationTracker } from "../citation-tracker.js";
 
 describe("citationTracker", () => {
   it("extracts named refs from wikitext", () => {
@@ -12,22 +12,30 @@ describe("citationTracker", () => {
 
   it("diff detects added citations", () => {
     const before: Parameters<typeof citationTracker.diffCitations>[0] = [];
-    const after = citationTracker.extractCitations(`Content<ref name="a">{{cite web |url=https://example.edu/a}}</ref>`);
+    const after = citationTracker.extractCitations(
+      `Content<ref name="a">{{cite web |url=https://example.edu/a}}</ref>`,
+    );
     const changes = citationTracker.diffCitations(before, after);
     expect(changes).toHaveLength(1);
     expect(changes[0].type).toBe("added");
   });
 
   it("diff detects replaced citations", () => {
-    const before = citationTracker.extractCitations(`Content<ref name="x">{{cite web |url=https://example.edu/old}}</ref>`);
-    const after = citationTracker.extractCitations(`Content<ref name="x">{{cite web |url=https://example.edu/new}}</ref>`);
+    const before = citationTracker.extractCitations(
+      `Content<ref name="x">{{cite web |url=https://example.edu/old}}</ref>`,
+    );
+    const after = citationTracker.extractCitations(
+      `Content<ref name="x">{{cite web |url=https://example.edu/new}}</ref>`,
+    );
     const changes = citationTracker.diffCitations(before, after);
     expect(changes).toHaveLength(1);
     expect(changes[0].type).toBe("replaced");
   });
 
   it("diff detects removed citations", () => {
-    const before = citationTracker.extractCitations(`Content<ref name="y">{{cite web |url=https://example.edu/y}}</ref>`);
+    const before = citationTracker.extractCitations(
+      `Content<ref name="y">{{cite web |url=https://example.edu/y}}</ref>`,
+    );
     const after: Parameters<typeof citationTracker.diffCitations>[1] = [];
     const changes = citationTracker.diffCitations(before, after);
     expect(changes).toHaveLength(1);
@@ -113,9 +121,7 @@ describe("buildSourceLineage", () => {
   it("classifies .gov source as government/high", () => {
     const refUrl = "https://www.nasa.gov/report";
     const content = `<ref name="g">{{cite web |url=${refUrl} |title=Report}}</ref>`;
-    const result = buildSourceLineage([
-      { revId: 1, timestamp: "2024-01-01T00:00:00Z", content },
-    ]);
+    const result = buildSourceLineage([{ revId: 1, timestamp: "2024-01-01T00:00:00Z", content }]);
     const src = result.sources.find((s) => s.url === refUrl)!;
     expect(src.sourceType).toBe("government");
     expect(src.authority).toBe("high");
@@ -124,9 +130,7 @@ describe("buildSourceLineage", () => {
   it("classifies doi.org as academic/medium", () => {
     const refUrl = "https://doi.org/10.1234/test";
     const content = `<ref name="d">{{cite journal |url=${refUrl} |title=Study}}</ref>`;
-    const result = buildSourceLineage([
-      { revId: 1, timestamp: "2024-01-01T00:00:00Z", content },
-    ]);
+    const result = buildSourceLineage([{ revId: 1, timestamp: "2024-01-01T00:00:00Z", content }]);
     const src = result.sources.find((s) => s.url === refUrl)!;
     expect(src.sourceType).toBe("academic");
     expect(src.authority).toBe("medium");
@@ -135,9 +139,7 @@ describe("buildSourceLineage", () => {
   it("classifies unknown URL as unknown/unrated", () => {
     const refUrl = "https://someblog.example/page";
     const content = `<ref name="u">{{cite web |url=${refUrl} |title=Blog}}</ref>`;
-    const result = buildSourceLineage([
-      { revId: 1, timestamp: "2024-01-01T00:00:00Z", content },
-    ]);
+    const result = buildSourceLineage([{ revId: 1, timestamp: "2024-01-01T00:00:00Z", content }]);
     const src = result.sources.find((s) => s.url === refUrl)!;
     expect(src.sourceType).toBe("unknown");
     expect(src.authority).toBe("unrated");

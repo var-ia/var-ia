@@ -19,18 +19,13 @@ export interface HeadingPosition {
 }
 
 export function extractHeadingMap(wikitext: string): HeadingPosition[] {
-  return Array.from(wikitext.matchAll(/^==+\s*(.*?)\s*==+\s*$/gm)).map(
-    (match) => ({
-      position: match.index ?? 0,
-      heading: match[1]?.trim() ?? "",
-    }),
-  );
+  return Array.from(wikitext.matchAll(/^==+\s*(.*?)\s*==+\s*$/gm)).map((match) => ({
+    position: match.index ?? 0,
+    heading: match[1]?.trim() ?? "",
+  }));
 }
 
-export function deriveSectionHeading(
-  wikitext: string,
-  position: number,
-): string | null {
+export function deriveSectionHeading(wikitext: string, position: number): string | null {
   let selected: string | null = null;
   for (const heading of extractHeadingMap(wikitext)) {
     if (heading.position > position) break;
@@ -60,11 +55,7 @@ export function countKeywordMentions(
   return { totalMentions, matchedPhrases };
 }
 
-export function extractAnchorSnippet(
-  wikitext: string,
-  phrases: string[],
-  radius = 200,
-): string | null {
+export function extractAnchorSnippet(wikitext: string, phrases: string[], radius = 200): string | null {
   const lowered = wikitext.toLowerCase();
   for (const phrase of phrases) {
     const normalized = phrase.trim().toLowerCase();

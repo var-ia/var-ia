@@ -1,4 +1,4 @@
-import type { EvidenceEvent, DeterministicFact } from "@var-ia/evidence-graph";
+import type { DeterministicFact, EvidenceEvent } from "@var-ia/evidence-graph";
 
 const CATEGORY_REGEX = /\[\[Category:([^\]|]+)(?:\|[^\]]*)?\]\]/gi;
 
@@ -7,6 +7,7 @@ export function extractCategories(wikitext: string): string[] {
   const seen = new Set<string>();
   let match: RegExpExecArray | null;
 
+  // biome-ignore lint/suspicious/noAssignInExpressions: Standard regex loop pattern
   while ((match = CATEGORY_REGEX.exec(wikitext)) !== null) {
     const name = match[1].trim();
     if (!name) continue;
@@ -19,10 +20,7 @@ export function extractCategories(wikitext: string): string[] {
   return categories;
 }
 
-export function diffCategories(
-  before: string[],
-  after: string[],
-): { added: string[]; removed: string[] } {
+export function diffCategories(before: string[], after: string[]): { added: string[]; removed: string[] } {
   const beforeSet = new Set(before);
   const afterSet = new Set(after);
 
@@ -53,10 +51,7 @@ export function buildCategoryEvents(
       section: "",
       before: "",
       after: cat,
-      deterministicFacts: [
-        { fact: "category_added", detail: `category=${cat}` },
-        ...(extraFacts ?? []),
-      ],
+      deterministicFacts: [{ fact: "category_added", detail: `category=${cat}` }, ...(extraFacts ?? [])],
       layer: "observed",
       timestamp,
     });
@@ -70,10 +65,7 @@ export function buildCategoryEvents(
       section: "",
       before: cat,
       after: "",
-      deterministicFacts: [
-        { fact: "category_removed", detail: `category=${cat}` },
-        ...(extraFacts ?? []),
-      ],
+      deterministicFacts: [{ fact: "category_removed", detail: `category=${cat}` }, ...(extraFacts ?? [])],
       layer: "observed",
       timestamp,
     });

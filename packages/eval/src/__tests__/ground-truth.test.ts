@@ -1,7 +1,7 @@
-import { describe, it, expect } from "vitest";
-import { validateAgainstGroundTruth, GROUND_TRUTH_LABELS, getGroundTruthForPage } from "../index.js";
 import type { EvidenceEvent } from "@var-ia/evidence-graph";
+import { describe, expect, it } from "vitest";
 import type { OutcomeLabel } from "../index.js";
+import { GROUND_TRUTH_LABELS, getGroundTruthForPage, validateAgainstGroundTruth } from "../index.js";
 
 function makeEvent(eventType: string, section = "body"): EvidenceEvent {
   return {
@@ -31,10 +31,7 @@ describe("validateAgainstGroundTruth", () => {
       expectedSection: "",
     };
 
-    const events = [
-      makeEvent("section_reorganized"),
-      makeEvent("claim_removed"),
-    ];
+    const events = [makeEvent("section_reorganized"), makeEvent("claim_removed")];
 
     const result = validateAgainstGroundTruth([outcome], events);
 
@@ -75,9 +72,7 @@ describe("validateAgainstGroundTruth", () => {
       expectedEventTypes: ["protection_changed", "revert_detected"],
     };
 
-    const events = [
-      makeEvent("protection_changed"),
-    ];
+    const events = [makeEvent("protection_changed")];
 
     const result = validateAgainstGroundTruth([outcome], events);
 

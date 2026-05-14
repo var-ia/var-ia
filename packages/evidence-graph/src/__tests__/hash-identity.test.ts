@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { createClaimIdentity, createEventIdentity } from "../hash-identity.js";
 import type { EvidenceEvent } from "../schemas/evidence.js";
 

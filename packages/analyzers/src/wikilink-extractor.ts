@@ -1,10 +1,26 @@
-import type { EvidenceEvent, DeterministicFact } from "@var-ia/evidence-graph";
+import type { DeterministicFact, EvidenceEvent } from "@var-ia/evidence-graph";
 
 const WIKILINK_REGEX = /\[\[([^\]]+?)(?:\|([^\]]*))?\]\]/g;
 
 const EXCLUDED_PREFIXES = [
-  "File:", "Image:", "Category:", "wikipedia:", "w:", "mediawiki:",
-  "mw:", "wiktionary:", "wikt:", "commons:", "c:", "d:", "n:", "q:", "s:", "v:", "voy:", "b:",
+  "File:",
+  "Image:",
+  "Category:",
+  "wikipedia:",
+  "w:",
+  "mediawiki:",
+  "mw:",
+  "wiktionary:",
+  "wikt:",
+  "commons:",
+  "c:",
+  "d:",
+  "n:",
+  "q:",
+  "s:",
+  "v:",
+  "voy:",
+  "b:",
 ];
 
 export function extractWikilinks(wikitext: string): string[] {
@@ -12,12 +28,11 @@ export function extractWikilinks(wikitext: string): string[] {
   const seen = new Set<string>();
   let match: RegExpExecArray | null;
 
+  // biome-ignore lint/suspicious/noAssignInExpressions: Standard regex loop pattern
   while ((match = WIKILINK_REGEX.exec(wikitext)) !== null) {
     const target = match[1].trim();
 
-    const isExcluded = EXCLUDED_PREFIXES.some((prefix) =>
-      target.toLowerCase().startsWith(prefix.toLowerCase()),
-    );
+    const isExcluded = EXCLUDED_PREFIXES.some((prefix) => target.toLowerCase().startsWith(prefix.toLowerCase()));
     if (isExcluded) continue;
 
     const normalized = target.toLowerCase().replace(/_/g, " ");
@@ -29,10 +44,7 @@ export function extractWikilinks(wikitext: string): string[] {
   return links;
 }
 
-export function diffWikilinks(
-  before: string[],
-  after: string[],
-): { added: string[]; removed: string[] } {
+export function diffWikilinks(before: string[], after: string[]): { added: string[]; removed: string[] } {
   const beforeSet = new Set(before);
   const afterSet = new Set(after);
 
@@ -64,10 +76,7 @@ export function buildWikilinkEvents(
       section,
       before: "",
       after: link,
-      deterministicFacts: [
-        { fact: "wikilink_added", detail: `target=${link}` },
-        ...(extraFacts ?? []),
-      ],
+      deterministicFacts: [{ fact: "wikilink_added", detail: `target=${link}` }, ...(extraFacts ?? [])],
       layer: "observed",
       timestamp,
     });
@@ -81,10 +90,7 @@ export function buildWikilinkEvents(
       section,
       before: link,
       after: "",
-      deterministicFacts: [
-        { fact: "wikilink_removed", detail: `target=${link}` },
-        ...(extraFacts ?? []),
-      ],
+      deterministicFacts: [{ fact: "wikilink_removed", detail: `target=${link}` }, ...(extraFacts ?? [])],
       layer: "observed",
       timestamp,
     });

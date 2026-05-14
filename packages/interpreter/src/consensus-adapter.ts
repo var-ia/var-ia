@@ -1,5 +1,5 @@
 import type { EvidenceEvent, ModelInterpretation } from "@var-ia/evidence-graph";
-import type { ModelAdapter, InterpretedEvent, LineageContext } from "./index.js";
+import type { InterpretedEvent, LineageContext, ModelAdapter } from "./index.js";
 
 export interface ConsensusConfig {
   adapters: ModelAdapter[];
@@ -25,9 +25,7 @@ export class ConsensusAdapter implements ModelAdapter {
   }
 
   async interpret(events: EvidenceEvent[], lineage?: LineageContext): Promise<InterpretedEvent[]> {
-    const allResults = await Promise.all(
-      this.adapters.map((a) => a.interpret(events, lineage)),
-    );
+    const allResults = await Promise.all(this.adapters.map((a) => a.interpret(events, lineage)));
 
     const consolidated: InterpretedEvent[] = [];
 
@@ -35,10 +33,7 @@ export class ConsensusAdapter implements ModelAdapter {
       const event = events[i];
       const interpretations = allResults
         .map((r) => r[i]?.modelInterpretation)
-        .filter(
-          (m): m is ModelInterpretation =>
-            m != null && m.confidence >= this.confidenceThreshold,
-        );
+        .filter((m): m is ModelInterpretation => m != null && m.confidence >= this.confidenceThreshold);
 
       const groups = new Map<string, { count: number; avgConfidence: number; sample: ModelInterpretation }>();
 
@@ -47,9 +42,7 @@ export class ConsensusAdapter implements ModelAdapter {
         const existing = groups.get(key);
 
         if (existing) {
-          existing.avgConfidence =
-            (existing.avgConfidence * existing.count + interp.confidence) /
-            (existing.count + 1);
+          existing.avgConfidence = (existing.avgConfidence * existing.count + interp.confidence) / (existing.count + 1);
           existing.count++;
           if (!existing.sample.policyDimension && interp.policyDimension) {
             existing.sample = interp;

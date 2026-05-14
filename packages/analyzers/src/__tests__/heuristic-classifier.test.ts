@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { classifyHeuristic } from "../heuristic-classifier.js";
 
 describe("classifyHeuristic", () => {
@@ -58,7 +58,6 @@ describe("classifyHeuristic", () => {
     expect(classifyHeuristic("", 50, { cosmeticThreshold: 100 })).toBe("cosmetic");
     expect(classifyHeuristic("tweak", 200, { minorThreshold: 300 })).toBe("minor");
   });
-
 
   it("is case-insensitive for comment matching", () => {
     expect(classifyHeuristic("REVERT", 0)).toBe("revert");

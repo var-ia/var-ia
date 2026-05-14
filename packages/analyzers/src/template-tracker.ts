@@ -1,34 +1,34 @@
-import type { TemplateTracker, Template, TemplateChange, TemplateType } from "./index.js";
 import type { EvidenceEvent } from "@var-ia/evidence-graph";
+import type { Template, TemplateChange, TemplateTracker, TemplateType } from "./index.js";
 
 const TEMPLATE_TYPE_MAP: Record<string, TemplateType> = {
   "citation needed": "citation",
-  "cn": "citation",
-  "citation": "citation",
-  "cite": "citation",
-  "fact": "citation",
-  "unreferenced": "citation",
-  "refimprove": "citation",
+  cn: "citation",
+  citation: "citation",
+  cite: "citation",
+  fact: "citation",
+  unreferenced: "citation",
+  refimprove: "citation",
   "need citation": "citation",
   "primary sources": "citation",
-  "npov": "neutrality",
-  "pov": "neutrality",
-  "undue": "neutrality",
-  "blp": "blp",
+  npov: "neutrality",
+  pov: "neutrality",
+  undue: "neutrality",
+  blp: "blp",
   "blp sources": "blp",
   "living persons": "blp",
-  "disputed": "dispute",
-  "dispute": "dispute",
-  "contradict": "dispute",
-  "inconsistent": "dispute",
-  "cleanup": "cleanup",
+  disputed: "dispute",
+  dispute: "dispute",
+  contradict: "dispute",
+  inconsistent: "dispute",
+  cleanup: "cleanup",
   "copy edit": "cleanup",
-  "tone": "cleanup",
-  "wikify": "cleanup",
-  "merge": "cleanup",
-  "split": "cleanup",
-  "pp": "protection",
-  "protected": "protection",
+  tone: "cleanup",
+  wikify: "cleanup",
+  merge: "cleanup",
+  split: "cleanup",
+  pp: "protection",
+  protected: "protection",
   "pp-protected": "protection",
   "semi-protected": "protection",
 };
@@ -171,7 +171,7 @@ export function diffTemplateParams(before: Template[], after: Template[]): Param
 
   for (const [name, afterTmpl] of afterMap) {
     const beforeTmpl = beforeMap.get(name);
-    if (!beforeTmpl || !beforeTmpl.params && !afterTmpl.params) continue;
+    if (!beforeTmpl || (!beforeTmpl.params && !afterTmpl.params)) continue;
     if (!beforeTmpl.params || !afterTmpl.params) continue;
 
     const beforeParams = normalizeParams(beforeTmpl.params);
@@ -226,7 +226,7 @@ function normalizeParams(params: Record<string, string>): Record<string, string>
   const normalized: Record<string, string> = {};
   for (const [key, val] of Object.entries(params)) {
     const nk = key.toLowerCase().trim();
-    normalized[nk] = val === "" ? undefined as unknown as string : val;
+    normalized[nk] = val === "" ? (undefined as unknown as string) : val;
   }
   return normalized;
 }

@@ -1,6 +1,6 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
+import type { EvidenceEvent, Revision } from "../index.js";
 import { createReplayManifest } from "../replay-manifest.js";
-import type { Revision, EvidenceEvent } from "../index.js";
 
 const rev: Revision = {
   revId: 1,

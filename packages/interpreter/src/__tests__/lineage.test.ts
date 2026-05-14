@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
 import type { EvidenceEvent, EvidenceLayer } from "@var-ia/evidence-graph";
+import { describe, expect, it } from "vitest";
 
 // Access internal functions for testing prompt construction
 // These are tested directly to validate lineage context behavior

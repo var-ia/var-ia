@@ -1,7 +1,19 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 vi.mock("bun:sqlite", () => {
-  class MockDB { run() {} query() { return { all: () => [], get: () => null }; } prepare() { return { run: () => {} }; } transaction(fn: () => void) { return fn; } close() {} }
+  class MockDB {
+    run() {}
+    query() {
+      return { all: () => [], get: () => null };
+    }
+    prepare() {
+      return { run: () => {} };
+    }
+    transaction(fn: () => void) {
+      return fn;
+    }
+    close() {}
+  }
   return { Database: MockDB };
 });
 

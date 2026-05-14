@@ -26,9 +26,7 @@ export interface ProtectionTracker {
 export const protectionTracker: ProtectionTracker = {
   buildState(logs: ProtectionLogRecord[]): Map<string, ProtectionState> {
     const state = new Map<string, ProtectionState>();
-    const sorted = [...logs].sort(
-      (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
-    );
+    const sorted = [...logs].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
     for (const log of sorted) {
       if (log.action === "protect" || log.action === "modify") {
@@ -45,10 +43,7 @@ export const protectionTracker: ProtectionTracker = {
     return state;
   },
 
-  diffState(
-    before: Map<string, ProtectionState>,
-    after: Map<string, ProtectionState>,
-  ): ProtectionChange[] {
+  diffState(before: Map<string, ProtectionState>, after: Map<string, ProtectionState>): ProtectionChange[] {
     const changes: ProtectionChange[] = [];
     const allTitles = new Set([...before.keys(), ...after.keys()]);
 
@@ -95,11 +90,7 @@ export const protectionTracker: ProtectionTracker = {
     return changes;
   },
 
-  findLogsBetween(
-    logs: ProtectionLogRecord[],
-    fromTimestamp: string,
-    toTimestamp: string,
-  ): ProtectionLogRecord[] {
+  findLogsBetween(logs: ProtectionLogRecord[], fromTimestamp: string, toTimestamp: string): ProtectionLogRecord[] {
     const from = new Date(fromTimestamp).getTime();
     const to = new Date(toTimestamp).getTime();
 

@@ -1,4 +1,4 @@
-import type { Revision, EvidenceEvent } from "@var-ia/evidence-graph";
+import type { EvidenceEvent, Revision } from "@var-ia/evidence-graph";
 
 const DEFAULT_WINDOW_BEFORE_MS = 7 * 24 * 60 * 60 * 1000;
 const DEFAULT_WINDOW_AFTER_MS = 3 * 24 * 60 * 60 * 1000;
@@ -19,9 +19,7 @@ export function correlateTalkRevisions(
 
   if (articleRevs.length === 0 || talkRevs.length === 0) return events;
 
-  const sortedTalk = [...talkRevs].sort(
-    (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
-  );
+  const sortedTalk = [...talkRevs].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
   for (const article of articleRevs) {
     const articleTime = new Date(article.timestamp).getTime();
@@ -44,7 +42,7 @@ export function correlateTalkRevisions(
     }
 
     if (closest) {
-      const deltaHours = Math.round(closestDelta / (1000 * 60 * 60) * 10) / 10;
+      const deltaHours = Math.round((closestDelta / (1000 * 60 * 60)) * 10) / 10;
       events.push({
         eventType: "talk_page_correlated",
         fromRevisionId: article.revId,
@@ -53,7 +51,10 @@ export function correlateTalkRevisions(
         before: "",
         after: "",
         deterministicFacts: [
-          { fact: "talk_page_correlated", detail: `time_delta_hours=${deltaHours} talk_comment=${closest.comment.slice(0, 200)}` },
+          {
+            fact: "talk_page_correlated",
+            detail: `time_delta_hours=${deltaHours} talk_comment=${closest.comment.slice(0, 200)}`,
+          },
         ],
         layer: "observed",
         timestamp: closest.timestamp,

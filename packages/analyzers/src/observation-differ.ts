@@ -10,10 +10,7 @@ function eventKey(event: EvidenceEvent): string {
   return `${event.eventType}|${event.fromRevisionId}|${event.toRevisionId}|${event.section}`;
 }
 
-export function diffObservations(
-  prior: EvidenceEvent[],
-  current: EvidenceEvent[],
-): ObservationDiff {
+export function diffObservations(prior: EvidenceEvent[], current: EvidenceEvent[]): ObservationDiff {
   const priorKeys = new Set(prior.map(eventKey));
   const currentKeys = new Set(current.map(eventKey));
 

@@ -1,5 +1,13 @@
-import type { Revision, DiffResult, DiffLine } from "@var-ia/evidence-graph";
-import type { RevisionFetcher, RevisionSource, DiffFetcher, MoveFetcher, RevisionOptions, PageMove, ProtectionLogEvent } from "./index.js";
+import type { DiffLine, DiffResult, Revision } from "@var-ia/evidence-graph";
+import type {
+  DiffFetcher,
+  MoveFetcher,
+  PageMove,
+  ProtectionLogEvent,
+  RevisionFetcher,
+  RevisionOptions,
+  RevisionSource,
+} from "./index.js";
 import { RateLimiter } from "./rate-limiter.js";
 
 const DEFAULT_API_URL = "https://en.wikipedia.org/w/api.php";
@@ -27,12 +35,15 @@ interface RawRevision {
 
 interface RevisionQueryResponse {
   query?: {
-    pages?: Record<string, {
-      pageid: number;
-      title: string;
-      revisions?: RawRevision[];
-      missing?: string;
-    }>;
+    pages?: Record<
+      string,
+      {
+        pageid: number;
+        title: string;
+        revisions?: RawRevision[];
+        missing?: string;
+      }
+    >;
   };
   continue?: {
     rvcontinue: string;
@@ -203,7 +214,7 @@ export class MediaWikiClient implements RevisionFetcher, RevisionSource, DiffFet
 
       const url = `${this.apiUrl}?${params.toString()}`;
       const response = await this.fetch(url);
-      const data = await response.json() as {
+      const data = (await response.json()) as {
         query?: {
           logevents?: Array<{
             logid: number;
@@ -273,7 +284,7 @@ export class MediaWikiClient implements RevisionFetcher, RevisionSource, DiffFet
     const response = await fetch(url, {
       headers: {
         "User-Agent": this.userAgent,
-        "Accept": "application/json",
+        Accept: "application/json",
       },
     });
 

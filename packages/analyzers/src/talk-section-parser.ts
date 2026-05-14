@@ -82,10 +82,7 @@ export function parseTalkThreads(wikitext: string): TalkThread[] {
   return threads;
 }
 
-export function diffTalkThreads(
-  before: TalkThread[],
-  after: TalkThread[],
-): TalkThreadChange[] {
+export function diffTalkThreads(before: TalkThread[], after: TalkThread[]): TalkThreadChange[] {
   const changes: TalkThreadChange[] = [];
   const beforeMap = new Map(before.map((t) => [t.heading.toLowerCase(), t]));
   const afterMap = new Map(after.map((t) => [t.heading.toLowerCase(), t]));
@@ -125,11 +122,12 @@ export function buildTalkThreadEvents(
   for (const change of changes) {
     if (change.type === "unchanged") continue;
 
-    const eventType = change.type === "opened"
-      ? "talk_thread_opened"
-      : change.type === "archived"
-        ? "talk_thread_archived"
-        : "talk_reply_added";
+    const eventType =
+      change.type === "opened"
+        ? "talk_thread_opened"
+        : change.type === "archived"
+          ? "talk_thread_archived"
+          : "talk_reply_added";
 
     events.push({
       eventType: eventType as EvidenceEvent["eventType"],

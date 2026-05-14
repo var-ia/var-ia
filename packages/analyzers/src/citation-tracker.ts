@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
-import type { CitationTracker, CitationRef, CitationChange } from "./index.js";
-import type { SourceRecord, SourceLineage, SourceType, SourceAuthority } from "@var-ia/evidence-graph";
+import type { SourceAuthority, SourceLineage, SourceRecord, SourceType } from "@var-ia/evidence-graph";
+import type { CitationChange, CitationRef, CitationTracker } from "./index.js";
 
 export const citationTracker: CitationTracker = {
   extractCitations(wikitext: string): CitationRef[] {
@@ -10,6 +10,7 @@ export const citationTracker: CitationTracker = {
     const refRegex = /<ref\b([^>]*?)>(.*?)<\/ref\s*>/gs;
     let match: RegExpExecArray | null;
 
+    // biome-ignore lint/suspicious/noAssignInExpressions: Standard regex loop pattern
     while ((match = refRegex.exec(wikitext)) !== null) {
       const attrs = match[1];
       const content = match[2].trim();
@@ -33,6 +34,7 @@ export const citationTracker: CitationTracker = {
     }
 
     const selfClosingRegex = /<ref\b([^>]*?)\/\s*>/g;
+    // biome-ignore lint/suspicious/noAssignInExpressions: Standard regex loop pattern
     while ((match = selfClosingRegex.exec(wikitext)) !== null) {
       const attrs = match[1];
       const nameMatch = attrs.match(/name\s*=\s*["']?([^"'\s>]+)/i);
@@ -86,9 +88,10 @@ function indexByKey(refs: CitationRef[]): Map<string, CitationRef> {
   return map;
 }
 
-export function buildSourceLineage(
-  revisions: { revId: number; timestamp: string; content: string }[],
-): { sources: SourceRecord[]; lineage: SourceLineage[] } {
+export function buildSourceLineage(revisions: { revId: number; timestamp: string; content: string }[]): {
+  sources: SourceRecord[];
+  lineage: SourceLineage[];
+} {
   const sourceMap = new Map<string, SourceRecord>();
   const replacementMap = new Map<string, { replacedById: string; atRevisionId: number; atTimestamp: string }[]>();
 
@@ -171,11 +174,27 @@ export function buildSourceId(ref: CitationRef): string {
 }
 
 const NEWS_DOMAINS = [
-  "cnn.com", "nytimes.com", "bbc.com", "reuters.com", "apnews.com",
-  "washingtonpost.com", "wsj.com", "theguardian.com", "bloomberg.com",
-  "npr.org", "thehill.com", "politico.com", "foxnews.com", "nbcnews.com",
-  "cbsnews.com", "abcnews.net", "usatoday.com", "latimes.com",
-  "chicagotribune.com", "huffpost.com", "buzzfeednews.com",
+  "cnn.com",
+  "nytimes.com",
+  "bbc.com",
+  "reuters.com",
+  "apnews.com",
+  "washingtonpost.com",
+  "wsj.com",
+  "theguardian.com",
+  "bloomberg.com",
+  "npr.org",
+  "thehill.com",
+  "politico.com",
+  "foxnews.com",
+  "nbcnews.com",
+  "cbsnews.com",
+  "abcnews.net",
+  "usatoday.com",
+  "latimes.com",
+  "chicagotribune.com",
+  "huffpost.com",
+  "buzzfeednews.com",
 ];
 
 function classifySourceType(ref: CitationRef): SourceType {

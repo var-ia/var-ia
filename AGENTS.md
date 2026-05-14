@@ -10,7 +10,8 @@ upgrade the commercial pipeline through a single adapter boundary.
 ```bash
 bun run build       # tsc -b (composite project references, all packages)
 bun run typecheck   # tsc --noEmit (full typecheck, no emit)
-bun run lint        # eslint packages/
+bun run lint        # biome lint packages/
+bun run format      # biome format --write packages/
 bun run test        # vitest run (runs *.test.ts across all packages)
 bun run clean       # rm -rf packages/*/dist
 ```

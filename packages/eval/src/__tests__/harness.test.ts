@@ -1,7 +1,7 @@
-import { describe, it, expect } from "vitest";
-import { createEvalHarness } from "../index.js";
 import type { EvidenceEvent, EvidenceLayer } from "@var-ia/evidence-graph";
+import { describe, expect, it } from "vitest";
 import type { EvalTestCase } from "../index.js";
+import { createEvalHarness } from "../index.js";
 
 function makeEvent(eventType: string, section = "body"): EvidenceEvent {
   const layer: EvidenceLayer = "observed";
@@ -35,10 +35,7 @@ describe("createEvalHarness", () => {
         tolerance: { minPrecision: 0.5 },
       };
 
-      const result = harness.evaluate(test, [
-        makeEvent("revert_detected"),
-        makeEvent("citation_added"),
-      ]);
+      const result = harness.evaluate(test, [makeEvent("revert_detected"), makeEvent("citation_added")]);
 
       expect(result.passed).toBe(true);
       expect(result.matches).toHaveLength(2);
@@ -54,9 +51,7 @@ describe("createEvalHarness", () => {
         pageTitle: "Test",
         pageId: 1,
         revisionRange: { from: 0, to: 0 },
-        expectedEvents: [
-          { eventType: "revert_detected", section: "body" },
-        ],
+        expectedEvents: [{ eventType: "revert_detected", section: "body" }],
         tolerance: { minPrecision: 0.5 },
       };
 
@@ -73,16 +68,11 @@ describe("createEvalHarness", () => {
         pageTitle: "Test",
         pageId: 1,
         revisionRange: { from: 0, to: 0 },
-        expectedEvents: [
-          { eventType: "revert_detected", section: "body" },
-        ],
+        expectedEvents: [{ eventType: "revert_detected", section: "body" }],
         tolerance: { minPrecision: 0.5 },
       };
 
-      const result = harness.evaluate(test, [
-        makeEvent("revert_detected"),
-        makeEvent("citation_added"),
-      ]);
+      const result = harness.evaluate(test, [makeEvent("revert_detected"), makeEvent("citation_added")]);
 
       expect(result.falsePositives).toHaveLength(1);
     });
@@ -95,9 +85,7 @@ describe("createEvalHarness", () => {
         pageTitle: "Test",
         pageId: 1,
         revisionRange: { from: 0, to: 0 },
-        expectedEvents: [
-          { eventType: "revert_detected", section: "body" },
-        ],
+        expectedEvents: [{ eventType: "revert_detected", section: "body" }],
         tolerance: { minEventCount: 3 },
       };
 
@@ -113,9 +101,7 @@ describe("createEvalHarness", () => {
         pageTitle: "Test",
         pageId: 1,
         revisionRange: { from: 0, to: 0 },
-        expectedEvents: [
-          { eventType: "section_reorganized", section: "(lead)" },
-        ],
+        expectedEvents: [{ eventType: "section_reorganized", section: "(lead)" }],
         tolerance: { minPrecision: 0.5 },
       };
 

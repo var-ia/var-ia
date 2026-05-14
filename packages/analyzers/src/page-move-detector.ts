@@ -8,9 +8,7 @@ interface PageMoveRecord {
   comment: string;
 }
 
-export function buildPageMoveEvents(
-  moves: PageMoveRecord[],
-): EvidenceEvent[] {
+export function buildPageMoveEvents(moves: PageMoveRecord[]): EvidenceEvent[] {
   const events: EvidenceEvent[] = [];
 
   for (const move of moves) {

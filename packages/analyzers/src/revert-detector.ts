@@ -1,5 +1,5 @@
 import type { Revision } from "@var-ia/evidence-graph";
-import type { RevertDetector, RevertChain } from "./index.js";
+import type { RevertChain, RevertDetector } from "./index.js";
 
 const REVERT_PATTERNS = [
   /\brevert/i,
@@ -17,9 +17,7 @@ export const revertDetector: RevertDetector = {
 
   detectRevertChain(revisions: Revision[]): RevertChain[] {
     const chains: RevertChain[] = [];
-    const sorted = [...revisions].sort(
-      (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
-    );
+    const sorted = [...revisions].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
     let i = 0;
     while (i < sorted.length) {
@@ -29,10 +27,7 @@ export const revertDetector: RevertDetector = {
         continue;
       }
 
-      const existing = chains.find(
-        (c) =>
-          rev.revId <= c.endRevisionId + 1 && rev.revId >= c.startRevisionId - 1
-      );
+      const existing = chains.find((c) => rev.revId <= c.endRevisionId + 1 && rev.revId >= c.startRevisionId - 1);
 
       if (existing) {
         existing.startRevisionId = Math.min(existing.startRevisionId, rev.revId);

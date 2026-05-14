@@ -1,6 +1,6 @@
-import { describe, it, expect } from "vitest";
-import { correlateTalkRevisions } from "../talk-correlator.js";
 import type { Revision } from "@var-ia/evidence-graph";
+import { describe, expect, it } from "vitest";
+import { correlateTalkRevisions } from "../talk-correlator.js";
 
 function makeArticleRev(revId: number, daysFromNow: number): Revision {
   const d = new Date("2026-01-15T12:00:00Z");
@@ -55,11 +55,7 @@ describe("correlateTalkRevisions", () => {
 
   it("matches the closest talk revision for each article revision", () => {
     const articleRevs = [makeArticleRev(100, 0), makeArticleRev(101, 5)];
-    const talkRevs = [
-      makeTalkRev(200, 1),
-      makeTalkRev(201, 2),
-      makeTalkRev(202, 6),
-    ];
+    const talkRevs = [makeTalkRev(200, 1), makeTalkRev(201, 2), makeTalkRev(202, 6)];
 
     const events = correlateTalkRevisions(articleRevs, talkRevs);
     expect(events).toHaveLength(2);

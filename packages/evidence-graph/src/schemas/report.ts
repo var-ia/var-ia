@@ -17,12 +17,12 @@ export interface Report {
   pageTitle: string;
   pageId: number;
   analyzedRevisionRange: { from: number; to: number };
-  generatedAt: string;       // ISO 8601
+  generatedAt: string; // ISO 8601
   depth: Depth;
   layers: ReportLayer[];
   timeline: PageTimeline;
-  claims: string[];          // Claim IDs
-  sources: string[];         // Source IDs
+  claims: string[]; // Claim IDs
+  sources: string[]; // Source IDs
   policySignals: PolicySignal[];
   caveats: string[];
   phase: string;
@@ -44,8 +44,8 @@ export interface TimelineEvent {
 }
 
 export interface PolicySignal {
-  dimension: string;         // e.g., "verifiability", "npov", "blp", "due_weight"
-  signal: string;            // e.g., "citation_needed_template_added", "blp_template_active"
+  dimension: string; // e.g., "verifiability", "npov", "blp", "due_weight"
+  signal: string; // e.g., "citation_needed_template_added", "blp_template_active"
   firstSeenRevisionId: number;
   lastSeenRevisionId?: number;
   active: boolean;

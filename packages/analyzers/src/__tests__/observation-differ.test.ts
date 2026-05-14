@@ -1,6 +1,6 @@
-import { describe, it, expect } from "vitest";
-import { diffObservations } from "../observation-differ.js";
 import type { EvidenceEvent } from "@var-ia/evidence-graph";
+import { describe, expect, it } from "vitest";
+import { diffObservations } from "../observation-differ.js";
 
 function makeEvent(eventType: string, fromRevId: number, toRevId: number, section = "body"): EvidenceEvent {
   return {
@@ -29,10 +29,7 @@ describe("diffObservations", () => {
 
   it("detects new events in current stream", () => {
     const prior = [makeEvent("revert_detected", 1, 2)];
-    const current = [
-      makeEvent("revert_detected", 1, 2),
-      makeEvent("citation_added", 2, 3),
-    ];
+    const current = [makeEvent("revert_detected", 1, 2), makeEvent("citation_added", 2, 3)];
 
     const diff = diffObservations(prior, current);
     expect(diff.new).toHaveLength(1);
@@ -41,10 +38,7 @@ describe("diffObservations", () => {
   });
 
   it("detects resolved events when prior has them and current does not", () => {
-    const prior = [
-      makeEvent("revert_detected", 1, 2),
-      makeEvent("template_added", 2, 3),
-    ];
+    const prior = [makeEvent("revert_detected", 1, 2), makeEvent("template_added", 2, 3)];
     const current = [makeEvent("revert_detected", 1, 2)];
 
     const diff = diffObservations(prior, current);
