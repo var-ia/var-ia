@@ -10,8 +10,9 @@ export async function runClaim(
   claimText: string,
   useCache = false,
   modelConfig?: ModelConfig,
+  apiUrl?: string,
 ): Promise<void> {
-  const client = new MediaWikiClient();
+  const client = new MediaWikiClient(apiUrl ? { apiUrl } : undefined);
   console.log(`Tracking claim in "${pageTitle}"...`);
   console.log(`Claim text: "${claimText}"\n`);
 

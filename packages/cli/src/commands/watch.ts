@@ -7,8 +7,9 @@ const POLL_INTERVAL_MS = 60_000;
 export async function runWatch(
   pageTitle: string,
   section?: string,
+  apiUrl?: string,
 ): Promise<void> {
-  const client = new MediaWikiClient();
+  const client = new MediaWikiClient(apiUrl ? { apiUrl } : undefined);
   console.log(`Watching "${pageTitle}"${section ? ` section="${section}"` : ""}`);
   console.log(`Polling every ${POLL_INTERVAL_MS / 1000}s. Press Ctrl+C to stop.\n`);
 

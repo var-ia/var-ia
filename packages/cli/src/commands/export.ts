@@ -6,8 +6,9 @@ export async function runExport(
   pageTitle: string,
   format: string,
   modelConfig?: ModelConfig,
+  apiUrl?: string,
 ): Promise<void> {
-  const events = await runAnalyze(pageTitle, "detailed", undefined, undefined, false, modelConfig);
+  const events = await runAnalyze(pageTitle, "detailed", undefined, undefined, false, modelConfig, apiUrl);
 
   if (events.length === 0) {
     console.log("No events to export.");

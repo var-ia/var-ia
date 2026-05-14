@@ -1,5 +1,5 @@
 import type { Revision, DiffResult, DiffLine } from "@var-ia/evidence-graph";
-import type { RevisionFetcher, DiffFetcher, RevisionOptions } from "./index.js";
+import type { RevisionFetcher, RevisionSource, DiffFetcher, RevisionOptions } from "./index.js";
 import { RateLimiter } from "./rate-limiter.js";
 
 const DEFAULT_API_URL = "https://en.wikipedia.org/w/api.php";
@@ -49,7 +49,7 @@ interface CompareResponse {
   };
 }
 
-export class MediaWikiClient implements RevisionFetcher, DiffFetcher {
+export class MediaWikiClient implements RevisionFetcher, RevisionSource, DiffFetcher {
   private rateLimiter: RateLimiter;
   private userAgent: string;
   private apiUrl: string;
@@ -169,6 +169,13 @@ export class MediaWikiClient implements RevisionFetcher, DiffFetcher {
     }
 
     return response;
+  }
+
+  async *revisions(pageTitle: string, options?: RevisionOptions): AsyncIterable<Revision> {
+    const revs = await this.fetchRevisions(pageTitle, options);
+    for (const rev of revs) {
+      yield rev;
+    }
   }
 
   private mapRevision(raw: RawRevision, page: PageInfo): Revision {

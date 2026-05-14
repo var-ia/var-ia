@@ -6,7 +6,24 @@ export interface PersistenceConfig {
   dbPath: string;
 }
 
-export class Persistence {
+export interface PersistenceAdapter {
+  insertRevision(rev: Revision): void;
+  insertRevisions(revisions: Revision[]): void;
+  getRevisions(pageTitle: string, options?: { limit?: number; direction?: "newer" | "older" }): Revision[];
+  hasRevision(revId: number): boolean;
+  insertClaim(claim: ClaimObject): void;
+  getClaims(pageTitle: string): Array<{
+    claim_id: string;
+    identity_key: string;
+    current_state: string;
+    proposition_type: string;
+    first_seen_rev_id: number;
+    first_seen_at: string;
+  }>;
+  close(): void;
+}
+
+export class Persistence implements PersistenceAdapter {
   private db: Database;
 
   constructor(config: PersistenceConfig) {

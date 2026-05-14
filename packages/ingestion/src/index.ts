@@ -4,6 +4,10 @@ export interface RevisionFetcher {
   fetchRevisions(pageTitle: string, options?: RevisionOptions): Promise<Revision[]>;
 }
 
+export interface RevisionSource {
+  revisions(pageTitle: string, options?: RevisionOptions): AsyncIterable<Revision>;
+}
+
 export interface DiffFetcher {
   fetchDiff(fromRevId: number, toRevId: number): Promise<DiffResult>;
 }

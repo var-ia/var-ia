@@ -24,8 +24,9 @@ export async function runAnalyze(
   _toRevId?: number,
   useCache = false,
   modelConfig?: ModelConfig,
+  apiUrl?: string,
 ): Promise<EvidenceEvent[]> {
-  const client = new MediaWikiClient();
+  const client = new MediaWikiClient(apiUrl ? { apiUrl } : undefined);
   console.log(`Analyzing "${pageTitle}" at depth: ${depth}...`);
 
   let revisions: Revision[] = [];

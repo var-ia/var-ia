@@ -25,6 +25,7 @@ Options:
   --model-api-key  API key for model provider (or set env var OPENAI_API_KEY etc.)
   --model-name     Model name override (default: provider-specific)
   --model-endpoint API endpoint override
+  --api            MediaWiki API base URL (default: https://en.wikipedia.org/w/api.php)
 `;
 
 export async function cli(args: string[]): Promise<void> {
@@ -42,6 +43,7 @@ export async function cli(args: string[]): Promise<void> {
       const toRev = parseFlag(args, "to");
       const useCache = args.includes("--cache");
       const modelConfig = parseModelConfig(args);
+      const apiUrl = parseFlag(args, "api");
 
       const events = await runAnalyze(
         pageTitle,
@@ -50,6 +52,7 @@ export async function cli(args: string[]): Promise<void> {
         toRev ? parseInt(toRev, 10) : undefined,
         useCache,
         modelConfig,
+        apiUrl,
       );
 
       console.log(`\n=== Analysis Results ===`);
@@ -81,7 +84,8 @@ export async function cli(args: string[]): Promise<void> {
       }
       const useCache = args.includes("--cache");
       const modelConfig = parseModelConfig(args);
-      await runClaim(pageTitle, claimText, useCache, modelConfig);
+      const apiUrl = parseFlag(args, "api");
+      await runClaim(pageTitle, claimText, useCache, modelConfig, apiUrl);
       break;
     }
     case "export": {
@@ -92,7 +96,8 @@ export async function cli(args: string[]): Promise<void> {
         process.exit(1);
       }
       const modelConfig = parseModelConfig(args);
-      await runExport(pageTitle, format, modelConfig);
+      const apiUrl = parseFlag(args, "api");
+      await runExport(pageTitle, format, modelConfig, apiUrl);
       break;
     }
     case "watch": {
@@ -102,7 +107,8 @@ export async function cli(args: string[]): Promise<void> {
         process.exit(1);
       }
       const section = parseFlag(args, "section");
-      await runWatch(pageTitle, section);
+      const apiUrl = parseFlag(args, "api");
+      await runWatch(pageTitle, section, apiUrl);
       break;
     }
     case "--help":

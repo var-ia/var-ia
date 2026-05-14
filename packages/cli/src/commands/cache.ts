@@ -1,4 +1,5 @@
 import { Persistence } from "@var-ia/persistence";
+import type { PersistenceAdapter } from "@var-ia/persistence";
 import type { Revision } from "@var-ia/evidence-graph";
 import { existsSync, mkdirSync } from "node:fs";
 import { homedir } from "node:os";
@@ -7,9 +8,9 @@ import { join } from "node:path";
 const CACHE_DIR = join(homedir(), ".wikihistory");
 const DB_PATH = join(CACHE_DIR, "varia.db");
 
-let _instance: Persistence | null = null;
+let _instance: PersistenceAdapter | null = null;
 
-export function getPersistence(): Persistence {
+export function getPersistence(): PersistenceAdapter {
   if (!_instance) {
     if (!existsSync(CACHE_DIR)) {
       mkdirSync(CACHE_DIR, { recursive: true });
