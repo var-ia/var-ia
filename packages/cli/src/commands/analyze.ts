@@ -1,7 +1,9 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
+import { join } from "node:path";
+import { homedir } from "node:os";
 import { MediaWikiClient } from "@var-ia/ingestion";
 import type { RevisionOptions } from "@var-ia/ingestion";
-import { sectionDiffer, citationTracker, revertDetector, templateTracker, extractWikilinks, diffWikilinks, buildPageMoveEvents, extractCategories, diffCategories, classifyClaimChange, buildSectionLineage, protectionTracker } from "@var-ia/analyzers";
+import { sectionDiffer, citationTracker, revertDetector, templateTracker, extractWikilinks, diffWikilinks, buildPageMoveEvents, extractCategories, diffCategories, classifyClaimChange, buildSectionLineage, protectionTracker, correlateTalkRevisions, buildParamChangeEvents, diffObservations } from "@var-ia/analyzers";
 import type { TemplateType } from "@var-ia/analyzers";
 import type { PageMove, ProtectionLogEvent } from "@var-ia/ingestion";
 import type { EvidenceEvent, EvidenceLayer, Revision, DeterministicFact } from "@var-ia/evidence-graph";
@@ -41,6 +43,7 @@ export async function runAnalyze(
   depth: string,
   fromRevId?: number,
   _toRevId?: number,
+  fromTimestamp?: string,
   useCache = false,
   modelConfig?: ModelConfig,
   apiUrl?: string,
@@ -48,7 +51,7 @@ export async function runAnalyze(
   cacheDir?: string,
 ): Promise<{ events: EvidenceEvent[]; revisions: Revision[] }> {
   if (pagesFile) {
-    return runBatch(pagesFile, depth, fromRevId, _toRevId, useCache, modelConfig, apiUrl, cacheDir);
+    return runBatch(pagesFile, depth, fromRevId, _toRevId, fromTimestamp, useCache, modelConfig, apiUrl, cacheDir);
   }
   const client = new MediaWikiClient(apiUrl ? { apiUrl } : undefined);
   console.log(`Analyzing "${pageTitle}" at depth: ${depth}...`);
@@ -66,13 +69,16 @@ export async function runAnalyze(
   if (revisions.length === 0) {
     console.log(`Fetching revisions from Wikipedia...`);
     const options: RevisionOptions = { direction: "newer" };
-    if (fromRevId) {
+    if (fromTimestamp) {
+      options.start = new Date(fromTimestamp);
+      console.log(`Fetching revisions since ${fromTimestamp}...`);
+    } else if (fromRevId) {
       options.startRevId = fromRevId;
     }
     if (_toRevId) {
       options.endRevId = _toRevId;
     }
-    if (!fromRevId && !_toRevId) {
+    if (!fromTimestamp && !fromRevId && !_toRevId) {
       options.limit = 20;
     }
     revisions = await client.fetchRevisions(pageTitle, options);
@@ -263,6 +269,9 @@ export async function runAnalyze(
         timestamp: after.timestamp,
       });
     }
+
+    const paramChangeEvents = buildParamChangeEvents(beforeTemplates, afterTemplates, before.revId, after.revId, after.timestamp);
+    events.push(...paramChangeEvents);
 
     for (const sc of sectionChanges) {
       if (sc.changeType === "unchanged") continue;
@@ -457,6 +466,39 @@ export async function runAnalyze(
     }
   }
 
+  const talkRevs = await client.fetchTalkRevisions(pageTitle, { direction: "newer", limit: 10 });
+  if (talkRevs.length > 0) {
+    const talkEvents = correlateTalkRevisions(sortedRevs, talkRevs);
+    events.push(...talkEvents);
+    if (talkEvents.length > 0) {
+      console.log(`Correlated ${talkEvents.length} talk page discussions.`);
+    }
+  }
+
+  if (fromTimestamp) {
+    const obsDir = cacheDir ?? join(homedir(), ".wikihistory", "observations");
+    if (!existsSync(obsDir)) mkdirSync(obsDir, { recursive: true });
+    const obsFile = join(obsDir, `${pageTitle.replace(/[^a-zA-Z0-9_-]/g, "_")}.json`);
+
+    let priorEvents: EvidenceEvent[] = [];
+    try {
+      const raw = readFileSync(obsFile, "utf-8");
+      priorEvents = JSON.parse(raw) as EvidenceEvent[];
+    } catch { /* prior observation file may not exist yet */ }
+
+    const obsDiff = diffObservations(priorEvents, events);
+    if (priorEvents.length > 0) {
+      console.log(`\n── Re-observation delta ──`);
+      console.log(`  New events:      ${obsDiff.new.length}`);
+      console.log(`  Resolved events: ${obsDiff.resolved.length}`);
+      console.log(`  Unchanged:       ${obsDiff.unchanged.length}`);
+    } else {
+      console.log(`First observation — no delta available.`);
+    }
+
+    writeFileSync(obsFile, JSON.stringify(events, null, 2), "utf-8");
+  }
+
   if (modelConfig && events.length > 0) {
     const adapter = createAdapter(modelConfig);
     console.log(`Interpreting ${events.length} events with ${modelConfig.provider}...`);
@@ -486,6 +528,7 @@ async function runBatch(
   depth: string,
   fromRevId?: number,
   toRevId?: number,
+  fromTimestamp?: string,
   useCache = false,
   modelConfig?: ModelConfig,
   apiUrl?: string,
@@ -504,7 +547,7 @@ async function runBatch(
 
   for (const title of titles) {
     console.log(`--- Page ${pages.length + 1}/${titles.length}: ${title} ---`);
-    const { events } = await runAnalyze(title, depth, fromRevId, toRevId, useCache, modelConfig, apiUrl, undefined, cacheDir);
+    const { events } = await runAnalyze(title, depth, fromRevId, toRevId, fromTimestamp, useCache, modelConfig, apiUrl, undefined, cacheDir);
     pages.push({
       pageTitle: title,
       pageId: 0,

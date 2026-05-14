@@ -25,7 +25,11 @@ export type EventType =
   | "category_added"
   | "category_removed"
   | "protection_changed"
-  | "talk_page_correlated";
+  | "talk_page_correlated"
+  | "talk_thread_opened"
+  | "talk_thread_archived"
+  | "talk_reply_added"
+  | "template_parameter_changed";
 
 export interface FactProvenance {
   analyzer: string;

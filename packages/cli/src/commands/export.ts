@@ -22,13 +22,13 @@ export async function runExport(
   bundle?: boolean,
 ): Promise<void> {
   if (bundle) {
-    const { events, revisions } = await runAnalyze(pageTitle, "detailed", undefined, undefined, false, modelConfig, apiUrl);
+    const { events, revisions } = await runAnalyze(pageTitle, "detailed", undefined, undefined, undefined, false, modelConfig, apiUrl);
     const bundleData = buildBundle(pageTitle, events, revisions);
     console.log(JSON.stringify(bundleData, null, 2));
     return;
   }
 
-  const { events } = await runAnalyze(pageTitle, "detailed", undefined, undefined, false, modelConfig, apiUrl);
+  const { events } = await runAnalyze(pageTitle, "detailed", undefined, undefined, undefined, false, modelConfig, apiUrl);
 
   if (events.length === 0) {
     console.log("No events to export.");

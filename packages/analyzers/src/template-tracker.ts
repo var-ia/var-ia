@@ -1,4 +1,5 @@
 import type { TemplateTracker, Template, TemplateChange, TemplateType } from "./index.js";
+import type { EvidenceEvent } from "@var-ia/evidence-graph";
 
 const TEMPLATE_TYPE_MAP: Record<string, TemplateType> = {
   "citation needed": "citation",
@@ -151,4 +152,81 @@ function splitParams(raw: string): string[] {
   }
 
   return parts;
+}
+
+export interface ParamChange {
+  templateName: string;
+  paramName: string;
+  oldValue?: string;
+  newValue?: string;
+}
+
+export function diffTemplateParams(before: Template[], after: Template[]): ParamChange[] {
+  const changes: ParamChange[] = [];
+  const beforeMap = new Map<string, Template>();
+  const afterMap = new Map<string, Template>();
+
+  for (const t of before) beforeMap.set(t.name.toLowerCase(), t);
+  for (const t of after) afterMap.set(t.name.toLowerCase(), t);
+
+  for (const [name, afterTmpl] of afterMap) {
+    const beforeTmpl = beforeMap.get(name);
+    if (!beforeTmpl || !beforeTmpl.params && !afterTmpl.params) continue;
+    if (!beforeTmpl.params || !afterTmpl.params) continue;
+
+    const beforeParams = normalizeParams(beforeTmpl.params);
+    const afterParams = normalizeParams(afterTmpl.params);
+    const allKeys = new Set([...Object.keys(beforeParams), ...Object.keys(afterParams)]);
+
+    for (const key of allKeys) {
+      const oldVal = beforeParams[key];
+      const newVal = afterParams[key];
+
+      if (oldVal === undefined && newVal !== undefined) {
+        changes.push({ templateName: afterTmpl.name, paramName: key, newValue: newVal });
+      } else if (oldVal !== undefined && newVal === undefined) {
+        changes.push({ templateName: afterTmpl.name, paramName: key, oldValue: oldVal });
+      } else if (oldVal !== newVal) {
+        changes.push({ templateName: afterTmpl.name, paramName: key, oldValue: oldVal, newValue: newVal });
+      }
+    }
+  }
+
+  return changes;
+}
+
+export function buildParamChangeEvents(
+  beforeTemplates: Template[],
+  afterTemplates: Template[],
+  fromRevId: number,
+  toRevId: number,
+  timestamp: string,
+): EvidenceEvent[] {
+  const changes = diffTemplateParams(beforeTemplates, afterTemplates);
+
+  return changes.map((c) => ({
+    eventType: "template_parameter_changed" as EvidenceEvent["eventType"],
+    fromRevisionId: fromRevId,
+    toRevisionId: toRevId,
+    section: "body",
+    before: c.oldValue ?? "",
+    after: c.newValue ?? "",
+    deterministicFacts: [
+      {
+        fact: "template_parameter_changed",
+        detail: `template=${c.templateName} param=${c.paramName}${c.oldValue !== undefined ? ` old=${c.oldValue.slice(0, 100)}` : ""}${c.newValue !== undefined ? ` new=${c.newValue.slice(0, 100)}` : ""}`,
+      },
+    ],
+    layer: "observed",
+    timestamp,
+  }));
+}
+
+function normalizeParams(params: Record<string, string>): Record<string, string> {
+  const normalized: Record<string, string> = {};
+  for (const [key, val] of Object.entries(params)) {
+    const nk = key.toLowerCase().trim();
+    normalized[nk] = val === "" ? undefined as unknown as string : val;
+  }
+  return normalized;
 }

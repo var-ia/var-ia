@@ -75,6 +75,7 @@ async function buildSummary(
     depth,
     undefined,
     undefined,
+    undefined,
     false,
     modelConfig,
     apiUrl,

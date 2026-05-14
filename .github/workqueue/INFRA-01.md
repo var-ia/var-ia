@@ -1,6 +1,6 @@
 ---
 id: INFRA-01
-status: blocked
+status: ready
 priority: 9
 dependencies: [L1-01, L1-02]
 packages: [eval]

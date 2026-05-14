@@ -64,7 +64,8 @@ export { sectionDiffer, buildSectionLineage } from "./section-differ.js";
 export type { SectionEvent, SectionLineage } from "./section-differ.js";
 export { citationTracker, buildSourceLineage, buildSourceId } from "./citation-tracker.js";
 export { revertDetector } from "./revert-detector.js";
-export { templateTracker } from "./template-tracker.js";
+export { templateTracker, diffTemplateParams, buildParamChangeEvents } from "./template-tracker.js";
+export type { ParamChange } from "./template-tracker.js";
 export { classifyHeuristic } from "./heuristic-classifier.js";
 export type { HeuristicKind, HeuristicOptions } from "./heuristic-classifier.js";
 export { extractWikilinks, diffWikilinks, buildWikilinkEvents } from "./wikilink-extractor.js";
@@ -73,6 +74,12 @@ export { extractCategories, diffCategories, buildCategoryEvents } from "./catego
 export { classifyClaimChange } from "./claim-differ.js";
 export { protectionTracker } from "./protection-tracker.js";
 export type { ProtectionTracker, ProtectionChange } from "./protection-tracker.js";
+export { correlateTalkRevisions } from "./talk-correlator.js";
+export type { TalkCorrelationOptions } from "./talk-correlator.js";
+export { parseTalkThreads, diffTalkThreads, buildTalkThreadEvents } from "./talk-section-parser.js";
+export type { TalkThread, TalkReply, TalkThreadChange } from "./talk-section-parser.js";
+export { diffObservations } from "./observation-differ.js";
+export type { ObservationDiff } from "./observation-differ.js";
 export {
   sanitizeWikitext,
   extractHeadingMap,

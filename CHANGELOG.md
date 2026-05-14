@@ -10,6 +10,32 @@ and L2 custom adapter deep dive. See `examples/README.md`.
 
 Dual-licensed: CC0-1.0 (scripts) + AGPL-3.0 (everything else).
 
+### L1-02: Talk Page Correlation
+
+New `correlateTalkRevisions()` analyzer matches article revision timestamps to
+nearby talk page revision timestamps (configurable window, default 7 days before
+to 3 days after). Produces `talk_page_correlated` events. Integrated into the
+analyze command pipeline.
+
+### L1-07: Re-Observation / Temporal Diff
+
+New `--since <iso-timestamp>` flag for the `analyze` command. Fetches only
+revisions after the given timestamp and diffs the event stream against the prior
+observation (persisted to `~/.wikihistory/observations/`). Shows delta of new,
+resolved, and unchanged events.
+
+### L1-08: Talk Page Section Extractor
+
+New `parseTalkThreads()` function extracts threaded discussion structure (sections,
+replies, participants, timestamps, resolved status). New event types:
+`talk_thread_opened`, `talk_thread_archived`, `talk_reply_added`.
+
+### L1-09: Template Parameter Differ
+
+Extended `template-tracker.ts` with `diffTemplateParams()` and
+`buildParamChangeEvents()`. Diffs parameter key-value pairs on templates present
+in both revisions. New event type: `template_parameter_changed`.
+
 ## 0.1.0 (2025-01-01)
 
 Initial release.

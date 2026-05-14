@@ -49,15 +49,18 @@ anything.
 | ID | Item | Layer | Priority | Effort | Deps | Status |
 |----|------|-------|----------|--------|------|--------|
 | L1-01 | Talk page fetcher | L1 | 1 | small | — | done |
-| L1-02 | Talk page correlation | L1 | 1 | small | L1-01 | ready |
+| L1-02 | Talk page correlation | L1 | 1 | small | L1-01 | done |
 | L1-03 | Wikilink extractor | L1 | 2 | small | — | done |
 | L1-04 | Page move detector | L1 | 3 | small | — | done |
 | L1-05 | Category tracker | L1 | 4 | small | — | done |
 | L1-06 | Claim direction classification | L1 | 5 | medium | — | done |
-| L2-01 | Talk page interpretation | L2 | 6 | medium | L1-01, L1-02 | blocked |
+| L1-07 | Re-observation / temporal diff | L1 | 10 | medium | — | done |
+| L1-08 | Talk page section extractor | L1 | 11 | small | L1-01 | done |
+| L1-09 | Template parameter differ | L1 | 12 | small | — | done |
+| L2-01 | Talk page interpretation | L2 | 6 | medium | L1-01, L1-02 | ready |
 | L2-02 | Lineage-aware interpretation | L2 | 7 | medium | — | done |
 | CW-01 | Cross-wiki diff command | CLI | 8 | medium | — | done |
-| INFRA-01 | Real L3 eval with ground truth | INFRA | 9 | large | L1-01, L1-02 | blocked |
+| INFRA-01 | Real L3 eval with ground truth | INFRA | 9 | large | L1-01, L1-02 | ready |
 
 ## Dependency Graph
 
@@ -73,7 +76,7 @@ L2-02 (independent)
 CW-01 (independent)
 ```
 
-**Ready to pick up:** L1-02
+**Ready to pick up:** L2-01, INFRA-01
 
 ## L1 — Deterministic
 

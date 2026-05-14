@@ -27,6 +27,7 @@ Options:
   --section        Watch a specific section only
   --from           Start revision ID
   --to             End revision ID
+  --since          ISO timestamp for re-observation (only events since this time)
   --cache          Cache revisions in SQLite (~/.wikihistory/varia.db)
   --model          Model provider for semantic interpretation (openai, anthropic, deepseek, local, byok)
   --model-api-key  API key for model provider (or set env var OPENAI_API_KEY etc.)
@@ -49,6 +50,7 @@ export async function cli(args: string[]): Promise<void> {
       const depth = parseFlag(args, "depth") ?? "detailed";
       const fromRev = parseFlag(args, "from");
       const toRev = parseFlag(args, "to");
+      const since = parseFlag(args, "since");
       const useCache = args.includes("--cache");
       const modelConfig = parseModelConfig(args);
       const apiUrl = parseFlag(args, "api");
@@ -60,6 +62,7 @@ export async function cli(args: string[]): Promise<void> {
           depth,
           fromRev ? parseInt(fromRev, 10) : undefined,
           toRev ? parseInt(toRev, 10) : undefined,
+          since,
           useCache,
           modelConfig,
           apiUrl,
@@ -78,6 +81,7 @@ export async function cli(args: string[]): Promise<void> {
           depth,
           fromRev ? parseInt(fromRev, 10) : undefined,
           toRev ? parseInt(toRev, 10) : undefined,
+          since,
           useCache,
           modelConfig,
           apiUrl,
@@ -88,6 +92,10 @@ export async function cli(args: string[]): Promise<void> {
         console.log(`\n=== Analysis Results ===`);
         console.log(`Page: ${pageTitle}`);
         console.log(`Events detected: ${events.length}`);
+
+        if (since) {
+          console.log(`Re-observation since: ${since}`);
+        }
         console.log();
 
         for (const event of events) {
