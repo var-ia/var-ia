@@ -1,6 +1,6 @@
 {
   "name": "@var-ia/eval",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "private": false,
   "description": "Evaluation harness for Wikipedia provenance analyzers",

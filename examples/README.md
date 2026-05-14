@@ -1,89 +1,38 @@
 # Examples
 
-## CLI
+Each script is a self-contained `bun` executable. Run any of them:
 
 ```bash
-wikihistory analyze "Earth" --depth brief
-wikihistory analyze "COVID-19 pandemic" --depth detailed
-wikihistory claim "Theranos" --text "revolutionary blood testing technology"
-wikihistory export "COVID-19 pandemic" --format json
-wikihistory analyze "Donald Trump" --depth detailed --model openai
-wikihistory analyze --pages-file pages.txt --depth brief
-wikihistory eval
+bun run examples/01-claim-provenance.ts
+bun run examples/02-equivalent-to-wikiwho.ts
+# ...etc
 ```
 
-## Library — programmatic analysis
+## Index
 
-```ts
-// Use individual analyzers programmatically
-import { sectionDiffer, citationTracker } from "@var-ia/analyzers";
-import { MediaWikiClient } from "@var-ia/ingestion";
-import type { EvidenceEvent } from "@var-ia/evidence-graph";
+| # | Script | Problem It Solves |
+|---|--------|-------------------|
+| 01 | [claim-provenance.ts](01-claim-provenance.ts) | Track a specific claim across revision history — first appearance, rewording, removal |
+| 02 | [equivalent-to-wikiwho.ts](02-equivalent-to-wikiwho.ts) | Token attribution vs. structured evidence with citation + template context |
+| 03 | [equivalent-to-ores.ts](03-equivalent-to-ores.ts) | Black-box ML scores vs. deterministic, reproducible edit classification with provenance |
+| 04 | [from-scratch-to-varia.ts](04-from-scratch-to-varia.ts) | The ~800 lines of brittle Wikipedia analysis code you don't need to write |
+| 05 | [wikidata-editorial-depth.ts](05-wikidata-editorial-depth.ts) | Current claim state vs. full editorial history — sources tried, replaced, removed |
+| 06 | [custom-model-adapter.ts](06-custom-model-adapter.ts) | L2 adapter deep dive — pipeline, lineage context, adapters, consensus, custom adapter |
 
-const client = new MediaWikiClient();
-const revisions = await client.fetchRevisions("Earth", { limit: 10 });
+## Audience
 
-for (let i = 1; i < revisions.length; i++) {
-  const before = revisions[i - 1].content;
-  const after = revisions[i].content;
+Each script targets a specific migration audience:
 
-  const sections = sectionDiffer.diffSections(
-    sectionDiffer.extractSections(before),
-    sectionDiffer.extractSections(after),
-  );
+- **WikiWho users** (02): "You get structured events + citation/template context instead of raw token diffs."
+- **ORES consumers** (03): "Same classifications, byte-reproducible, with a 'why' for every label."
+- **Manual API scraper rebuilders** (04): "Your pipeline already exists — in 3 imports."
+- **Wikidata-oriented researchers** (05): "Edit history of claims, not just current state."
+- **Model adapter builders** (06): "The hardest API to learn from types alone, walked through step by step."
 
-  const citations = citationTracker.diffCitations(
-    citationTracker.extractCitations(before),
-    citationTracker.extractCitations(after),
-  );
+Scripts 01-05 are fully deterministic — no API keys needed. Script 06
+requires a model provider key to show live interpretation (but documents
+the setup flow even without one).
 
-  console.log(`Revision ${revisions[i].revId}:`);
-  console.log(`  Sections changed: ${sections.length}`);
-  console.log(`  Citation changes: ${citations.length}`);
-}
-```
-
-## Custom model adapter
-
-```ts
-import { createAdapter } from "@var-ia/interpreter";
-import type { ModelAdapter } from "@var-ia/interpreter";
-
-// OpenAI
-const openai = createAdapter({ provider: "openai" });
-
-// Local Ollama
-const local = createAdapter({ provider: "local", model: "llama3" });
-
-// Bring your own endpoint
-const byok = createAdapter({
-  provider: "byok",
-  endpoint: "https://your-endpoint.com/v1",
-  model: "your-model",
-  apiKey: process.env.YOUR_API_KEY,
-});
-```
-
-## Evaluation harness
-
-```ts
-import { createEvalHarness } from "@var-ia/eval";
-import { MediaWikiClient } from "@var-ia/ingestion";
-import { sectionDiffer } from "@var-ia/analyzers";
-
-const harness = createEvalHarness();
-const client = new MediaWikiClient();
-const results = [];
-
-for (const test of harness.benchmarkPages()) {
-  const revisions = await client.fetchRevisions(test.pageTitle, { limit: 20 });
-  // Run analyzers to produce evidence events
-  const events = runAnalyzers(revisions); // your event pipeline
-  const result = harness.evaluate(test, events);
-  results.push(result);
-}
-
-const summary = harness.computeScores(results);
-console.log(`Precision: ${summary.overallPrecision}`);
-console.log(`Passed: ${summary.testsPassed}/${summary.totalTests}`);
-```
+Each script runs against live Wikipedia API with a rate limiter
+(200ms minimum delay between requests). They use small revision
+windows (8-20 revisions) for quick runs.

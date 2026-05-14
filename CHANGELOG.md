@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.1 (2026-05-13)
+
+### Examples (new)
+
+Six migration-audience tutorial scripts covering claim provenance, WikiWho
+equivalent, ORES equivalent, from-scratch migration, Wikidata editorial depth,
+and L2 custom adapter deep dive. See `examples/README.md`.
+
+Dual-licensed: CC0-1.0 (scripts) + AGPL-3.0 (everything else).
+
 ## 0.1.0 (2025-01-01)
 
 Initial release.

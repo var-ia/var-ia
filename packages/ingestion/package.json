@@ -1,6 +1,6 @@
 {
   "name": "@var-ia/ingestion",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "type": "module",
   "private": false,
   "description": "Wikimedia API adapters: revision fetching, diff computation, rate limiting, pagination",
@@ -13,7 +13,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@var-ia/evidence-graph": "^0.2.0"
+    "@var-ia/evidence-graph": "^0.2.1"
   },
   "devDependencies": {}
 }

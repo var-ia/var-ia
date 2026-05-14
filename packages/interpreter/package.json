@@ -1,6 +1,6 @@
 {
   "name": "@var-ia/interpreter",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "private": false,
   "description": "Pluggable model adapter for semantic interpretation of evidence events",
@@ -13,7 +13,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@var-ia/evidence-graph": "^0.2.0"
+    "@var-ia/evidence-graph": "^0.2.1"
   },
   "devDependencies": {}
 }
