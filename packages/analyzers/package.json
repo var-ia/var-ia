@@ -3,7 +3,7 @@
   "version": "0.2.1",
   "type": "module",
   "private": false,
-  "description": "Deterministic analyzers: section diffing, citation tracking, revert detection, template tracking",
+  "description": "Deterministic L1 analyzers — section diff, claim extraction, citation tracking, revert detection, talk page correlation, template/category/wikilink analysis",
   "license": "AGPL-3.0",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",

@@ -3,7 +3,7 @@
   "version": "0.1.1",
   "type": "module",
   "private": false,
-  "description": "Evaluation harness for Wikipedia provenance analyzers",
+  "description": "Generic evaluation harness for L2 model quality — benchmarks, calibration, L3 ground truth validation",
   "license": "AGPL-3.0",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",

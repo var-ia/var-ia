@@ -1,7 +1,32 @@
 # Roadmap
 
-Varia is at 0.1.0. This roadmap tracks the next increment of awareness mechanisms.
-Every item extends the existing three-layer architecture without restructuring it.
+Varia v0.1 (Phase 1) is complete. All 20 workqueue items shipped.
+Phase 2 focuses on the NextConsensus private prototype.
+
+## Repo Map
+
+| Category | Repo | Purpose |
+|----------|------|---------|
+| **Varia repos** | `varia` (this repo, open-source) | Generic public-knowledge observability. Answers: "What changed?" |
+| **NextConsensus repos** | (to be created, private) | Healthcare-specific decision intelligence. Answers: "Does this change matter for this healthcare decision?" |
+| **Private repos** | (to be created, private) | Source weighting, thresholds, backtests, customer workflows, outcome data |
+
+Only `varia` exists locally. The other repos need to be created.
+
+## Agent Workstream Mapping
+
+The monorepo packages have been reorganized to match the agent workstream structure:
+
+| Package | Workstream | Purpose |
+|---------|-----------|---------|
+| `evidence-graph` | Agent F | Event schema and export |
+| `ingestion` | Agent A | MediaWiki ingestion |
+| `analyzers` | Agents B/C/D/E | Diff engine, claims, citations, disputes |
+| `interpreter` | L2 model adapter | — |
+| `cli` | Agent G | CLI and local storage |
+| `persistence` | Agent G | Local storage |
+| `eval` | — | Evaluation harness (generic, kept in varia) |
+| `observable` | — | Observable Framework data loaders |
 
 ## What Varia Observes
 
@@ -46,48 +71,13 @@ anything.
 
 ## Status
 
-| ID | Item | Layer | Priority | Effort | Deps | Status |
-|----|------|-------|----------|--------|------|--------|
-| L1-01 | Talk page fetcher | L1 | 1 | small | — | done |
-| L1-02 | Talk page correlation | L1 | 1 | small | L1-01 | done |
-| L1-03 | Wikilink extractor | L1 | 2 | small | — | done |
-| L1-04 | Page move detector | L1 | 3 | small | — | done |
-| L1-05 | Category tracker | L1 | 4 | small | — | done |
-| L1-06 | Claim direction classification | L1 | 5 | medium | — | done |
-| L1-07 | Re-observation / temporal diff | L1 | 10 | medium | — | done |
-| L1-08 | Talk page section extractor | L1 | 11 | small | L1-01 | done |
-| L1-09 | Template parameter differ | L1 | 12 | small | — | done |
-| L2-01 | Talk page interpretation | L2 | 6 | medium | L1-01, L1-02 | done |
-| L2-02 | Lineage-aware interpretation | L2 | 7 | medium | — | done |
-| CW-01 | Cross-wiki diff command | CLI | 8 | medium | — | done |
-| CW-02 | Multi-workset diff | CLI | 10 | medium | CW-01 | done |
-| CW-03 | Evidence graph viz | CLI | 13 | small | — | done |
-| CW-04 | Non-English Wikipedia support | CLI | 15 | medium | — | done |
-| CW-05 | Private MediaWiki instance support | INFRA | 16 | medium | — | done |
-| INFRA-01 | Real L3 eval with ground truth | INFRA | 9 | large | L1-01, L1-02 | done |
-| INFRA-02 | Scheduled re-observation | INFRA | 11 | medium | L1-07 | done |
-| INFRA-03 | L2 quality benchmarks | INFRA | 12 | large | L2-01, INFRA-01 | done |
-| INFRA-04 | Watch channels | INFRA | 14 | medium | INFRA-02 | done |
+**Phase 1 (Varia v0.1): Complete.**
 
-## Dependency Graph
+All 20 workqueue items are shipped. See the task descriptions below for details on what was built.
 
-```
-L1-01 ──→ L1-02 ──→ L2-01 ──→ INFRA-03 ✓
-L1-01 ──→ INFRA-01 ──→ INFRA-03 ✓
-L1-02 ──→ INFRA-01 ✓
-L1-07 ──→ INFRA-02 ✓ ──→ INFRA-04 ✓
-CW-01 ──→ CW-02 ✓
-L1-03 (independent) ✓
-L1-04 (independent) ✓
-L1-05 (independent) ✓
-L1-06 (independent) ✓
-L2-02 (independent) ✓
-CW-03 ✓ (independent)
-CW-04 ✓ (independent)
-CW-05 (independent)
-```
+**Phase 2: NextConsensus private prototype (current focus).**
 
-**Ready to pick up:** None — all items are done.
+New capability work moves to private repos. This repo enters maintenance mode for bug fixes and polish.
 
 ## L1 — Deterministic
 

@@ -6,6 +6,6 @@ date-released: 2025-01-01
 authors:
   - name: NextConsensus
     website: https://nextconsensus.com
-repository-code: https://github.com/nextconsensus/var-ia
+repository-code: https://github.com/var-ia/var-ia
 license: AGPL-3.0
 type: software

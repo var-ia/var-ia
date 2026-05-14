@@ -3,7 +3,7 @@
   "version": "0.2.1",
   "type": "module",
   "private": false,
-  "description": "Generic evidence graph schemas: claim, evidence, source, report objects",
+  "description": "Core types and schemas for evidence events, claims, revisions, sources, and reports — the canonical event schema for Varia",
   "license": "AGPL-3.0",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",

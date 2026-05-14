@@ -74,7 +74,7 @@ Returns exit code 1 if new events detected. Combine with `--notify-slack` or `--
 **I want this as a GitHub Action:**
 
 ```yaml
-- uses: nextconsensus/varia-action@main
+- uses: var-ia/varia-action@main
   with:
     pages: |
       Bitcoin

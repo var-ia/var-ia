@@ -21,7 +21,7 @@ Deterministic claim-provenance engine for MediaWiki knowledge systems. Evidence,
 
 ```bash
 # CLI via npx (coming) or clone the repo
-git clone https://github.com/nextconsensus/varia
+git clone https://github.com/var-ia/var-ia
 cd varia && bun install && bun run build
 
 # Analyze a Wikipedia page

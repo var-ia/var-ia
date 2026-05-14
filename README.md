@@ -1,13 +1,16 @@
 # Var-ia
 
-[![CI](https://github.com/nextconsensus/var-ia/actions/workflows/ci.yml/badge.svg)](https://github.com/nextconsensus/var-ia/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/github/v/release/nextconsensus/var-ia)](https://github.com/nextconsensus/var-ia/releases)
+[![CI](https://github.com/var-ia/var-ia/actions/workflows/ci.yml/badge.svg)](https://github.com/var-ia/var-ia/actions/workflows/ci.yml)
+[![Version](https://img.shields.io/github/v/release/var-ia/var-ia)](https://github.com/var-ia/var-ia/releases)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-0f172a.svg)](./LICENSE)
 [![npm scope](https://img.shields.io/badge/npm-%40var--ia-2563eb.svg)](https://www.npmjs.com/org/var-ia)
 
-**Open-source infrastructure for knowledge change.**
+**Open-source deterministic observation engine for public revision histories.**
 
 > Evidence, not truth.
+>
+> **Varia answers:** "What changed?"
+> **NextConsensus answers:** "Does this change matter for this healthcare decision?"
 
 Var-ia turns revision histories from MediaWiki-based knowledge systems into
 structured timelines of how claims, sources, wording, and disputes change over
@@ -18,10 +21,9 @@ score: L1 facts (what changed) are deterministic and reproducible. L2
 interpretations (what the change means) are model-assisted and
 confidence-bounded.
 
-Built and open-sourced by [NextConsensus](https://nextconsensus.com). Varia is
+Built and maintained by [NextConsensus](https://nextconsensus.com). Varia is
 domain-neutral infrastructure for structuring public knowledge change.
-[Repository boundary](./docs/repository-boundary.md): Varia observes change.
-NextConsensus judges healthcare decision relevance.
+[Repository map and boundary](./docs/repository-boundary.md).
 
 ![Concept Overview](./docs/diagrams/concept-overview.svg)
 
@@ -255,7 +257,7 @@ integration without AGPL obligations. See [nextconsensus.com](https://nextconsen
 
 - [Contributing](./CONTRIBUTING.md) — how to get started
 - [Good first tasks](./ROADMAP.md) — ready-to-pick-up work items
-- [Discussions](https://github.com/nextconsensus/var-ia/discussions) — questions, ideas
+- [Discussions](https://github.com/var-ia/var-ia/discussions) — questions, ideas
 - [Code of Conduct](./.github/CODE_OF_CONDUCT.md)
 - [Security](./.github/SECURITY.md)
 - [Changelog](./CHANGELOG.md)

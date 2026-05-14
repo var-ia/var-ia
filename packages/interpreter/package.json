@@ -3,7 +3,7 @@
   "version": "0.1.1",
   "type": "module",
   "private": false,
-  "description": "Pluggable model adapter for semantic interpretation of evidence events",
+  "description": "Pluggable model adapter interface (L2) — interpret L1 evidence through OpenAI, Anthropic, DeepSeek, Ollama, or custom adapters",
   "license": "AGPL-3.0",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",

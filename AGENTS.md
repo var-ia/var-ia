@@ -4,6 +4,11 @@ Varia is the open-source deterministic observation engine built and maintained
 by [NextConsensus](https://nextconsensus.com). It is domain-neutral
 infrastructure for MediaWiki and public revision histories.
 
+## Repository Boundary
+
+Varia = generic public-knowledge observability
+NextConsensus = healthcare-specific decision intelligence
+
 Repository boundary: read `docs/repository-boundary.md` before adding scope.
 Varia observes change. NextConsensus judges healthcare decision relevance.
 

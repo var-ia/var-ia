@@ -1,12 +1,18 @@
 # Repository Boundary
 
 Varia is open-source core observability for MediaWiki and public revision histories.
-It turns visible changes in pages, sections, claims, sources, links, categories,
-talk-page references, and revision metadata into provenance-tagged evidence.
+
+## Repo Map
+
+| Category | Answers | Scope |
+|----------|---------|-------|
+| **Varia repos** (open-source) | "What changed?" | Generic public-knowledge observability |
+| **NextConsensus repos** (private) | "Does this change matter for this healthcare decision?" | Healthcare-specific decision intelligence |
+| **Private repos** (private) | — | Source weighting, thresholds, backtests, customer workflows, outcome data |
 
 Varia observes change. NextConsensus judges healthcare decision relevance.
 
-## In Scope
+## In Scope (Varia repos)
 
 - Fetching and replaying MediaWiki revision histories.
 - Deterministic extraction of what changed between revisions.
@@ -18,7 +24,7 @@ Varia observes change. NextConsensus judges healthcare decision relevance.
   revision-history events.
 - Connectors for public or user-controlled MediaWiki instances.
 
-## Out of Scope
+## Out of Scope (Varia repos)
 
 - Healthcare decision judgment or recommendation logic.
 - Payer, guideline, clinical, regulatory, customer, or case-workflow rules.
