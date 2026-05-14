@@ -6,6 +6,20 @@
   "description": "A deterministic claim-provenance engine for Wikipedia page histories. Show what changed, not what is true.",
   "repository": "github:nextconsensus/var-ia",
   "homepage": "https://nextconsensus.com",
+  "bugs": "https://github.com/nextconsensus/var-ia/issues",
+  "keywords": [
+    "wikipedia",
+    "evidence-graph",
+    "claim-provenance",
+    "diff-analysis",
+    "edit-history",
+    "deterministic",
+    "observation-engine"
+  ],
+  "engines": {
+    "bun": ">=1.2.0",
+    "node": ">=20.0.0"
+  },
   "license": "AGPL-3.0",
   "workspaces": [
     "packages/ingestion",

@@ -146,7 +146,7 @@ export async function runClaim(
 
 export { runClaim as runClaimCommand };
 
-function stripWikitext(wikitext: string): string {
+export function stripWikitext(wikitext: string): string {
   let text = wikitext;
   text = text.replace(/<!--[\s\S]*?-->/g, "");
   text = text.replace(/<ref\b[^>]*\/\s*>/gi, "");
@@ -161,7 +161,7 @@ function stripWikitext(wikitext: string): string {
   return text.trim();
 }
 
-function fuzzyFindClaim(claimText: string, plainText: string): string {
+export function fuzzyFindClaim(claimText: string, plainText: string): string {
   const normalized = claimText.toLowerCase().replace(/\s+/g, " ").trim();
   const searchText = plainText.toLowerCase().replace(/\s+/g, " ");
 
@@ -181,7 +181,7 @@ function fuzzyFindClaim(claimText: string, plainText: string): string {
   return "";
 }
 
-function findSectionForText(wikitext: string, plainText: string): string {
+export function findSectionForText(wikitext: string, plainText: string): string {
   const headerRegex = /^(=+)\s*([^=]+?)\s*\1$/gm;
   const lines = wikitext.split("\n");
   let currentSection = "(lead)";

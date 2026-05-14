@@ -22,12 +22,13 @@
     },
     "packages/cli": {
       "name": "@var-ia/cli",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "bin": {
-        "wikihistory": "./dist/src/cli.js",
+        "wikihistory": "dist/src/cli.js",
       },
       "dependencies": {
         "@var-ia/analyzers": "^0.1.0",
+        "@var-ia/eval": "^0.1.0",
         "@var-ia/evidence-graph": "^0.1.0",
         "@var-ia/ingestion": "^0.1.0",
         "@var-ia/interpreter": "^0.1.0",

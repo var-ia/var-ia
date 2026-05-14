@@ -1,6 +1,6 @@
 {
   "name": "@var-ia/cli",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
   "private": false,
   "description": "CLI tool for Wikipedia edit history analysis",
@@ -19,11 +19,12 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@var-ia/ingestion": "^0.1.0",
-    "@var-ia/analyzers": "^0.1.0",
+    "@var-ia/ingestion": "^0.2.0",
+    "@var-ia/analyzers": "^0.2.0",
     "@var-ia/interpreter": "^0.1.0",
-    "@var-ia/evidence-graph": "^0.1.0",
-    "@var-ia/persistence": "^0.1.0"
+    "@var-ia/evidence-graph": "^0.2.0",
+    "@var-ia/persistence": "^0.1.0",
+    "@var-ia/eval": "^0.1.0"
   },
   "devDependencies": {}
 }

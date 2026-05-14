@@ -1,14 +1,34 @@
+import { createHash } from "node:crypto";
 import { runAnalyze } from "./analyze.js";
-import type { EvidenceEvent, Report, PolicySignal } from "@var-ia/evidence-graph";
+import { createEventIdentity } from "@var-ia/evidence-graph";
+import type { EvidenceEvent, Report, PolicySignal, Revision } from "@var-ia/evidence-graph";
 import type { ModelConfig } from "@var-ia/interpreter";
+
+interface EvidenceBundle {
+  format: "varia-evidence-bundle/v1";
+  generatedAt: string;
+  pageTitle: string;
+  revisionRange: { from: number; to: number };
+  inputRevisions: Revision[];
+  outputEvents: EvidenceEvent[];
+  bundleHash: string;
+}
 
 export async function runExport(
   pageTitle: string,
   format: string,
   modelConfig?: ModelConfig,
   apiUrl?: string,
+  bundle?: boolean,
 ): Promise<void> {
-  const events = await runAnalyze(pageTitle, "detailed", undefined, undefined, false, modelConfig, apiUrl);
+  if (bundle) {
+    const { events, revisions } = await runAnalyze(pageTitle, "detailed", undefined, undefined, false, modelConfig, apiUrl);
+    const bundleData = buildBundle(pageTitle, events, revisions);
+    console.log(JSON.stringify(bundleData, null, 2));
+    return;
+  }
+
+  const { events } = await runAnalyze(pageTitle, "detailed", undefined, undefined, false, modelConfig, apiUrl);
 
   if (events.length === 0) {
     console.log("No events to export.");
@@ -23,6 +43,31 @@ export async function runExport(
   } else {
     console.log(JSON.stringify(events, null, 2));
   }
+}
+
+function buildBundle(pageTitle: string, events: EvidenceEvent[], revisions: Revision[]): EvidenceBundle {
+  const from = revisions[0]?.revId ?? 0;
+  const to = revisions[revisions.length - 1]?.revId ?? 0;
+
+  const taggedEvents = events.map((e) => ({
+    ...e,
+    eventId: e.eventId ?? createEventIdentity(e),
+  }));
+
+  const bundle = {
+    format: "varia-evidence-bundle/v1" as const,
+    generatedAt: new Date().toISOString(),
+    pageTitle,
+    revisionRange: { from, to },
+    inputRevisions: revisions,
+    outputEvents: taggedEvents,
+  };
+
+  const bundleHash = createHash("sha256")
+    .update(JSON.stringify(bundle))
+    .digest("hex");
+
+  return { ...bundle, bundleHash };
 }
 
 function buildReport(pageTitle: string, events: EvidenceEvent[]): Report {

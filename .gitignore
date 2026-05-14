@@ -2,4 +2,8 @@ node_modules/
 dist/
 *.tsbuildinfo
 .env
+.env.local
+coverage/
+.vite/
+*.log
 .DS_Store

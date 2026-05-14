@@ -1,6 +1,6 @@
 {
   "name": "@var-ia/analyzers",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "private": false,
   "description": "Deterministic analyzers: section diffing, citation tracking, revert detection, template tracking",
@@ -13,7 +13,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@var-ia/evidence-graph": "^0.1.0"
+    "@var-ia/evidence-graph": "^0.2.0"
   },
   "devDependencies": {}
 }

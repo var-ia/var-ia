@@ -1,4 +1,6 @@
+import { createHash } from "node:crypto";
 import type { CitationTracker, CitationRef, CitationChange } from "./index.js";
+import type { SourceRecord, SourceLineage, SourceType, SourceAuthority } from "@var-ia/evidence-graph";
 
 export const citationTracker: CitationTracker = {
   extractCitations(wikitext: string): CitationRef[] {
@@ -82,4 +84,123 @@ function indexByKey(refs: CitationRef[]): Map<string, CitationRef> {
     map.set(key, ref);
   }
   return map;
+}
+
+export function buildSourceLineage(
+  revisions: { revId: number; timestamp: string; content: string }[],
+): { sources: SourceRecord[]; lineage: SourceLineage[] } {
+  const sourceMap = new Map<string, SourceRecord>();
+  const replacementMap = new Map<string, { replacedById: string; atRevisionId: number; atTimestamp: string }[]>();
+
+  function ensureSource(ref: CitationRef, seenAtRevId: number, seenAtTimestamp: string): string {
+    const sourceId = buildSourceId(ref);
+    if (!sourceMap.has(sourceId)) {
+      sourceMap.set(sourceId, {
+        sourceId,
+        url: ref.url,
+        title: ref.title,
+        sourceType: classifySourceType(ref),
+        authority: classifyAuthority(ref),
+        firstSeenRevisionId: seenAtRevId,
+        firstSeenAt: seenAtTimestamp,
+        claimsReferencing: [],
+      });
+    }
+    return sourceId;
+  }
+
+  // Seed sources from the first revision
+  if (revisions.length > 0) {
+    const first = revisions[0];
+    for (const ref of citationTracker.extractCitations(first.content)) {
+      ensureSource(ref, first.revId, first.timestamp);
+    }
+  }
+
+  for (let i = 0; i < revisions.length - 1; i++) {
+    const before = revisions[i];
+    const after = revisions[i + 1];
+
+    const beforeRefs = citationTracker.extractCitations(before.content);
+    const afterRefs = citationTracker.extractCitations(after.content);
+    const changes = citationTracker.diffCitations(beforeRefs, afterRefs);
+
+    for (const change of changes) {
+      if (change.after) {
+        const id = ensureSource(change.after, before.revId, before.timestamp);
+        if (change.type === "replaced" && change.before) {
+          const oldId = ensureSource(change.before, before.revId, before.timestamp);
+          const replacements = replacementMap.get(oldId) ?? [];
+          replacements.push({
+            replacedById: id,
+            atRevisionId: after.revId,
+            atTimestamp: after.timestamp,
+          });
+          replacementMap.set(oldId, replacements);
+        }
+      }
+
+      if ((change.type === "removed" || change.type === "replaced") && change.before) {
+        const sourceId = ensureSource(change.before, before.revId, before.timestamp);
+        const record = sourceMap.get(sourceId);
+        if (record) {
+          record.lastSeenRevisionId = before.revId;
+          record.lastSeenAt = before.timestamp;
+        }
+      }
+    }
+  }
+
+  const sources = Array.from(sourceMap.values());
+  const lineage: SourceLineage[] = [];
+  for (const [sourceId, replacements] of replacementMap) {
+    lineage.push({ sourceId, replacements });
+  }
+
+  return { sources, lineage };
+}
+
+export function buildSourceId(ref: CitationRef): string {
+  if (ref.url) {
+    return createHash("sha256").update(ref.url).digest("hex").slice(0, 16);
+  }
+  if (ref.refName) {
+    return createHash("sha256").update(`ref:${ref.refName}`).digest("hex").slice(0, 16);
+  }
+  return createHash("sha256").update(ref.raw).digest("hex").slice(0, 16);
+}
+
+const NEWS_DOMAINS = [
+  "cnn.com", "nytimes.com", "bbc.com", "reuters.com", "apnews.com",
+  "washingtonpost.com", "wsj.com", "theguardian.com", "bloomberg.com",
+  "npr.org", "thehill.com", "politico.com", "foxnews.com", "nbcnews.com",
+  "cbsnews.com", "abcnews.net", "usatoday.com", "latimes.com",
+  "chicagotribune.com", "huffpost.com", "buzzfeednews.com",
+];
+
+function classifySourceType(ref: CitationRef): SourceType {
+  const url = ref.url?.toLowerCase() ?? "";
+  if (!url) return "unknown";
+
+  if (url.includes("doi.org") || /journal|jstor|springer|sciencedirect/i.test(url)) {
+    return "academic";
+  }
+  if (url.includes(".gov")) return "government";
+  if (url.includes(".edu")) return "secondary";
+  if (NEWS_DOMAINS.some((d) => url.includes(d))) return "news";
+
+  return "unknown";
+}
+
+function classifyAuthority(ref: CitationRef): SourceAuthority {
+  const url = ref.url?.toLowerCase() ?? "";
+  if (!url) return "unrated";
+
+  if (url.includes("doi.org") || /journal|jstor|springer/i.test(url)) {
+    return "medium";
+  }
+  if (/\.(edu|gov|org)\b/.test(url)) return "high";
+  if (/\.(com|net)\b/.test(url)) return "medium";
+
+  return "unrated";
 }

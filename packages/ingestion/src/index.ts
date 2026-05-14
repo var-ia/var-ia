@@ -17,6 +17,8 @@ export interface RevisionOptions {
   start?: Date;
   end?: Date;
   direction?: "newer" | "older";
+  startRevId?: number;
+  endRevId?: number;
 }
 
 export { MediaWikiClient } from "./mediawiki-client.js";

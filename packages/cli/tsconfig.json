@@ -17,6 +17,7 @@
     { "path": "../ingestion" },
     { "path": "../analyzers" },
     { "path": "../interpreter" },
-    { "path": "../persistence" }
+    { "path": "../persistence" },
+    { "path": "../eval" }
   ]
 }

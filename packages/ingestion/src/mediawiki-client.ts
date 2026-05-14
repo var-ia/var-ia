@@ -90,6 +90,12 @@ export class MediaWikiClient implements RevisionFetcher, RevisionSource, DiffFet
       } else if (options?.end) {
         params.set("rvend", formatTimestamp(options.end));
       }
+      if (options?.startRevId) {
+        params.set("rvstartid", String(options.startRevId));
+      }
+      if (options?.endRevId) {
+        params.set("rvendid", String(options.endRevId));
+      }
 
       if (rvcontinue) {
         params.set("rvcontinue", rvcontinue);

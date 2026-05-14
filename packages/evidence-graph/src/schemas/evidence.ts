@@ -9,6 +9,7 @@ export type EventType =
   | "claim_strengthened"
   | "claim_reworded"
   | "claim_moved"
+  | "claim_reintroduced"
   | "citation_added"
   | "citation_removed"
   | "citation_replaced"
@@ -34,6 +35,7 @@ export interface ModelInterpretation {
 }
 
 export interface EvidenceEvent {
+  eventId?: string;
   eventType: EventType;
   claimId?: string;
   fromRevisionId: number;

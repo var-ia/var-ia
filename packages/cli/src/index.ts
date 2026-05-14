@@ -1,5 +1,6 @@
 import { runAnalyze } from "./commands/analyze.js";
 import { runClaim } from "./commands/claim.js";
+import { runEval } from "./commands/eval.js";
 import { runExport } from "./commands/export.js";
 import { runWatch } from "./commands/watch.js";
 import type { ModelConfig } from "@var-ia/interpreter";
@@ -9,9 +10,11 @@ wikihistory — Wikipedia edit history analysis
 
 Usage:
   wikihistory analyze <page> [--depth brief|detailed|forensic] [--from <revId>] [--to <revId>] [--cache] [--model <provider>]
+  wikihistory analyze --pages-file <path> [--depth brief|detailed|forensic] [--cache] [--model <provider>]
   wikihistory claim <page> --text "<claim text>" [--cache] [--model <provider>]
-  wikihistory export <page> --format json|csv [--model <provider>]
+  wikihistory export <page> --format json|csv [--bundle] [--model <provider>]
   wikihistory watch <page> [--section <name>]
+  wikihistory eval [--page <title>]
 
 Options:
   --depth          Analysis depth (default: detailed)
@@ -34,10 +37,7 @@ export async function cli(args: string[]): Promise<void> {
   switch (command) {
     case "analyze": {
       const pageTitle = args[1];
-      if (!pageTitle) {
-        console.error("Usage: wikihistory analyze <page> [--depth brief|detailed|forensic] [--cache] [--model <provider>]");
-        process.exit(1);
-      }
+      const pagesFile = parseFlag(args, "pages-file");
       const depth = parseFlag(args, "depth") ?? "detailed";
       const fromRev = parseFlag(args, "from");
       const toRev = parseFlag(args, "to");
@@ -45,31 +45,50 @@ export async function cli(args: string[]): Promise<void> {
       const modelConfig = parseModelConfig(args);
       const apiUrl = parseFlag(args, "api");
 
-      const events = await runAnalyze(
-        pageTitle,
-        depth,
-        fromRev ? parseInt(fromRev, 10) : undefined,
-        toRev ? parseInt(toRev, 10) : undefined,
-        useCache,
-        modelConfig,
-        apiUrl,
-      );
-
-      console.log(`\n=== Analysis Results ===`);
-      console.log(`Page: ${pageTitle}`);
-      console.log(`Events detected: ${events.length}`);
-      console.log();
-
-      for (const event of events) {
-        console.log(`[${event.timestamp}] ${event.eventType} (rev ${event.fromRevisionId}→${event.toRevisionId})`);
-        if (event.section) console.log(`  Section: ${event.section}`);
-        for (const fact of event.deterministicFacts) {
-          console.log(`  • ${fact.fact}${fact.detail ? `: ${fact.detail}` : ""}`);
+      if (pagesFile) {
+        const result = await runAnalyze(
+          "",
+          depth,
+          fromRev ? parseInt(fromRev, 10) : undefined,
+          toRev ? parseInt(toRev, 10) : undefined,
+          useCache,
+          modelConfig,
+          apiUrl,
+          pagesFile,
+        );
+        const events = result.events;
+        console.log(`\nBatch complete. Total events: ${events.length}`);
+      } else {
+        if (!pageTitle) {
+          console.error("Usage: wikihistory analyze <page> [--depth brief|detailed|forensic] [--cache] [--model <provider>]");
+          process.exit(1);
         }
-        if (event.modelInterpretation) {
-          console.log(`  ↳ ${event.modelInterpretation.semanticChange} (confidence: ${event.modelInterpretation.confidence.toFixed(2)})`);
-          if (event.modelInterpretation.policyDimension) {
-            console.log(`  ↳ policy: ${event.modelInterpretation.policyDimension}`);
+        const { events } = await runAnalyze(
+          pageTitle,
+          depth,
+          fromRev ? parseInt(fromRev, 10) : undefined,
+          toRev ? parseInt(toRev, 10) : undefined,
+          useCache,
+          modelConfig,
+          apiUrl,
+        );
+
+        console.log(`\n=== Analysis Results ===`);
+        console.log(`Page: ${pageTitle}`);
+        console.log(`Events detected: ${events.length}`);
+        console.log();
+
+        for (const event of events) {
+          console.log(`[${event.timestamp}] ${event.eventType} (rev ${event.fromRevisionId}→${event.toRevisionId})`);
+          if (event.section) console.log(`  Section: ${event.section}`);
+          for (const fact of event.deterministicFacts) {
+            console.log(`  • ${fact.fact}${fact.detail ? `: ${fact.detail}` : ""}`);
+          }
+          if (event.modelInterpretation) {
+            console.log(`  ↳ ${event.modelInterpretation.semanticChange} (confidence: ${event.modelInterpretation.confidence.toFixed(2)})`);
+            if (event.modelInterpretation.policyDimension) {
+              console.log(`  ↳ policy: ${event.modelInterpretation.policyDimension}`);
+            }
           }
         }
       }
@@ -91,13 +110,14 @@ export async function cli(args: string[]): Promise<void> {
     case "export": {
       const pageTitle = args[1];
       const format = parseFlag(args, "format") ?? "json";
+      const bundle = args.includes("--bundle");
       if (!pageTitle) {
-        console.error("Usage: wikihistory export <page> --format json|csv [--model <provider>]");
+        console.error("Usage: wikihistory export <page> --format json|csv [--bundle] [--model <provider>]");
         process.exit(1);
       }
       const modelConfig = parseModelConfig(args);
       const apiUrl = parseFlag(args, "api");
-      await runExport(pageTitle, format, modelConfig, apiUrl);
+      await runExport(pageTitle, format, modelConfig, apiUrl, bundle);
       break;
     }
     case "watch": {
@@ -109,6 +129,11 @@ export async function cli(args: string[]): Promise<void> {
       const section = parseFlag(args, "section");
       const apiUrl = parseFlag(args, "api");
       await runWatch(pageTitle, section, apiUrl);
+      break;
+    }
+    case "eval": {
+      const pageOverride = parseFlag(args, "page");
+      await runEval(pageOverride);
       break;
     }
     case "--help":

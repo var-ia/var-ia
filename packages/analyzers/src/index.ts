@@ -60,8 +60,9 @@ export interface TemplateChange {
   template: Template;
 }
 
-export { sectionDiffer } from "./section-differ.js";
-export { citationTracker } from "./citation-tracker.js";
+export { sectionDiffer, buildSectionLineage } from "./section-differ.js";
+export type { SectionEvent, SectionLineage } from "./section-differ.js";
+export { citationTracker, buildSourceLineage, buildSourceId } from "./citation-tracker.js";
 export { revertDetector } from "./revert-detector.js";
 export { templateTracker } from "./template-tracker.js";
 export { classifyHeuristic } from "./heuristic-classifier.js";

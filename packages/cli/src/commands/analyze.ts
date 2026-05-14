@@ -1,10 +1,28 @@
+import { readFileSync } from "node:fs";
 import { MediaWikiClient } from "@var-ia/ingestion";
+import type { RevisionOptions } from "@var-ia/ingestion";
 import { sectionDiffer, citationTracker, revertDetector, templateTracker } from "@var-ia/analyzers";
 import type { TemplateType } from "@var-ia/analyzers";
-import type { EvidenceEvent, EvidenceLayer, Revision } from "@var-ia/evidence-graph";
+import type { EvidenceEvent, EvidenceLayer, Revision, DeterministicFact } from "@var-ia/evidence-graph";
 import { createAdapter } from "@var-ia/interpreter";
 import type { ModelConfig } from "@var-ia/interpreter";
 import { loadCachedRevisions, saveRevisions } from "./cache.js";
+import { stripWikitext, fuzzyFindClaim, findSectionForText } from "./claim.js";
+
+interface BatchPageResult {
+  pageTitle: string;
+  pageId: number;
+  eventCount: number;
+  events: EvidenceEvent[];
+}
+
+interface BatchResult {
+  mode: "batch";
+  batchSize: number;
+  pages: BatchPageResult[];
+  totalEvents: number;
+  generatedAt: string;
+}
 
 function templateTypeToPolicyDimension(type: TemplateType): string | null {
   switch (type) {
@@ -25,7 +43,11 @@ export async function runAnalyze(
   useCache = false,
   modelConfig?: ModelConfig,
   apiUrl?: string,
-): Promise<EvidenceEvent[]> {
+  pagesFile?: string,
+): Promise<{ events: EvidenceEvent[]; revisions: Revision[] }> {
+  if (pagesFile) {
+    return runBatch(pagesFile, depth, fromRevId, _toRevId, useCache, modelConfig, apiUrl);
+  }
   const client = new MediaWikiClient(apiUrl ? { apiUrl } : undefined);
   console.log(`Analyzing "${pageTitle}" at depth: ${depth}...`);
 
@@ -41,8 +63,16 @@ export async function runAnalyze(
 
   if (revisions.length === 0) {
     console.log(`Fetching revisions from Wikipedia...`);
-    const options: { limit?: number; direction?: "newer" | "older" } = { limit: 20, direction: "newer" };
-    void fromRevId;
+    const options: RevisionOptions = { direction: "newer" };
+    if (fromRevId) {
+      options.startRevId = fromRevId;
+    }
+    if (_toRevId) {
+      options.endRevId = _toRevId;
+    }
+    if (!fromRevId && !_toRevId) {
+      options.limit = 20;
+    }
     revisions = await client.fetchRevisions(pageTitle, options);
     console.log(`Fetched ${revisions.length} revisions.`);
 
@@ -54,7 +84,7 @@ export async function runAnalyze(
 
   if (revisions.length < 2) {
     console.log("Need at least 2 revisions to analyze.");
-    return [];
+    return { events: [], revisions: [] };
   }
 
   const events: EvidenceEvent[] = [];
@@ -62,9 +92,20 @@ export async function runAnalyze(
     (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
   );
 
+  const allSeenSentences = new Set<string>();
+
   for (let i = 1; i < sortedRevs.length; i++) {
     const before = sortedRevs[i - 1];
     const after = sortedRevs[i];
+
+    const isBrief = depth === "brief";
+    const isForensic = depth === "forensic";
+    const extraFacts: DeterministicFact[] = isForensic
+      ? [
+          { fact: "full_wikitext_before", detail: before.content },
+          { fact: "full_wikitext_after", detail: after.content },
+        ]
+      : [];
 
     const beforeSections = sectionDiffer.extractSections(before.content);
     const afterSections = sectionDiffer.extractSections(after.content);
@@ -88,10 +129,11 @@ export async function runAnalyze(
         fromRevisionId: before.revId,
         toRevisionId: after.revId,
         section: "body",
-        before: cit.before?.raw ?? "",
-        after: cit.after?.raw ?? "",
+        before: isBrief ? "" : (cit.before?.raw ?? ""),
+        after: isBrief ? "" : (cit.after?.raw ?? ""),
         deterministicFacts: [
           { fact: "citation_changed", detail: `type=${cit.type}` },
+          ...extraFacts,
         ],
         layer,
         timestamp: after.timestamp,
@@ -100,6 +142,25 @@ export async function runAnalyze(
 
     for (const tpl of templateChanges) {
       if (tpl.type === "unchanged") continue;
+
+      if (tpl.template.type === "protection") {
+        events.push({
+          eventType: "protection_changed",
+          fromRevisionId: before.revId,
+          toRevisionId: after.revId,
+          section: "body",
+          before: tpl.type === "removed" ? tpl.template.name : "",
+          after: tpl.type === "added" ? tpl.template.name : "",
+          deterministicFacts: [
+            { fact: "protection_changed", detail: `name=${tpl.template.name} type=${tpl.type}` },
+            ...extraFacts,
+          ],
+          layer: "policy_coded",
+          timestamp: after.timestamp,
+        });
+        continue;
+      }
+
       const policyDimension = templateTypeToPolicyDimension(tpl.template.type);
       const layer: EvidenceLayer = policyDimension ? "policy_coded" : "observed";
       events.push({
@@ -108,10 +169,11 @@ export async function runAnalyze(
         toRevisionId: after.revId,
         section: "body",
         before: "",
-        after: tpl.template.name,
+        after: isBrief ? "" : tpl.template.name,
         deterministicFacts: [
           { fact: "template_changed", detail: `name=${tpl.template.name} type=${tpl.type}` },
           ...(policyDimension ? [{ fact: "policy_signal", detail: `dimension=${policyDimension} signal=${tpl.template.name.toLowerCase().replace(/\s+/g, "_")}` }] : []),
+          ...extraFacts,
         ],
         layer,
         timestamp: after.timestamp,
@@ -125,10 +187,11 @@ export async function runAnalyze(
         fromRevisionId: before.revId,
         toRevisionId: after.revId,
         section: sc.section,
-        before: sc.fromContent ?? "",
-        after: sc.toContent ?? "",
+        before: isBrief ? "" : (sc.fromContent ?? ""),
+        after: isBrief ? "" : (sc.toContent ?? ""),
         deterministicFacts: [
           { fact: "section_changed", detail: `change=${sc.changeType}` },
+          ...extraFacts,
         ],
         layer: "observed",
         timestamp: after.timestamp,
@@ -142,14 +205,146 @@ export async function runAnalyze(
         toRevisionId: after.revId,
         section: "",
         before: "",
-        after: after.comment,
+        after: isBrief ? "" : after.comment,
         deterministicFacts: [
           { fact: "revert_detected", detail: after.comment },
           { fact: "policy_signal", detail: "dimension=edit_warring signal=revert_detected" },
+          ...extraFacts,
         ],
         layer: "policy_coded",
         timestamp: after.timestamp,
       });
+    }
+
+    const leadChange = sectionChanges.find(
+      sc => sc.section === "(lead)" && sc.changeType === "modified"
+    );
+    if (leadChange) {
+      const fromLen = leadChange.fromContent?.length ?? 0;
+      const toLen = leadChange.toContent?.length ?? 0;
+      const contentMovedOut = fromLen > toLen && toLen < fromLen * 0.5;
+      const contentMovedIn = toLen > fromLen && fromLen < toLen * 0.5;
+
+      if (contentMovedOut) {
+        const targetSection = sectionChanges.find(
+          sc => sc.section !== "(lead)" && (sc.changeType === "added" || sc.changeType === "modified")
+        );
+        if (targetSection) {
+          events.push({
+            eventType: "lead_demotion",
+            fromRevisionId: before.revId,
+            toRevisionId: after.revId,
+            section: targetSection.section,
+            before: isBrief ? "" : (leadChange.fromContent ?? ""),
+            after: isBrief ? "" : (leadChange.toContent ?? ""),
+            deterministicFacts: [
+              { fact: "lead_content_moved", detail: `from=lead to=${targetSection.section}` },
+              ...extraFacts,
+            ],
+            layer: "observed",
+            timestamp: after.timestamp,
+          });
+        }
+      } else if (contentMovedIn) {
+        const sourceSection = sectionChanges.find(
+          sc => sc.section !== "(lead)" && (sc.changeType === "removed" || sc.changeType === "modified")
+        );
+        if (sourceSection) {
+          events.push({
+            eventType: "lead_promotion",
+            fromRevisionId: before.revId,
+            toRevisionId: after.revId,
+            section: sourceSection.section,
+            before: isBrief ? "" : (leadChange.fromContent ?? ""),
+            after: isBrief ? "" : (leadChange.toContent ?? ""),
+            deterministicFacts: [
+              { fact: "lead_content_moved", detail: `from=${sourceSection.section} to=lead` },
+              ...extraFacts,
+            ],
+            layer: "observed",
+            timestamp: after.timestamp,
+          });
+        }
+      }
+    }
+
+    const beforePlain = stripWikitext(before.content);
+    const afterPlain = stripWikitext(after.content);
+
+    const beforeSentences = beforePlain.split(/[.!?]\s+/).filter(s => s.trim().length > 20);
+    const afterSentences = afterPlain.split(/[.!?]\s+/).filter(s => s.trim().length > 20);
+
+    for (const sentence of afterSentences) {
+      const trimmed = sentence.trim();
+      if (!trimmed) continue;
+      const foundInBefore = fuzzyFindClaim(trimmed, beforePlain);
+      if (!foundInBefore) {
+        const normalized = trimmed.toLowerCase().replace(/\s+/g, " ");
+        const wasSeenBefore = allSeenSentences.has(normalized);
+        const section = findSectionForText(after.content, trimmed);
+        events.push({
+          eventType: wasSeenBefore ? "claim_reintroduced" : "claim_first_seen",
+          fromRevisionId: before.revId,
+          toRevisionId: after.revId,
+          section,
+          before: "",
+          after: isBrief ? "" : trimmed,
+          deterministicFacts: [
+            { fact: "claim_detected", detail: `sentence_length=${trimmed.length}` },
+            ...extraFacts,
+          ],
+          layer: "observed",
+          timestamp: after.timestamp,
+        });
+      } else {
+        const oldLen = foundInBefore.length;
+        const newLen = trimmed.length;
+        if (Math.abs(newLen - oldLen) > oldLen * 0.2) {
+          const section = findSectionForText(after.content, trimmed);
+          events.push({
+            eventType: "claim_reworded",
+            fromRevisionId: before.revId,
+            toRevisionId: after.revId,
+            section,
+            before: isBrief ? "" : foundInBefore,
+            after: isBrief ? "" : trimmed,
+            deterministicFacts: [
+              { fact: "claim_reworded", detail: `old_length=${oldLen} new_length=${newLen}` },
+              ...extraFacts,
+            ],
+            layer: "observed",
+            timestamp: after.timestamp,
+          });
+        }
+      }
+    }
+
+    for (const sentence of beforeSentences) {
+      const trimmed = sentence.trim();
+      if (!trimmed) continue;
+      const foundInAfter = fuzzyFindClaim(trimmed, afterPlain);
+      if (!foundInAfter) {
+        const section = findSectionForText(before.content, trimmed);
+        events.push({
+          eventType: "claim_removed",
+          fromRevisionId: before.revId,
+          toRevisionId: after.revId,
+          section,
+          before: isBrief ? "" : trimmed,
+          after: "",
+          deterministicFacts: [
+            { fact: "claim_removed", detail: `sentence_length=${trimmed.length}` },
+            ...extraFacts,
+          ],
+          layer: "observed",
+          timestamp: after.timestamp,
+        });
+      }
+    }
+
+    for (const s of afterSentences) {
+      const normalized = s.trim().toLowerCase().replace(/\s+/g, " ");
+      if (normalized) allSeenSentences.add(normalized);
     }
   }
 
@@ -161,8 +356,58 @@ export async function runAnalyze(
       interpreted[i].layer = events[i].layer;
     }
     console.log("Interpretation complete.");
-    return interpreted;
+    return { events: interpreted, revisions: sortedRevs };
   }
 
-  return events;
+  return { events, revisions: sortedRevs };
+}
+
+async function runBatch(
+  pagesFile: string,
+  depth: string,
+  fromRevId?: number,
+  toRevId?: number,
+  useCache = false,
+  modelConfig?: ModelConfig,
+  apiUrl?: string,
+): Promise<{ events: EvidenceEvent[]; revisions: Revision[] }> {
+  const content = readFileSync(pagesFile, "utf-8");
+  const titles = content
+    .split("\n")
+    .map(l => l.trim())
+    .filter(l => l.length > 0 && !l.startsWith("#"));
+
+  console.log(`Batch mode: ${titles.length} pages from ${pagesFile}\n`);
+
+  const pages: BatchPageResult[] = [];
+  const allEvents: EvidenceEvent[] = [];
+
+  for (const title of titles) {
+    console.log(`--- Page ${pages.length + 1}/${titles.length}: ${title} ---`);
+    const { events } = await runAnalyze(title, depth, fromRevId, toRevId, useCache, modelConfig, apiUrl, undefined);
+    pages.push({
+      pageTitle: title,
+      pageId: 0,
+      eventCount: events.length,
+      events,
+    });
+    allEvents.push(...events);
+  }
+
+  const result: BatchResult = {
+    mode: "batch",
+    batchSize: titles.length,
+    pages,
+    totalEvents: allEvents.length,
+    generatedAt: new Date().toISOString(),
+  };
+
+  console.log(`\n=== Batch Results ===`);
+  console.log(`Pages processed: ${result.batchSize}`);
+  console.log(`Total events: ${result.totalEvents}\n`);
+  for (const p of result.pages) {
+    console.log(`  ${p.pageTitle}: ${p.eventCount} events`);
+  }
+
+  return { events: allEvents, revisions: [] };
 }
