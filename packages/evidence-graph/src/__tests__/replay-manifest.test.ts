@@ -32,6 +32,7 @@ describe("createReplayManifest", () => {
       analyzerVersions: { "revert-detector": "0.1.0" },
       revisions: [rev],
       events: [event],
+      generatedAt: "2026-01-01T00:00:00.000Z",
     });
 
     expect(manifest.format).toBe("varia-replay-manifest/v1");
@@ -45,6 +46,7 @@ describe("createReplayManifest", () => {
       analyzerVersions: { "revert-detector": "0.1.0" },
       revisions: [rev],
       events: [event],
+      generatedAt: "2026-01-01T00:00:00.000Z",
     });
 
     expect(manifest.manifestHash).toMatch(/^[0-9a-f]{64}$/);
@@ -56,6 +58,7 @@ describe("createReplayManifest", () => {
       analyzerVersions: { "revert-detector": "0.1.0" },
       revisions: [rev],
       events: [event],
+      generatedAt: "2026-01-01T00:00:00.000Z",
     });
 
     expect(manifest.inputRevisionHashes).toHaveLength(1);
@@ -68,6 +71,7 @@ describe("createReplayManifest", () => {
       analyzerVersions: { "revert-detector": "0.1.0" },
       revisions: [rev],
       events: [event],
+      generatedAt: "2026-01-01T00:00:00.000Z",
     });
 
     const b = createReplayManifest({
@@ -75,6 +79,7 @@ describe("createReplayManifest", () => {
       analyzerVersions: { "revert-detector": "0.1.0" },
       revisions: [rev],
       events: [event],
+      generatedAt: "2026-01-01T00:00:00.000Z",
     });
 
     expect(a.manifestHash).toBe(b.manifestHash);

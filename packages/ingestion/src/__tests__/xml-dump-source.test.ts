@@ -1,0 +1,151 @@
+import { describe, it, expect } from "vitest";
+import { XmlDumpRevisionSource } from "../xml-dump-source.js";
+import { writeFileSync, mkdtempSync, rmSync } from "node:fs";
+import { join } from "node:path";
+import { tmpdir } from "node:os";
+
+const SAMPLE_DUMP = `<?xml version="1.0"?>
+<mediawiki xmlns="http://www.mediawiki.org/xml/export-0.11/">
+  <page>
+    <title>Earth</title>
+    <ns>0</ns>
+    <id>1</id>
+    <revision>
+      <id>10</id>
+      <timestamp>2026-01-01T00:00:00Z</timestamp>
+      <contributor><username>Alice</username><id>100</id></contributor>
+      <comment>first revision</comment>
+      <text>Hello world</text>
+      <sha1>abc</sha1>
+    </revision>
+    <revision>
+      <id>20</id>
+      <timestamp>2026-02-01T00:00:00Z</timestamp>
+      <contributor><username>Bob</username><id>200</id></contributor>
+      <comment>added content</comment>
+      <text>Hello world. More content here.</text>
+      <sha1>def</sha1>
+    </revision>
+  </page>
+  <page>
+    <title>Mars</title>
+    <ns>0</ns>
+    <id>2</id>
+    <revision>
+      <id>30</id>
+      <timestamp>2026-03-01T00:00:00Z</timestamp>
+      <contributor><username>Carol</username><id>300</id></contributor>
+      <comment>mars revision</comment>
+      <text>Mars content</text>
+      <sha1>ghi</sha1>
+    </revision>
+  </page>
+</mediawiki>`;
+
+const SAMPLE_ENTITIES = `<?xml version="1.0"?>
+<mediawiki xmlns="http://www.mediawiki.org/xml/export-0.11/">
+  <page>
+    <title>Foo &amp; Bar</title>
+    <ns>0</ns>
+    <id>3</id>
+    <revision>
+      <id>40</id>
+      <timestamp>2026-04-01T00:00:00Z</timestamp>
+      <contributor><username>Dave</username><id>400</id></contributor>
+      <comment>with &amp; entities</comment>
+      <text>Text with &lt;tags&gt; &amp; entities.</text>
+      <sha1>jkl</sha1>
+    </revision>
+  </page>
+</mediawiki>`;
+
+describe("XmlDumpRevisionSource", () => {
+  it("yields revisions for matching page title", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "varia-xml-test-"));
+    const filePath = join(dir, "dump.xml");
+    writeFileSync(filePath, SAMPLE_DUMP, "utf-8");
+
+    const source = new XmlDumpRevisionSource(filePath);
+    const revs: Array<{ revId: number; pageTitle: string; content: string }> = [];
+    for await (const rev of source.revisions("Earth")) {
+      revs.push(rev);
+    }
+
+    rmSync(dir, { recursive: true });
+
+    expect(revs).toHaveLength(2);
+    expect(revs[0].revId).toBe(10);
+    expect(revs[0].pageTitle).toBe("Earth");
+    expect(revs[0].content).toBe("Hello world");
+    expect(revs[1].revId).toBe(20);
+    expect(revs[1].content).toBe("Hello world. More content here.");
+  });
+
+  it("returns empty for non-existent page", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "varia-xml-test-"));
+    const filePath = join(dir, "dump.xml");
+    writeFileSync(filePath, SAMPLE_DUMP, "utf-8");
+
+    const source = new XmlDumpRevisionSource(filePath);
+    const revs: Array<unknown> = [];
+    for await (const rev of source.revisions("Venus")) {
+      revs.push(rev);
+    }
+
+    rmSync(dir, { recursive: true });
+    expect(revs).toEqual([]);
+  });
+
+  it("respects limit option", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "varia-xml-test-"));
+    const filePath = join(dir, "dump.xml");
+    writeFileSync(filePath, SAMPLE_DUMP, "utf-8");
+
+    const source = new XmlDumpRevisionSource(filePath);
+    const revs: Array<{ revId: number }> = [];
+    for await (const rev of source.revisions("Earth", { limit: 1 })) {
+      revs.push(rev);
+    }
+
+    rmSync(dir, { recursive: true });
+    expect(revs).toHaveLength(1);
+    expect(revs[0].revId).toBe(10);
+  });
+
+  it("respects timestamp filtering", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "varia-xml-test-"));
+    const filePath = join(dir, "dump.xml");
+    writeFileSync(filePath, SAMPLE_DUMP, "utf-8");
+
+    const source = new XmlDumpRevisionSource(filePath);
+    const revs: Array<{ revId: number }> = [];
+    for await (const rev of source.revisions("Earth", {
+      start: new Date("2026-01-15T00:00:00Z"),
+    })) {
+      revs.push(rev);
+    }
+
+    rmSync(dir, { recursive: true });
+    expect(revs).toHaveLength(1);
+    expect(revs[0].revId).toBe(20);
+  });
+
+  it("handles XML entities in title and content", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "varia-xml-test-"));
+    const filePath = join(dir, "dump.xml");
+    writeFileSync(filePath, SAMPLE_ENTITIES, "utf-8");
+
+    const source = new XmlDumpRevisionSource(filePath);
+    const revs: Array<{ revId: number; pageTitle: string; content: string; comment: string }> = [];
+    for await (const rev of source.revisions("Foo & Bar")) {
+      revs.push(rev);
+    }
+
+    rmSync(dir, { recursive: true });
+
+    expect(revs).toHaveLength(1);
+    expect(revs[0].revId).toBe(40);
+    expect(revs[0].content).toBe('Text with <tags> & entities.');
+    expect(revs[0].comment).toBe('with & entities');
+  });
+});

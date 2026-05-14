@@ -39,6 +39,8 @@ export interface ModelConfig {
 
 export { ConsensusAdapter } from "./consensus-adapter.js";
 export type { ConsensusConfig } from "./consensus-adapter.js";
+export { ModelRouter } from "./model-router.js";
+export type { ModelRoute, RouterConfig } from "./model-router.js";
 
 export function createAdapter(config: ModelConfig): ModelAdapter {
   switch (config.provider) {

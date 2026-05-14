@@ -39,6 +39,7 @@ Options:
   --interval       Watch polling interval in ms (default: 60000)
   --cache-dir      Cache directory path (default: ~/.wikihistory)
   --api            MediaWiki API base URL (default: https://en.wikipedia.org/w/api.php)
+  --router         Use local open-weight models via Ollama (no API key needed)
 `;
 
 export async function cli(args: string[]): Promise<void> {
@@ -56,6 +57,7 @@ export async function cli(args: string[]): Promise<void> {
       const modelConfig = parseModelConfig(args);
       const apiUrl = parseFlag(args, "api");
       const cacheDir = parseFlag(args, "cache-dir");
+      const useRouter = args.includes("--router");
 
       if (pagesFile) {
         const result = await runAnalyze(
@@ -69,6 +71,7 @@ export async function cli(args: string[]): Promise<void> {
           apiUrl,
           pagesFile,
           cacheDir,
+          useRouter,
         );
         const events = result.events;
         console.log(`\nBatch complete. Total events: ${events.length}`);
@@ -88,6 +91,7 @@ export async function cli(args: string[]): Promise<void> {
           apiUrl,
           undefined,
           cacheDir,
+          useRouter,
         );
 
         console.log(`\n=== Analysis Results ===`);

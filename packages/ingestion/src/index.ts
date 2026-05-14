@@ -44,3 +44,4 @@ export interface RevisionOptions {
 
 export { MediaWikiClient } from "./mediawiki-client.js";
 export { RateLimiter } from "./rate-limiter.js";
+export { XmlDumpRevisionSource } from "./xml-dump-source.js";

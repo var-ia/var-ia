@@ -7,7 +7,7 @@ import { sectionDiffer, citationTracker, revertDetector, templateTracker, extrac
 import type { TemplateType } from "@var-ia/analyzers";
 import type { PageMove, ProtectionLogEvent } from "@var-ia/ingestion";
 import type { EvidenceEvent, EvidenceLayer, Revision, DeterministicFact } from "@var-ia/evidence-graph";
-import { createAdapter } from "@var-ia/interpreter";
+import { createAdapter, ModelRouter } from "@var-ia/interpreter";
 import type { ModelConfig } from "@var-ia/interpreter";
 import { loadCachedRevisions, saveRevisions } from "./cache.js";
 import { stripWikitext, fuzzyFindClaim, findSectionForText } from "./claim.js";
@@ -49,9 +49,10 @@ export async function runAnalyze(
   apiUrl?: string,
   pagesFile?: string,
   cacheDir?: string,
+  useRouter = false,
 ): Promise<{ events: EvidenceEvent[]; revisions: Revision[] }> {
   if (pagesFile) {
-    return runBatch(pagesFile, depth, fromRevId, _toRevId, fromTimestamp, useCache, modelConfig, apiUrl, cacheDir);
+    return runBatch(pagesFile, depth, fromRevId, _toRevId, fromTimestamp, useCache, modelConfig, apiUrl, cacheDir, useRouter);
   }
   const client = new MediaWikiClient(apiUrl ? { apiUrl } : undefined);
   console.log(`Analyzing "${pageTitle}" at depth: ${depth}...`);
@@ -520,6 +521,27 @@ export async function runAnalyze(
     return { events: interpreted, revisions: sortedRevs };
   }
 
+  if (useRouter && events.length > 0) {
+    const router = new ModelRouter();
+    console.log(`Interpreting ${events.length} events with local open-weight models...`);
+
+    const sectionLineage = buildSectionLineage(sortedRevs);
+    const lineage = {
+      sectionLineages: sectionLineage.map((s) => ({
+        sectionName: s.sectionName,
+        events: s.events.map((e) => `${e.eventType} in rev ${e.revisionId}`),
+        isActive: s.isActive,
+      })),
+    };
+
+    const interpreted = await router.interpret(events, lineage);
+    for (let i = 0; i < interpreted.length; i++) {
+      interpreted[i].layer = events[i].layer;
+    }
+    console.log("Interpretation complete.");
+    return { events: interpreted, revisions: sortedRevs };
+  }
+
   return { events, revisions: sortedRevs };
 }
 
@@ -533,6 +555,7 @@ async function runBatch(
   modelConfig?: ModelConfig,
   apiUrl?: string,
   cacheDir?: string,
+  useRouter = false,
 ): Promise<{ events: EvidenceEvent[]; revisions: Revision[] }> {
   const content = readFileSync(pagesFile, "utf-8");
   const titles = content
@@ -547,7 +570,7 @@ async function runBatch(
 
   for (const title of titles) {
     console.log(`--- Page ${pages.length + 1}/${titles.length}: ${title} ---`);
-    const { events } = await runAnalyze(title, depth, fromRevId, toRevId, fromTimestamp, useCache, modelConfig, apiUrl, undefined, cacheDir);
+    const { events } = await runAnalyze(title, depth, fromRevId, toRevId, fromTimestamp, useCache, modelConfig, apiUrl, undefined, cacheDir, useRouter);
     pages.push({
       pageTitle: title,
       pageId: 0,
