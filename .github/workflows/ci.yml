@@ -11,20 +11,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v1
+      - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
 
       - run: bun install --frozen-lockfile
-
-      - name: Build
-        run: bun run build
-
-      - name: Lint & Format Check
-        run: bun x biome ci packages/
-
-      - name: Typecheck
-        run: bun run typecheck
-
-      - name: Test
-        run: bun run test
+      - run: bun run build
+      - run: bun x biome ci packages/
+      - run: bun run typecheck
+      - run: bun run test
