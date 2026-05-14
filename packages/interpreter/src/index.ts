@@ -1,4 +1,4 @@
-import type { EvidenceEvent, ModelInterpretation } from "@var-ia/evidence-graph";
+import type { EvidenceEvent, ModelInterpretation, PolicyDimension } from "@var-ia/evidence-graph";
 
 // Lineage types used by the interpreter but defined here to avoid
 // coupling the interpreter to the analyzers package. The shape is
