@@ -2,14 +2,10 @@
 
 ## Repository Boundary
 
-Varia observes change. NextConsensus judges healthcare decision relevance.
-
 Contributions must stay inside the open-source observability boundary described
-in [docs/repository-boundary.md](./docs/repository-boundary.md). Varia can
-detect and label public revision-history events. It must not import healthcare
-decision judgment, payer/guideline logic, source weighting, thresholds,
-production backtests, outcome-data claims, customer workflows, or
-NextConsensus-private logic.
+in [docs/repository-boundary.md](./docs/repository-boundary.md). Varia must not
+include healthcare-specific logic, domain-specific source weighting, or
+customer-workflow rules.
 
 ## Commit Convention
 

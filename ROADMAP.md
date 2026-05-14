@@ -1,17 +1,6 @@
 # Roadmap
 
 Varia v0.1 (Phase 1) is complete. All 20 workqueue items shipped.
-Phase 2 focuses on the NextConsensus private prototype.
-
-## Repo Map
-
-| Category | Repo | Purpose |
-|----------|------|---------|
-| **Varia repos** | `varia` (this repo, open-source) | Generic public-knowledge observability. Answers: "What changed?" |
-| **NextConsensus repos** | (to be created, private) | Healthcare-specific decision intelligence. Answers: "Does this change matter for this healthcare decision?" |
-| **Private repos** | (to be created, private) | Source weighting, thresholds, backtests, customer workflows, outcome data |
-
-Only `varia` exists locally. The other repos need to be created.
 
 ## Agent Workstream Mapping
 
@@ -75,9 +64,7 @@ anything.
 
 All 20 workqueue items are shipped. See the task descriptions below for details on what was built.
 
-**Phase 2: NextConsensus private prototype (current focus).**
-
-New capability work moves to private repos. This repo enters maintenance mode for bug fixes and polish.
+**Phase 2: Ongoing.** This repo is in maintenance mode for bug fixes and polish.
 
 ## L1 — Deterministic
 

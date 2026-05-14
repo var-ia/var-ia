@@ -3,10 +3,8 @@
 ## Repo Architecture
 
 This architecture lives in the **varia** repository (open-source, generic
-public-knowledge observability). Healthcare-specific decision intelligence lives
-in **NextConsensus** private repos, which consume this engine's output without
-modifying it. Source weighting, thresholds, and customer workflows belong in
-separate private repos.
+public-knowledge observability). Healthcare-specific logic lives in private
+repos, which consume this engine's output without modifying it.
 
 Varia separates computation into three architecturally isolated layers. No
 layer's output feeds into another layer's input in a way that would contaminate

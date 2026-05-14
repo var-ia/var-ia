@@ -1,18 +1,9 @@
 # Repository Boundary
 
 Varia is open-source core observability for MediaWiki and public revision histories.
+Varia observes change. Healthcare-specific logic lives in private repos.
 
-## Repo Map
-
-| Category | Answers | Scope |
-|----------|---------|-------|
-| **Varia repos** (open-source) | "What changed?" | Generic public-knowledge observability |
-| **NextConsensus repos** (private) | "Does this change matter for this healthcare decision?" | Healthcare-specific decision intelligence |
-| **Private repos** (private) | — | Source weighting, thresholds, backtests, customer workflows, outcome data |
-
-Varia observes change. NextConsensus judges healthcare decision relevance.
-
-## In Scope (Varia repos)
+## In Scope
 
 - Fetching and replaying MediaWiki revision histories.
 - Deterministic extraction of what changed between revisions.
@@ -24,19 +15,13 @@ Varia observes change. NextConsensus judges healthcare decision relevance.
   revision-history events.
 - Connectors for public or user-controlled MediaWiki instances.
 
-## Out of Scope (Varia repos)
+## Out of Scope
 
-- Healthcare decision judgment or recommendation logic.
-- Payer, guideline, clinical, regulatory, customer, or case-workflow rules.
-- Domain-specific source weighting.
-- Decision thresholds, production backtests, outcome-data claims, or lead-time
-  claims imported from a private product.
-- Any NextConsensus-private logic, prompts, datasets, scoring rules, or
-  customer workflows.
+- Healthcare-specific logic (decision judgment, source weighting, clinical rules, customer workflows).
 - Claims that Varia determines truth, predicts external events, or ranks people.
 
-## Agent Rule
+## Test
 
-When in doubt, keep Varia generic. A valid Varia contribution should be useful
-for observing public-knowledge change on Wikipedia, Fandom, or another MediaWiki
-instance without relying on healthcare context or private decision criteria.
+A valid Varia contribution should be useful for observing public-knowledge change
+on Wikipedia, Fandom, or another MediaWiki instance without relying on healthcare
+context or private decision criteria.
