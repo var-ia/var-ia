@@ -60,23 +60,30 @@ anything.
 | L2-01 | Talk page interpretation | L2 | 6 | medium | L1-01, L1-02 | done |
 | L2-02 | Lineage-aware interpretation | L2 | 7 | medium | — | done |
 | CW-01 | Cross-wiki diff command | CLI | 8 | medium | — | done |
+| CW-02 | Multi-workset diff | CLI | 10 | medium | CW-01 | ready |
+| CW-03 | Evidence graph viz | CLI | 13 | small | — | ready |
 | INFRA-01 | Real L3 eval with ground truth | INFRA | 9 | large | L1-01, L1-02 | done |
+| INFRA-02 | Scheduled re-observation | INFRA | 11 | medium | L1-07 | ready |
+| INFRA-03 | L2 quality benchmarks | INFRA | 12 | large | L2-01, INFRA-01 | ready |
+| INFRA-04 | Watch channels | INFRA | 14 | medium | INFRA-02 | ready |
 
 ## Dependency Graph
 
 ```
-L1-01 ──→ L1-02 ──→ L2-01
-L1-01 ──→ INFRA-01
+L1-01 ──→ L1-02 ──→ L2-01 ──→ INFRA-03
+L1-01 ──→ INFRA-01 ──→ INFRA-03
 L1-02 ──→ INFRA-01
+L1-07 ──→ INFRA-02 ──→ INFRA-04
+CW-01 ──→ CW-02
 L1-03 (independent)
 L1-04 (independent)
 L1-05 (independent)
 L1-06 (independent)
 L2-02 (independent)
-CW-01 (independent)
+CW-03 (independent)
 ```
 
-**Ready to pick up:** *(all items completed — next increment TBD)*
+**Ready to pick up:** CW-02, INFRA-02, INFRA-03, CW-03, INFRA-04
 
 ## L1 — Deterministic
 
