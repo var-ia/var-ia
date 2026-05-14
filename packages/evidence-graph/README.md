@@ -1,6 +1,10 @@
 # @var-ia/evidence-graph
 
-Core types and schemas used across all varia packages. Zero runtime dependencies.
+Core types and schemas. Zero runtime dependencies.
+
+```bash
+bun add @var-ia/evidence-graph
+```
 
 ## Exports
 

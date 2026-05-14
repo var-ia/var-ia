@@ -1,6 +1,10 @@
 # @var-ia/interpreter
 
-Pluggable model adapter for semantic interpretation of evidence events. L2 in the three-knowledge-split architecture.
+Pluggable model adapter — L2 in the three-knowledge-split architecture.
+
+```bash
+bun add @var-ia/interpreter
+```
 
 ## Exports
 

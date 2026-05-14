@@ -16,5 +16,4 @@
 
 ## Commercial
 
-For commercial support, consulting, or custom adapter development, contact
-[NextConsensus](https://nextconsensus.com).
+For commercial support, consulting, or custom adapters, contact [NextConsensus](https://nextconsensus.com).

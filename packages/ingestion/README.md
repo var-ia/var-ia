@@ -2,6 +2,10 @@
 
 Wikimedia API adapters — revision fetching, diffing, rate limiting.
 
+```bash
+bun add @var-ia/ingestion
+```
+
 ## Exports
 
 ### Interfaces

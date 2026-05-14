@@ -1,32 +1,18 @@
 # Examples
 
-## CLI usage
+## CLI
 
 ```bash
-# Basic analysis
 wikihistory analyze "Earth" --depth brief
-
-# Detailed with claim tracking
-wikihistory analyze "CRISPR" --depth detailed
-
-# Track a specific claim across edit history
+wikihistory analyze "COVID-19 pandemic" --depth detailed
 wikihistory claim "Theranos" --text "revolutionary blood testing technology"
-
-# Export to JSON for downstream processing
 wikihistory export "COVID-19 pandemic" --format json
-
-# With L2 model interpretation (requires API key)
 wikihistory analyze "Donald Trump" --depth detailed --model openai
-
-# Batch analysis from file
-echo "Earth\nCRISPR\nShakespeare" > pages.txt
 wikihistory analyze --pages-file pages.txt --depth brief
-
-# Cached analysis (faster on re-run)
-wikihistory analyze "Albert Einstein" --depth detailed --cache
+wikihistory eval
 ```
 
-## Library usage
+## Library — programmatic analysis
 
 ```ts
 // Use individual analyzers programmatically

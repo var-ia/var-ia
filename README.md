@@ -110,6 +110,10 @@ AGPL-3.0. See [LICENSE](./LICENSE).
 
 If you modify this software and deploy it as a network service, you must release your modifications.
 
-## Contributing
+## Community
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md). All measurement claims must carry phase tags. Unsure of a claim's phase → Phase 0.
+- [Contributing](./CONTRIBUTING.md) — all measurement claims must carry phase tags
+- [Code of Conduct](./.github/CODE_OF_CONDUCT.md)
+- [Security](./.github/SECURITY.md)
+- [Changelog](./CHANGELOG.md)
+- [Cite this software](./CITATION.cff)

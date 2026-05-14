@@ -1,6 +1,10 @@
 # @var-ia/persistence
 
-SQLite persistence layer for varia. Uses `bun:sqlite` — Bun only.
+SQLite persistence layer. Uses `bun:sqlite` — Bun only.
+
+```bash
+bun add @var-ia/persistence
+```
 
 ## Exports
 

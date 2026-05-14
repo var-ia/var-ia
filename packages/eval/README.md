@@ -1,6 +1,10 @@
 # @var-ia/eval
 
-Evaluation harness for varia analyzers. Benchmark pages with expected event patterns and precision scoring.
+Evaluation harness — benchmark pages, expected event patterns, precision scoring.
+
+```bash
+bun add @var-ia/eval
+```
 
 ## Exports
 

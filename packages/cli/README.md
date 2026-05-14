@@ -1,6 +1,10 @@
 # @var-ia/cli
 
-CLI tool for Wikipedia edit history analysis. Provides the `wikihistory` command.
+CLI tool — provides the `wikihistory` command.
+
+```bash
+bun add @var-ia/cli
+```
 
 ## Commands
 

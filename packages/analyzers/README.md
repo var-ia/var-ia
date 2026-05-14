@@ -1,6 +1,10 @@
 # @var-ia/analyzers
 
-Deterministic analyzers for Wikipedia edit history. Byte-for-byte reproducible, no model involved.
+Deterministic analyzers. Byte-for-byte reproducible, no model involved.
+
+```bash
+bun add @var-ia/analyzers
+```
 
 ## Exports
 
