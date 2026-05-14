@@ -1,3 +1,4 @@
+import type { EvidenceEvent } from "@var-ia/evidence-graph";
 import { createEvalHarness, validateAgainstGroundTruth, GROUND_TRUTH_LABELS } from "@var-ia/eval";
 import { runAnalyze } from "./analyze.js";
 
@@ -62,7 +63,7 @@ async function runGroundTruth(path: string): Promise<void> {
     console.log(`Using ${labels.length} built-in ground truth labels.\n`);
   }
 
-  const allEvents: Array<{ outcomeId: string; events: import("@var-ia/evidence-graph").EvidenceEvent[] }> = [];
+  const allEvents: Array<{ outcomeId: string; events: EvidenceEvent[] }> = [];
 
   for (const label of labels) {
     console.log(`[${label.id}] ${label.description}...`);
@@ -99,7 +100,7 @@ async function runGroundTruth(path: string): Promise<void> {
   }
 
   const count = allResults.length;
-  console.log(`\n  Total: ${totalPassed}/${count} passed`);
+  console.log(`\n  Total: ${totalPassed}/${count} passed (${totalFailed} failed)`);
   console.log(`  Avg precision: ${(totalPrecision / count * 100).toFixed(1)}%`);
   console.log(`  Avg recall: ${(totalRecall / count * 100).toFixed(1)}%`);
 }

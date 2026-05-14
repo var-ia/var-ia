@@ -291,4 +291,3 @@ export function createEvalHarness(): EvalHarness {
 }
 
 export { GROUND_TRUTH_LABELS, getGroundTruthForPage, getGroundTruthById } from "./ground-truth.js";
-export type { OutcomeLabel, L3ValidationResult, L3ValidationSummary } from "./index.js";

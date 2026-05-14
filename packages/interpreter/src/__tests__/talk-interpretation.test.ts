@@ -34,7 +34,7 @@ function makeEditEvent(revId: number, eventType: EvidenceEvent["eventType"] = "c
 }
 
 function buildUserPrompt(events: EvidenceEvent[]): string {
-  let text = `Evidence events to classify:\n${JSON.stringify(
+    const text = `Evidence events to classify:\n${JSON.stringify(
     events.map((e, i) => ({
       index: i,
       eventType: e.eventType,
@@ -104,15 +104,14 @@ Return ONLY a JSON array of objects with fields: eventIndex (matching the input 
     expect(events.length).toBe(3);
   });
 
-  it("never passes raw wikitext in prompt", () => {
+  it("only passes L1-extracted facts, not raw wikitext", () => {
     const events = [makeTalkCorrelatedEvent(1, "time_delta_hours=6 talk_comment=BLP concern")];
-    const prompt = buildUserPrompt(events);
 
-    const hasRawContent = events.some((e) =>
+    const containsWikitext = events.some((e) =>
       e.deterministicFacts.some((f) =>
         f.detail && (f.detail.includes("\n==") || f.detail.includes("{{") || f.detail.includes("[[")),
       ),
     );
-    expect(hasRawContent).toBe(false);
+    expect(containsWikitext).toBe(false);
   });
 });

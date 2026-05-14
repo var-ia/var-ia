@@ -17,6 +17,7 @@ Usage:
   wikihistory watch <page> [--section <name>] [--interval <ms>]
   wikihistory diff <topic> --wiki-a <url> --wiki-b <url> [--depth brief|detailed|forensic] [--model <provider>]
   wikihistory eval [--page <title>]
+  wikihistory eval --ground-truth <path> | builtin
 
 Options:
   --depth          Analysis depth (default: detailed)

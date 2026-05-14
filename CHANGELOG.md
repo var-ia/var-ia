@@ -36,6 +36,22 @@ Extended `template-tracker.ts` with `diffTemplateParams()` and
 `buildParamChangeEvents()`. Diffs parameter key-value pairs on templates present
 in both revisions. New event type: `template_parameter_changed`.
 
+### L2-01: Talk Page Interpretation
+
+Added `discussionType` field to `ModelInterpretation`. Extended default system
+prompt with talk page discussion type taxonomy (notability_challenge,
+sourcing_dispute, neutrality_concern, content_deletion, content_addition,
+naming_dispute, procedural, other). Model receives only L1-extracted
+deterministic facts — never raw wikitext.
+
+### INFRA-01: Real L3 Eval with Ground Truth
+
+New `OutcomeLabel` type and `validateAgainstGroundTruth()` function. Ground
+truth dataset of 5 manually curated labels covering RFC closures, talk page
+consensus, and page protection events. New `--ground-truth builtin | <path>`
+flag for `wikihistory eval`. CLI validates pipeline signal against independent
+outcome labels.
+
 ## 0.1.0 (2025-01-01)
 
 Initial release.

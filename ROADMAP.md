@@ -57,10 +57,10 @@ anything.
 | L1-07 | Re-observation / temporal diff | L1 | 10 | medium | — | done |
 | L1-08 | Talk page section extractor | L1 | 11 | small | L1-01 | done |
 | L1-09 | Template parameter differ | L1 | 12 | small | — | done |
-| L2-01 | Talk page interpretation | L2 | 6 | medium | L1-01, L1-02 | ready |
+| L2-01 | Talk page interpretation | L2 | 6 | medium | L1-01, L1-02 | done |
 | L2-02 | Lineage-aware interpretation | L2 | 7 | medium | — | done |
 | CW-01 | Cross-wiki diff command | CLI | 8 | medium | — | done |
-| INFRA-01 | Real L3 eval with ground truth | INFRA | 9 | large | L1-01, L1-02 | ready |
+| INFRA-01 | Real L3 eval with ground truth | INFRA | 9 | large | L1-01, L1-02 | done |
 
 ## Dependency Graph
 
@@ -76,7 +76,7 @@ L2-02 (independent)
 CW-01 (independent)
 ```
 
-**Ready to pick up:** L2-01, INFRA-01
+**Ready to pick up:** *(all items completed — next increment TBD)*
 
 ## L1 — Deterministic
 
