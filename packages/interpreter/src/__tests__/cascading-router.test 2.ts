@@ -1,8 +1,7 @@
 import type { EvidenceEvent, EvidenceLayer, ModelInterpretation } from "@var-ia/evidence-graph";
 import { describe, expect, it } from "vitest";
-import type { ModelAdapter } from "../index.js";
 import { CascadingRouter } from "../cascading-router.js";
-import type { LineageContext } from "../index.js";
+import type { LineageContext, ModelAdapter } from "../index.js";
 
 function makeEvent(eventType = "revert_detected"): EvidenceEvent {
   const layer: EvidenceLayer = "observed";

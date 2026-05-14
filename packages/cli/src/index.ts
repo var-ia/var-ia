@@ -1,14 +1,14 @@
-import { Command } from "commander";
 import type { AuthConfig } from "@var-ia/ingestion";
 import type { ModelConfig } from "@var-ia/interpreter";
+import { Command } from "commander";
 import { runAnalyze } from "./commands/analyze.js";
-import { runCron } from "./commands/cron.js";
-import { runDiff } from "./commands/diff.js";
-import type { DiffResult } from "./commands/diff.js";
-import { runVisualize } from "./commands/visualize.js";
 import { runClaim } from "./commands/claim.js";
+import { runCron } from "./commands/cron.js";
+import type { DiffResult } from "./commands/diff.js";
+import { runDiff } from "./commands/diff.js";
 import { runEval } from "./commands/eval.js";
 import { runExport } from "./commands/export.js";
+import { runVisualize } from "./commands/visualize.js";
 import { runWatch } from "./commands/watch.js";
 import { bold, cyan, dim, formatEvent, gray, green, heading, red, success } from "./render.js";
 
@@ -189,7 +189,13 @@ const watchCmd = program
   .option("-i, --interval <ms>", "poll interval in ms (default: 60000)", parseInt);
 withGlobal(watchCmd);
 watchCmd.action(async (page, opts) => {
-  await runWatch(page, opts.section as string | undefined, opts.api as string | undefined, opts.interval as number | undefined, extractAuth(opts));
+  await runWatch(
+    page,
+    opts.section as string | undefined,
+    opts.api as string | undefined,
+    opts.interval as number | undefined,
+    extractAuth(opts),
+  );
 });
 
 // ── cron ──
@@ -261,9 +267,8 @@ diffCmd.action(async (topic, opts) => {
 
 function printUserFacingDiff(result: DiffResult): void {
   const { wikis, comparison, outliers } = result;
-  const labels = wikis.length <= 26
-    ? wikis.map((_, i) => String.fromCharCode(65 + i))
-    : wikis.map((_, i) => `W${i + 1}`);
+  const labels =
+    wikis.length <= 26 ? wikis.map((_, i) => String.fromCharCode(65 + i)) : wikis.map((_, i) => `W${i + 1}`);
 
   console.log(heading(`Cross-Wiki Diff: "${result.pageTitle}"`));
   for (let i = 0; i < wikis.length; i++) {
@@ -272,7 +277,9 @@ function printUserFacingDiff(result: DiffResult): void {
   console.log();
 
   console.log(bold("── Overview ──"));
-  console.log(`  ${"Total events".padEnd(14)} ${comparison.totalEvents.map((n) => cyan(String(n).padStart(6))).join(" ")}`);
+  console.log(
+    `  ${"Total events".padEnd(14)} ${comparison.totalEvents.map((n) => cyan(String(n).padStart(6))).join(" ")}`,
+  );
   console.log(`  ${"Sections".padEnd(14)} ${comparison.totalSections.map((n) => String(n).padStart(6)).join(" ")}`);
   console.log(`  ${"Citations".padEnd(14)} ${wikis.map((w) => String(w.summary.citations).padStart(6)).join(" ")}`);
   console.log(`  ${"Templates".padEnd(14)} ${wikis.map((w) => String(w.summary.templates).padStart(6)).join(" ")}`);
@@ -303,7 +310,9 @@ function printUserFacingDiff(result: DiffResult): void {
     console.log(bold("\n── Outliers (|z-score| > 2) ──"));
     for (const o of outliers) {
       const sign = o.zScore > 0 ? "+" : "";
-      console.log(`  Wiki ${o.wikiLabel}: ${o.eventType} = ${cyan(String(o.count))} (mean=${o.mean}, z=${sign}${o.zScore})`);
+      console.log(
+        `  Wiki ${o.wikiLabel}: ${o.eventType} = ${cyan(String(o.count))} (mean=${o.mean}, z=${sign}${o.zScore})`,
+      );
     }
   }
 }
@@ -317,12 +326,7 @@ const evalCmd = program
   .option("--l2", "run L2 quality benchmarks against synthetic dataset");
 withModel(evalCmd);
 evalCmd.action(async (opts) => {
-  await runEval(
-    opts.page as string | undefined,
-    opts.groundTruth as string | undefined,
-    !!opts.l2,
-    extractModel(opts),
-  );
+  await runEval(opts.page as string | undefined, opts.groundTruth as string | undefined, !!opts.l2, extractModel(opts));
 });
 
 export async function cli(args: string[]): Promise<void> {
@@ -332,5 +336,3 @@ export async function cli(args: string[]): Promise<void> {
   }
   await program.parseAsync(args, { from: "user" });
 }
-
-

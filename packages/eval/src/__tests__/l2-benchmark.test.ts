@@ -6,10 +6,7 @@ vi.mock("@var-ia/interpreter", () => ({
 }));
 
 import { createAdapter } from "@var-ia/interpreter";
-import {
-  buildL2Dataset,
-  runL2Benchmark,
-} from "../l2-benchmark.js";
+import { buildL2Dataset, runL2Benchmark } from "../l2-benchmark.js";
 
 describe("L2 benchmark", () => {
   it("buildL2Dataset returns 13 test cases", () => {

@@ -104,8 +104,10 @@ describe("buildSourceLineage", () => {
     expect(result.sources).toHaveLength(2);
     expect(result.lineage).toHaveLength(1);
 
-    const eduSource = result.sources.find((s) => s.url?.includes("example.edu"))!;
-    const comSource = result.sources.find((s) => s.url?.includes("reuters.com"))!;
+    const eduSource = result.sources.find((s) => s.url?.includes("example.edu"));
+    if (!eduSource) throw new Error("Expected edu source to be found");
+    const comSource = result.sources.find((s) => s.url?.includes("reuters.com"));
+    if (!comSource) throw new Error("Expected com source to be found");
 
     expect(eduSource.sourceType).toBe("secondary");
     expect(eduSource.authority).toBe("high");
@@ -122,7 +124,8 @@ describe("buildSourceLineage", () => {
     const refUrl = "https://www.nasa.gov/report";
     const content = `<ref name="g">{{cite web |url=${refUrl} |title=Report}}</ref>`;
     const result = buildSourceLineage([{ revId: 1, timestamp: "2024-01-01T00:00:00Z", content }]);
-    const src = result.sources.find((s) => s.url === refUrl)!;
+    const src = result.sources.find((s) => s.url === refUrl);
+    if (!src) throw new Error("Expected source to be found");
     expect(src.sourceType).toBe("government");
     expect(src.authority).toBe("high");
   });
@@ -131,7 +134,8 @@ describe("buildSourceLineage", () => {
     const refUrl = "https://doi.org/10.1234/test";
     const content = `<ref name="d">{{cite journal |url=${refUrl} |title=Study}}</ref>`;
     const result = buildSourceLineage([{ revId: 1, timestamp: "2024-01-01T00:00:00Z", content }]);
-    const src = result.sources.find((s) => s.url === refUrl)!;
+    const src = result.sources.find((s) => s.url === refUrl);
+    if (!src) throw new Error("Expected source to be found");
     expect(src.sourceType).toBe("academic");
     expect(src.authority).toBe("medium");
   });
@@ -140,7 +144,8 @@ describe("buildSourceLineage", () => {
     const refUrl = "https://someblog.example/page";
     const content = `<ref name="u">{{cite web |url=${refUrl} |title=Blog}}</ref>`;
     const result = buildSourceLineage([{ revId: 1, timestamp: "2024-01-01T00:00:00Z", content }]);
-    const src = result.sources.find((s) => s.url === refUrl)!;
+    const src = result.sources.find((s) => s.url === refUrl);
+    if (!src) throw new Error("Expected source to be found");
     expect(src.sourceType).toBe("unknown");
     expect(src.authority).toBe("unrated");
   });
@@ -158,7 +163,8 @@ describe("buildSourceLineage", () => {
     };
 
     const result = buildSourceLineage([rev1, rev2]);
-    const src = result.sources.find((s) => s.url?.includes("example.edu"))!;
+    const src = result.sources.find((s) => s.url?.includes("example.edu"));
+    if (!src) throw new Error("Expected source to be found");
     expect(src.lastSeenRevisionId).toBe(1);
     expect(src.lastSeenAt).toBe("2024-01-01T00:00:00Z");
   });

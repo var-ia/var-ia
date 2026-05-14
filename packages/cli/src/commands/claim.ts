@@ -206,7 +206,12 @@ export function fuzzyFindClaim(claimText: string, plainText: string, preNormaliz
   return "";
 }
 
-export function findSectionForText(wikitext: string, plainText: string, preStripped?: string, sectionCharMap?: Array<{ charOffset: number; section: string }>): string {
+export function findSectionForText(
+  wikitext: string,
+  plainText: string,
+  preStripped?: string,
+  sectionCharMap?: Array<{ charOffset: number; section: string }>,
+): string {
   const strippedBase = preStripped ?? stripWikitext(wikitext);
   const stripped = strippedBase.toLowerCase().replace(/\s+/g, " ");
   const targetIdx = stripped.indexOf(plainText.toLowerCase().replace(/\s+/g, " ").trim());

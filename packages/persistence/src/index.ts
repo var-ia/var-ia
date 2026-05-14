@@ -1,4 +1,4 @@
-import { Database, type Statement, type QueryBuilder } from "bun:sqlite";
+import { Database, type QueryBuilder, type Statement } from "bun:sqlite";
 import type { ClaimObject, Revision } from "@var-ia/evidence-graph";
 
 export interface PersistenceConfig {
@@ -69,9 +69,7 @@ export class Persistence implements PersistenceAdapter {
       LIMIT ?
     `);
     this.hasRevisionQuery = this.db.query("SELECT 1 FROM revisions WHERE rev_id = ? LIMIT 1");
-    this.latestTimestampQuery = this.db.query(
-      "SELECT MAX(timestamp) as latest FROM revisions WHERE page_title = ?",
-    );
+    this.latestTimestampQuery = this.db.query("SELECT MAX(timestamp) as latest FROM revisions WHERE page_title = ?");
     this.getClaimsQuery = this.db.query(`
       SELECT claim_id, identity_key, current_state, proposition_type,
              first_seen_rev_id, first_seen_at

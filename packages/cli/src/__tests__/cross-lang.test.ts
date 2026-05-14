@@ -14,10 +14,7 @@ const AR_WIKI = "https://ar.wikipedia.org/w/api.php";
 
 describe("cross-language claim classification", () => {
   it("detects German hedging", () => {
-    const result = classifyClaimChange(
-      "Die Erde ist der dritte Planet.",
-      "Die Erde ist angeblich der dritte Planet.",
-    );
+    const result = classifyClaimChange("Die Erde ist der dritte Planet.", "Die Erde ist angeblich der dritte Planet.");
     expect(result).toBe("softened");
   });
 
@@ -30,10 +27,7 @@ describe("cross-language claim classification", () => {
   });
 
   it("detects French hedging", () => {
-    const result = classifyClaimChange(
-      "La Terre est la troisième planète.",
-      "La Terre serait la troisième planète.",
-    );
+    const result = classifyClaimChange("La Terre est la troisième planète.", "La Terre serait la troisième planète.");
     expect(result).toBe("softened");
   });
 
@@ -46,10 +40,7 @@ describe("cross-language claim classification", () => {
   });
 
   it("detects Japanese hedging", () => {
-    const result = classifyClaimChange(
-      "地球は太陽から三番目の惑星です。",
-      "地球は太陽から三番目の惑星かもしれない。",
-    );
+    const result = classifyClaimChange("地球は太陽から三番目の惑星です。", "地球は太陽から三番目の惑星かもしれない。");
     expect(result).toBe("softened");
   });
 
@@ -62,18 +53,12 @@ describe("cross-language claim classification", () => {
   });
 
   it("detects Arabic hedging", () => {
-    const result = classifyClaimChange(
-      "الأرض هي الكوكب الثالث.",
-      "ربما الأرض هي الكوكب الثالث.",
-    );
+    const result = classifyClaimChange("الأرض هي الكوكب الثالث.", "ربما الأرض هي الكوكب الثالث.");
     expect(result).toBe("softened");
   });
 
   it("detects Arabic certainty", () => {
-    const result = classifyClaimChange(
-      "ربما الأرض هي الكوكب الثالث.",
-      "بالتأكيد الأرض هي الكوكب الثالث.",
-    );
+    const result = classifyClaimChange("ربما الأرض هي الكوكب الثالث.", "بالتأكيد الأرض هي الكوكب الثالث.");
     expect(result).toBe("strengthened");
   });
 

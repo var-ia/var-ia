@@ -1,5 +1,5 @@
-import type { AuthConfig } from "@var-ia/ingestion";
 import type { EvidenceEvent, Revision } from "@var-ia/evidence-graph";
+import type { AuthConfig } from "@var-ia/ingestion";
 import { runAnalyze } from "./analyze.js";
 
 const CLAIM_EVENT_TYPES = new Set([
@@ -52,9 +52,7 @@ export async function runVisualize(
     return;
   }
 
-  const sortedRevs = [...revisions].sort(
-    (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
-  );
+  const sortedRevs = [...revisions].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
   const filteredEvents = showAll ? events : events.filter((e) => CLAIM_EVENT_TYPES.has(e.eventType));
 
@@ -93,9 +91,7 @@ function printMermaid(revisions: Revision[], events: EvidenceEvent[]): void {
   for (let i = 0; i < revisions.length - 1; i++) {
     const from = revisions[i];
     const to = revisions[i + 1];
-    const revEvents = events.filter(
-      (e) => e.fromRevisionId === from.revId && e.toRevisionId === to.revId,
-    );
+    const revEvents = events.filter((e) => e.fromRevisionId === from.revId && e.toRevisionId === to.revId);
     if (revEvents.length === 0) {
       labels.push(`  R${from.revId} --> R${to.revId}`);
     } else {
@@ -137,9 +133,7 @@ function printDot(revisions: Revision[], events: EvidenceEvent[]): void {
   for (let i = 0; i < revisions.length - 1; i++) {
     const from = revisions[i];
     const to = revisions[i + 1];
-    const revEvents = events.filter(
-      (e) => e.fromRevisionId === from.revId && e.toRevisionId === to.revId,
-    );
+    const revEvents = events.filter((e) => e.fromRevisionId === from.revId && e.toRevisionId === to.revId);
 
     if (revEvents.length === 0) {
       console.log(`  "rev_${from.revId}" -> "rev_${to.revId}";`);
@@ -147,7 +141,9 @@ function printDot(revisions: Revision[], events: EvidenceEvent[]): void {
       const evLabels = revEvents.map((e) => eventLabel(e).replace(/"/g, '\\"'));
       const label = evLabels.join("\\n");
       const color = EVENT_COLORS[revEvents[0].eventType] ?? "#999";
-      console.log(`  "rev_${from.revId}" -> "rev_${to.revId}" [label="${label}", color="${color}", fontcolor="${color}"];`);
+      console.log(
+        `  "rev_${from.revId}" -> "rev_${to.revId}" [label="${label}", color="${color}", fontcolor="${color}"];`,
+      );
     }
   }
 

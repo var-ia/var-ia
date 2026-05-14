@@ -150,7 +150,7 @@ export class MediaWikiClient implements RevisionFetcher, RevisionSource, DiffFet
         }
         if (page.revisions) {
           for (const rev of page.revisions) {
-            revisions.push(this.mapRevision(rev, pageInfo!));
+            revisions.push(this.mapRevision(rev, pageInfo));
           }
         }
       }
@@ -339,9 +339,7 @@ export class MediaWikiClient implements RevisionFetcher, RevisionSource, DiffFet
         continue;
       }
 
-      throw new Error(
-        `MediaWiki API error: ${response.status} ${response.statusText} for ${url}`,
-      );
+      throw new Error(`MediaWiki API error: ${response.status} ${response.statusText} for ${url}`);
     }
 
     throw new Error(`MediaWiki API request failed after ${retries} retries for ${url}`);
@@ -377,7 +375,6 @@ function formatTimestamp(date: Date): string {
   const iso = date.toISOString();
   return `${iso.slice(0, -5)}Z`;
 }
-
 
 function parseUnifiedDiff(diffText: string): DiffLine[] {
   const lines: DiffLine[] = [];

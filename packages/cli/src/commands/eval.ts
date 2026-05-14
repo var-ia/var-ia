@@ -1,4 +1,10 @@
-import { createEvalHarness, GROUND_TRUTH_LABELS, printBenchmarkResult, runL2Benchmark, validateAgainstGroundTruth } from "@var-ia/eval";
+import {
+  createEvalHarness,
+  GROUND_TRUTH_LABELS,
+  printBenchmarkResult,
+  runL2Benchmark,
+  validateAgainstGroundTruth,
+} from "@var-ia/eval";
 import type { EvidenceEvent } from "@var-ia/evidence-graph";
 import type { ModelConfig } from "@var-ia/interpreter";
 import { runAnalyze } from "./analyze.js";

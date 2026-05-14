@@ -61,10 +61,7 @@ export const sectionDiffer: SectionDiffer = {
 
     for (let i = 0; i < headerMatches.length; i++) {
       const header = headerMatches[i];
-      const nextOffset =
-        i + 1 < headerMatches.length
-          ? headerMatches[i + 1].offset
-          : bytes.length;
+      const nextOffset = i + 1 < headerMatches.length ? headerMatches[i + 1].offset : bytes.length;
       const headerEnd = lineByteOffsets[header.index + 1] ?? bytes.length;
       const content = wikitext.slice(headerEnd, nextOffset).trim();
 
@@ -205,11 +202,13 @@ export function buildSectionLineage(
     const renamedFromTo = new Map<string, string>();
     const contentToAddKey = new Map<string, string>();
     for (const addKey of addedKeys) {
-      const section = currByKey.get(addKey)!;
+      const section = currByKey.get(addKey);
+      if (!section) continue;
       contentToAddKey.set(section.content, addKey);
     }
     for (const remKey of removedKeys) {
-      const remSection = prevByKey.get(remKey)!;
+      const remSection = prevByKey.get(remKey);
+      if (!remSection) continue;
       const addKey = contentToAddKey.get(remSection.content);
       if (addKey) {
         renamedFromTo.set(remKey, addKey);
@@ -220,9 +219,10 @@ export function buildSectionLineage(
 
     for (const key of removedKeys) {
       if (renamedFromTo.has(key)) {
-        const newKey = renamedFromTo.get(key)!;
-        const oldSection = prevByKey.get(key)!;
-        const newSection = currByKey.get(newKey)!;
+        const newKey = renamedFromTo.get(key);
+        const oldSection = prevByKey.get(key);
+        const newSection = newKey ? currByKey.get(newKey) : undefined;
+        if (!newKey || !oldSection || !newSection) continue;
         const lineage = lineages.get(key);
         if (lineage) {
           lineage.events.push({
@@ -242,7 +242,8 @@ export function buildSectionLineage(
           lineages.delete(key);
         }
       } else {
-        const section = prevByKey.get(key)!;
+        const section = prevByKey.get(key);
+        if (!section) continue;
         const lineage = lineages.get(key);
         if (lineage) {
           lineage.events.push({
@@ -260,7 +261,8 @@ export function buildSectionLineage(
 
     for (const key of addedKeys) {
       if (!renamedToSet.has(key)) {
-        const section = currByKey.get(key)!;
+        const section = currByKey.get(key);
+        if (!section) continue;
         const lineage: SectionLineage = {
           sectionName: section.title || "(lead)",
           level: section.level,
@@ -284,8 +286,9 @@ export function buildSectionLineage(
 
     for (const key of prevKeys) {
       if (currKeys.has(key) && !renamedFromTo.has(key)) {
-        const prevSection = prevByKey.get(key)!;
-        const currSection = currByKey.get(key)!;
+        const prevSection = prevByKey.get(key);
+        const currSection = currByKey.get(key);
+        if (!prevSection || !currSection) continue;
         const lineage = lineages.get(key);
         if (lineage) {
           if (prevSection.content !== currSection.content) {

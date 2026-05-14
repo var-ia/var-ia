@@ -57,9 +57,12 @@ export const templateTracker: TemplateTracker = {
           const inner = raw.slice(2, -2).trim();
           const firstBar = inner.indexOf("|");
           const firstName =
-      firstBar >= 0
-        ? inner.slice(0, firstBar).trim()
-        : (() => { const nl = inner.indexOf("\n"); return nl >= 0 ? inner.slice(0, nl).trim() : inner.trim(); })();
+            firstBar >= 0
+              ? inner.slice(0, firstBar).trim()
+              : (() => {
+                  const nl = inner.indexOf("\n");
+                  return nl >= 0 ? inner.slice(0, nl).trim() : inner.trim();
+                })();
           const name = firstName.toLowerCase().replace(/\s+/g, " ");
 
           const key = name;

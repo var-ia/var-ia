@@ -37,14 +37,14 @@ export interface ModelConfig {
   systemPrompt?: string;
 }
 
+export type { CalibrationBin, CalibrationData } from "./calibrated-adapter.js";
+export { CalibratedAdapter } from "./calibrated-adapter.js";
+export type { CascadingRouterConfig } from "./cascading-router.js";
+export { CascadingRouter } from "./cascading-router.js";
 export type { ConsensusConfig } from "./consensus-adapter.js";
 export { ConsensusAdapter } from "./consensus-adapter.js";
 export type { ModelRoute, RouterConfig } from "./model-router.js";
 export { ModelRouter } from "./model-router.js";
-export type { CascadingRouterConfig } from "./cascading-router.js";
-export { CascadingRouter } from "./cascading-router.js";
-export type { CalibrationBin, CalibrationData } from "./calibrated-adapter.js";
-export { CalibratedAdapter } from "./calibrated-adapter.js";
 
 export function createAdapter(config: ModelConfig): ModelAdapter {
   switch (config.provider) {

@@ -117,9 +117,7 @@ export function table(headers: string[], rows: string[][], align: ("left" | "rig
 
   const sep = colWidths.map((w) => "\u2500".repeat(w + 2)).join("\u253c");
 
-  const headerRow = bold(
-    headers.map((h, i) => pad(h, colWidths[i], align[i] ?? "left")).join(` ${dim("\u2502")} `),
-  );
+  const headerRow = bold(headers.map((h, i) => pad(h, colWidths[i], align[i] ?? "left")).join(` ${dim("\u2502")} `));
   const dataRows = rows.map((row) =>
     row.map((cell, i) => pad(cell, colWidths[i], align[i] ?? "left")).join(` ${dim("\u2502")} `),
   );

@@ -12,10 +12,7 @@ export interface DeltaNotification {
   wikiUrl?: string;
 }
 
-export async function sendNotifications(
-  config: NotifyConfig,
-  deltas: DeltaNotification[],
-): Promise<void> {
+export async function sendNotifications(config: NotifyConfig, deltas: DeltaNotification[]): Promise<void> {
   if (deltas.length === 0) return;
 
   const changedDeltas = deltas.filter((d) => d.eventsNew > 0 || d.eventsResolved > 0);
@@ -45,9 +42,8 @@ export async function sendNotifications(
 
 function formatSlackMessage(deltas: DeltaNotification[]): string {
   const lines = deltas.map((d) => {
-    const summary = d.eventsNew > 0
-      ? `${d.eventsNew} new event(s), ${d.eventsResolved} resolved`
-      : `${d.eventsResolved} resolved`;
+    const summary =
+      d.eventsNew > 0 ? `${d.eventsNew} new event(s), ${d.eventsResolved} resolved` : `${d.eventsResolved} resolved`;
     return `• *${d.pageTitle}*: ${summary}`;
   });
 
@@ -79,9 +75,8 @@ async function sendEmailNotification(deltas: DeltaNotification[]): Promise<void>
   const subject = `Varia: ${deltas.length} page(s) changed`;
   const body = deltas
     .map((d) => {
-      const summary = d.eventsNew > 0
-        ? `${d.eventsNew} new, ${d.eventsResolved} resolved`
-        : `${d.eventsResolved} resolved`;
+      const summary =
+        d.eventsNew > 0 ? `${d.eventsNew} new, ${d.eventsResolved} resolved` : `${d.eventsResolved} resolved`;
       return `${d.pageTitle}: ${summary}${d.wikiUrl ? ` (${d.wikiUrl})` : ""}`;
     })
     .join("\n");

@@ -1,9 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import type { TemplateType } from "@var-ia/analyzers";
-import type { Section } from "@var-ia/evidence-graph";
-import type { CitationRef, Template } from "@var-ia/analyzers";
+import type { CitationRef, Template, TemplateType } from "@var-ia/analyzers";
 import {
   buildPageMoveEvents,
   buildParamChangeEvents,
@@ -20,13 +18,13 @@ import {
   sectionDiffer,
   templateTracker,
 } from "@var-ia/analyzers";
-import type { DeterministicFact, EvidenceEvent, EvidenceLayer, Revision } from "@var-ia/evidence-graph";
+import type { DeterministicFact, EvidenceEvent, EvidenceLayer, Revision, Section } from "@var-ia/evidence-graph";
 import type { AuthConfig, RevisionOptions } from "@var-ia/ingestion";
 import { MediaWikiClient } from "@var-ia/ingestion";
 import type { ModelConfig } from "@var-ia/interpreter";
 import { createAdapter, ModelRouter } from "@var-ia/interpreter";
 import { loadCachedRevisions, loadLatestCachedTimestamp, saveRevisions } from "./cache.js";
-import { findSectionForText, fuzzyFindClaim, stripWikitext, buildSectionCharMap } from "./claim.js";
+import { buildSectionCharMap, findSectionForText, fuzzyFindClaim, stripWikitext } from "./claim.js";
 
 interface ParsedContent {
   sections: Section[];
@@ -396,9 +394,7 @@ export async function runAnalyze(
 
     const fromTs = new Date(before.timestamp).getTime();
     const toTs = new Date(after.timestamp).getTime();
-    const protectionLogsInRange = protectionLogsWithTs
-      .filter(({ ts }) => ts > fromTs && ts <= toTs)
-      .map(({ l }) => l);
+    const protectionLogsInRange = protectionLogsWithTs.filter(({ ts }) => ts > fromTs && ts <= toTs).map(({ l }) => l);
     for (const log of protectionLogsInRange) {
       events.push({
         eventType: "protection_changed",

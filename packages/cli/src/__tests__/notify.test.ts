@@ -71,9 +71,7 @@ describe("notify", () => {
     const deltas = [{ pageTitle: "Earth", eventsNew: 1, eventsResolved: 0, deltaSummary: "1 new" }];
     await sendNotifications({ slack: true }, deltas);
 
-    expect(warnSpy).toHaveBeenCalledWith(
-      expect.stringContaining("SLACK_WEBHOOK_URL"),
-    );
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("SLACK_WEBHOOK_URL"));
     warnSpy.mockRestore();
   });
 });

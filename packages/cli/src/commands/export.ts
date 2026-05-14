@@ -199,8 +199,8 @@ function extractPolicySignals(events: EvidenceEvent[]): PolicySignal[] {
     const signal = sigMatch.slice("signal=".length);
     const key = `${dimension}:${signal}`;
 
-    if (signalMap.has(key)) {
-      const existing = signalMap.get(key)!;
+    const existing = signalMap.get(key);
+    if (existing) {
       existing.lastSeenRevisionId = event.toRevisionId;
       existing.active = true;
     } else {

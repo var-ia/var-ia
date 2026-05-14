@@ -55,17 +55,14 @@ export async function runDiff(
   const resolvedDepth = depth ?? "detailed";
   const sharedConfig = modelConfig ? { ...modelConfig } : undefined;
 
-  const labels = wikiUrls.length <= 26
-    ? wikiUrls.map((_, i) => String.fromCharCode(65 + i))
-    : wikiUrls.map((_, i) => `W${i + 1}`);
+  const labels =
+    wikiUrls.length <= 26 ? wikiUrls.map((_, i) => String.fromCharCode(65 + i)) : wikiUrls.map((_, i) => `W${i + 1}`);
 
   for (let i = 0; i < wikiUrls.length; i++) {
     console.log(`Analyzing wiki ${labels[i]}: ${wikiUrls[i]}`);
   }
 
-  const results = await Promise.all(
-    wikiUrls.map((url) => buildSummary(topic, url, resolvedDepth, sharedConfig)),
-  );
+  const results = await Promise.all(wikiUrls.map((url) => buildSummary(topic, url, resolvedDepth, sharedConfig)));
   const summaries = results.map((r) => r.summary);
   const allEvents = results.map((r) => r.events);
 
@@ -137,9 +134,7 @@ async function buildSummary(
   };
 }
 
-function buildEventTypeDiffsMatrix(
-  allCounts: Record<string, number>[],
-): EventTypeDiff[] {
+function buildEventTypeDiffsMatrix(allCounts: Record<string, number>[]): EventTypeDiff[] {
   const allTypes = new Set<string>();
   for (const counts of allCounts) {
     for (const key of Object.keys(counts)) {
@@ -158,10 +153,7 @@ function buildEventTypeDiffsMatrix(
   return withSortKey.map(({ eventType, counts, diffs }) => ({ eventType, counts, diffs }));
 }
 
-function detectOutliers(
-  summaries: WikiSummary[],
-  labels: string[],
-): OutlierEntry[] {
+function detectOutliers(summaries: WikiSummary[], labels: string[]): OutlierEntry[] {
   const allTypes = new Set<string>();
   for (const s of summaries) {
     for (const key of Object.keys(s.eventCounts)) {
@@ -197,5 +189,3 @@ function detectOutliers(
 
   return outliers.sort((a, b) => Math.abs(b.zScore) - Math.abs(a.zScore));
 }
-
-

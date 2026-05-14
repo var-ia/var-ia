@@ -1,8 +1,8 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import type { EvidenceEvent } from "@var-ia/evidence-graph";
 import { diffObservations } from "@var-ia/analyzers";
+import type { EvidenceEvent } from "@var-ia/evidence-graph";
 import type { AuthConfig } from "@var-ia/ingestion";
 import type { NotifyConfig } from "../notify.js";
 import { sendNotifications } from "../notify.js";

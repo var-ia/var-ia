@@ -1,4 +1,4 @@
-import type { InterpretedEvent, CalibrationData } from "@var-ia/interpreter";
+import type { CalibrationData, InterpretedEvent } from "@var-ia/interpreter";
 
 export interface ExpectedInterpretation {
   semanticChange: string;
@@ -28,10 +28,7 @@ export function computeCalibration(
     const bin = bins[binIndex];
     bin.count++;
 
-    if (
-      expectedInterp.semanticChange === "any" ||
-      interp.semanticChange === expectedInterp.semanticChange
-    ) {
+    if (expectedInterp.semanticChange === "any" || interp.semanticChange === expectedInterp.semanticChange) {
       bin.correctCount++;
     }
   }

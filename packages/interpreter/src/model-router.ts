@@ -65,9 +65,7 @@ export class ModelRouter implements ModelAdapter {
     const results = await Promise.allSettled(
       this.routes.map((route) =>
         this.probeEndpoint
-          ? probeModel(route.endpoint ?? "http://localhost:11434").then(
-              (ok): ModelRoute | null => (ok ? route : null),
-            )
+          ? probeModel(route.endpoint ?? "http://localhost:11434").then((ok): ModelRoute | null => (ok ? route : null))
           : Promise.resolve(route),
       ),
     );

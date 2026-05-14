@@ -1,14 +1,10 @@
 import type { EvidenceEvent, EvidenceLayer, ModelInterpretation } from "@var-ia/evidence-graph";
 import type { InterpretedEvent } from "@var-ia/interpreter";
 import { describe, expect, it } from "vitest";
-import { computeCalibration } from "../calibration.js";
 import type { ExpectedInterpretation } from "../calibration.js";
+import { computeCalibration } from "../calibration.js";
 
-function makeInterpretedEvent(
-  eventType: string,
-  semanticChange: string,
-  confidence: number,
-): InterpretedEvent {
+function makeInterpretedEvent(eventType: string, semanticChange: string, confidence: number): InterpretedEvent {
   const layer: EvidenceLayer = "observed";
   return {
     eventType: eventType as EvidenceEvent["eventType"],
@@ -93,10 +89,7 @@ describe("computeCalibration", () => {
 
   it("truncates to shorter input length", () => {
     const interpretations = [makeInterpretedEvent("revert_detected", "revert", 0.9)];
-    const expected: ExpectedInterpretation[] = [
-      { semanticChange: "revert" },
-      { semanticChange: "add" },
-    ];
+    const expected: ExpectedInterpretation[] = [{ semanticChange: "revert" }, { semanticChange: "add" }];
 
     const result = computeCalibration(interpretations, expected);
     expect(result.totalSamples).toBe(1);
@@ -107,10 +100,7 @@ describe("computeCalibration", () => {
       makeInterpretedEvent("revert_detected", "whatever", 0.7),
       makeInterpretedEvent("citation_added", "anything", 0.6),
     ];
-    const expected: ExpectedInterpretation[] = [
-      { semanticChange: "any" },
-      { semanticChange: "any" },
-    ];
+    const expected: ExpectedInterpretation[] = [{ semanticChange: "any" }, { semanticChange: "any" }];
 
     const result = computeCalibration(interpretations, expected);
     expect(result.overallAccuracy).toBe(1.0);

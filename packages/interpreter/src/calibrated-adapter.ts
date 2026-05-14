@@ -41,9 +41,7 @@ export class CalibratedAdapter implements ModelAdapter {
   private calibrate(rawConfidence: number): number {
     if (this.calibration.bins.length === 0) return rawConfidence;
 
-    const bin = this.calibration.bins.find(
-      (b) => rawConfidence >= b.lowerBound && rawConfidence < b.upperBound,
-    );
+    const bin = this.calibration.bins.find((b) => rawConfidence >= b.lowerBound && rawConfidence < b.upperBound);
     if (!bin || bin.count === 0) return rawConfidence;
 
     return bin.empiricalAccuracy;
