@@ -2,24 +2,29 @@ import { runAnalyze } from "./commands/analyze.js";
 import { runClaim } from "./commands/claim.js";
 import { runExport } from "./commands/export.js";
 import { runWatch } from "./commands/watch.js";
+import type { ModelConfig } from "@var-ia/interpreter";
 
 const HELP = `
 wikihistory — Wikipedia edit history analysis
 
 Usage:
-  wikihistory analyze <page> [--depth brief|detailed|forensic] [--from <revId>] [--to <revId>] [--cache]
-  wikihistory claim <page> --text "<claim text>" [--cache]
-  wikihistory export <page> --format json|csv
+  wikihistory analyze <page> [--depth brief|detailed|forensic] [--from <revId>] [--to <revId>] [--cache] [--model <provider>]
+  wikihistory claim <page> --text "<claim text>" [--cache] [--model <provider>]
+  wikihistory export <page> --format json|csv [--model <provider>]
   wikihistory watch <page> [--section <name>]
 
 Options:
-  --depth      Analysis depth (default: detailed)
-  --text       Claim text to track across revisions
-  --format     Export format (json, csv)
-  --section    Watch a specific section only
-  --from       Start revision ID
-  --to         End revision ID
-  --cache      Cache revisions in SQLite (~/.wikihistory/varia.db)
+  --depth          Analysis depth (default: detailed)
+  --text           Claim text to track across revisions
+  --format         Export format (json, csv)
+  --section        Watch a specific section only
+  --from           Start revision ID
+  --to             End revision ID
+  --cache          Cache revisions in SQLite (~/.wikihistory/varia.db)
+  --model          Model provider for semantic interpretation (openai, anthropic, deepseek, local, byok)
+  --model-api-key  API key for model provider (or set env var OPENAI_API_KEY etc.)
+  --model-name     Model name override (default: provider-specific)
+  --model-endpoint API endpoint override
 `;
 
 export async function cli(args: string[]): Promise<void> {
@@ -29,13 +34,14 @@ export async function cli(args: string[]): Promise<void> {
     case "analyze": {
       const pageTitle = args[1];
       if (!pageTitle) {
-        console.error("Usage: wikihistory analyze <page> [--depth brief|detailed|forensic] [--cache]");
+        console.error("Usage: wikihistory analyze <page> [--depth brief|detailed|forensic] [--cache] [--model <provider>]");
         process.exit(1);
       }
       const depth = parseFlag(args, "depth") ?? "detailed";
       const fromRev = parseFlag(args, "from");
       const toRev = parseFlag(args, "to");
       const useCache = args.includes("--cache");
+      const modelConfig = parseModelConfig(args);
 
       const events = await runAnalyze(
         pageTitle,
@@ -43,6 +49,7 @@ export async function cli(args: string[]): Promise<void> {
         fromRev ? parseInt(fromRev, 10) : undefined,
         toRev ? parseInt(toRev, 10) : undefined,
         useCache,
+        modelConfig,
       );
 
       console.log(`\n=== Analysis Results ===`);
@@ -55,6 +62,12 @@ export async function cli(args: string[]): Promise<void> {
         if (event.section) console.log(`  Section: ${event.section}`);
         for (const fact of event.deterministicFacts) {
           console.log(`  • ${fact.fact}${fact.detail ? `: ${fact.detail}` : ""}`);
+        }
+        if (event.modelInterpretation) {
+          console.log(`  ↳ ${event.modelInterpretation.semanticChange} (confidence: ${event.modelInterpretation.confidence.toFixed(2)})`);
+          if (event.modelInterpretation.policyDimension) {
+            console.log(`  ↳ policy: ${event.modelInterpretation.policyDimension}`);
+          }
         }
       }
       break;

@@ -1,12 +1,15 @@
 import { MediaWikiClient } from "@var-ia/ingestion";
 import { createClaimIdentity } from "@var-ia/evidence-graph";
-import type { ClaimState, Revision } from "@var-ia/evidence-graph";
+import type { ClaimState, EvidenceEvent, Revision } from "@var-ia/evidence-graph";
+import { createAdapter } from "@var-ia/interpreter";
+import type { ModelConfig } from "@var-ia/interpreter";
 import { loadCachedRevisions, saveRevisions } from "./cache.js";
 
 export async function runClaim(
   pageTitle: string,
   claimText: string,
   useCache = false,
+  modelConfig?: ModelConfig,
 ): Promise<void> {
   const client = new MediaWikiClient();
   console.log(`Tracking claim in "${pageTitle}"...`);
@@ -95,6 +98,36 @@ export async function runClaim(
   if (variants.length === 0) {
     console.log(`\nClaim "${claimText}" not found in any revision of "${pageTitle}".`);
     return;
+  }
+
+  if (modelConfig && variants.length >= 2) {
+    const adapter = createAdapter(modelConfig);
+    const comparisonEvents: EvidenceEvent[] = [];
+    for (let i = 1; i < variants.length; i++) {
+      comparisonEvents.push({
+        eventType: "claim_reworded",
+        fromRevisionId: variants[i - 1].revisionId,
+        toRevisionId: variants[i].revisionId,
+        section: variants[i].section,
+        before: variants[i - 1].text,
+        after: variants[i].text,
+        deterministicFacts: [
+          { fact: "claim_variant_compared", detail: `pair=${i}` },
+        ],
+        layer: "observed",
+        timestamp: variants[i].observedAt,
+      });
+    }
+
+    if (comparisonEvents.length > 0) {
+      console.log(`\nSemantically comparing ${comparisonEvents.length} claim variant pairs with ${modelConfig.provider}...`);
+      const interpreted = await adapter.interpret(comparisonEvents);
+      for (const ie of interpreted) {
+        const conf = ie.modelInterpretation.confidence;
+        const label = conf >= 0.7 ? "similar" : conf >= 0.4 ? "moderate change" : "substantial change";
+        console.log(`[rev ${ie.fromRevisionId}→${ie.toRevisionId}] ${label} (confidence: ${conf.toFixed(2)}) — ${ie.modelInterpretation.semanticChange}`);
+      }
+    }
   }
 
   if (currentState !== "absent" && currentState !== "deleted") {

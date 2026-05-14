@@ -1,7 +1,21 @@
 import { MediaWikiClient } from "@var-ia/ingestion";
 import { sectionDiffer, citationTracker, revertDetector, templateTracker } from "@var-ia/analyzers";
+import type { TemplateType } from "@var-ia/analyzers";
 import type { EvidenceEvent, EvidenceLayer, Revision } from "@var-ia/evidence-graph";
+import { createAdapter } from "@var-ia/interpreter";
+import type { ModelConfig } from "@var-ia/interpreter";
 import { loadCachedRevisions, saveRevisions } from "./cache.js";
+
+function templateTypeToPolicyDimension(type: TemplateType): string | null {
+  switch (type) {
+    case "citation": return "verifiability";
+    case "neutrality": return "npov";
+    case "blp": return "blp";
+    case "dispute": return "due_weight";
+    case "protection": return "protection";
+    default: return null;
+  }
+}
 
 export async function runAnalyze(
   pageTitle: string,
@@ -9,6 +23,7 @@ export async function runAnalyze(
   fromRevId?: number,
   _toRevId?: number,
   useCache = false,
+  modelConfig?: ModelConfig,
 ): Promise<EvidenceEvent[]> {
   const client = new MediaWikiClient();
   console.log(`Analyzing "${pageTitle}" at depth: ${depth}...`);
@@ -84,6 +99,8 @@ export async function runAnalyze(
 
     for (const tpl of templateChanges) {
       if (tpl.type === "unchanged") continue;
+      const policyDimension = templateTypeToPolicyDimension(tpl.template.type);
+      const layer: EvidenceLayer = policyDimension ? "policy_coded" : "observed";
       events.push({
         eventType: tpl.type === "added" ? "template_added" : "template_removed",
         fromRevisionId: before.revId,
@@ -93,8 +110,9 @@ export async function runAnalyze(
         after: tpl.template.name,
         deterministicFacts: [
           { fact: "template_changed", detail: `name=${tpl.template.name} type=${tpl.type}` },
+          ...(policyDimension ? [{ fact: "policy_signal", detail: `dimension=${policyDimension} signal=${tpl.template.name.toLowerCase().replace(/\s+/g, "_")}` }] : []),
         ],
-        layer: "observed",
+        layer,
         timestamp: after.timestamp,
       });
     }
@@ -126,11 +144,23 @@ export async function runAnalyze(
         after: after.comment,
         deterministicFacts: [
           { fact: "revert_detected", detail: after.comment },
+          { fact: "policy_signal", detail: "dimension=edit_warring signal=revert_detected" },
         ],
-        layer: "observed",
+        layer: "policy_coded",
         timestamp: after.timestamp,
       });
     }
+  }
+
+  if (modelConfig && events.length > 0) {
+    const adapter = createAdapter(modelConfig);
+    console.log(`Interpreting ${events.length} events with ${modelConfig.provider}...`);
+    const interpreted = await adapter.interpret(events);
+    for (let i = 0; i < interpreted.length; i++) {
+      interpreted[i].layer = events[i].layer;
+    }
+    console.log("Interpretation complete.");
+    return interpreted;
   }
 
   return events;
