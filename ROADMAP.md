@@ -62,6 +62,8 @@ anything.
 | CW-01 | Cross-wiki diff command | CLI | 8 | medium | — | done |
 | CW-02 | Multi-workset diff | CLI | 10 | medium | CW-01 | ready |
 | CW-03 | Evidence graph viz | CLI | 13 | small | — | ready |
+| CW-04 | Non-English Wikipedia support | CLI | 15 | medium | — | ready |
+| CW-05 | Private MediaWiki instance support | INFRA | 16 | medium | — | ready |
 | INFRA-01 | Real L3 eval with ground truth | INFRA | 9 | large | L1-01, L1-02 | done |
 | INFRA-02 | Scheduled re-observation | INFRA | 11 | medium | L1-07 | ready |
 | INFRA-03 | L2 quality benchmarks | INFRA | 12 | large | L2-01, INFRA-01 | ready |
@@ -81,9 +83,11 @@ L1-05 (independent)
 L1-06 (independent)
 L2-02 (independent)
 CW-03 (independent)
+CW-04 (independent)
+CW-05 (independent)
 ```
 
-**Ready to pick up:** CW-02, INFRA-02, INFRA-03, CW-03, INFRA-04
+**Ready to pick up:** CW-02, INFRA-02, INFRA-03, CW-03, INFRA-04, CW-04, CW-05
 
 ## L1 — Deterministic
 
@@ -117,6 +121,12 @@ Current L2 sees isolated event pairs. Pass the full section/source/claim lineage
 
 ### CW-01: Cross-Wiki Diff
 New CLI command: `wikihistory diff --wiki-a <url> --wiki-b <url> <topic>`. Runs the full analyze pipeline against two MediaWiki instances independently, then diffs the structured evidence output. Deterministic at L1; optional L2 interpretation on each side independently.
+
+### CW-04: Non-English Wikipedia Support
+Test and document the engine against non-English Wikipedias (de.wikipedia.org, fr.wikipedia.org, ja.wikipedia.org, etc.). The `--api` flag already accepts any MediaWiki endpoint, so the architecture supports this. This task is about verification: run the full analyze pipeline against non-English pages, document any parser edge cases (RTL languages, non-ASCII section headers, CJK citation formats), and add integration tests. No architecture changes expected — just hardening.
+
+### CW-05: Private MediaWiki Instance Support
+Test and document the engine against self-hosted/private MediaWiki instances (corporate wikis, institutional knowledge bases, private fan wikis). Builds on `--api` flag. Requires: authentication support (OAuth, basic auth, API tokens) via config, documentation for connecting to non-public instances, and integration tests against a local MediaWiki container. Private wikis are the natural enterprise extension path — if Varia handles a corporate wiki behind auth, it proves the adapter boundary works for paid NextConsensus deployments without requiring open-source scope creep into healthcare.
 
 ## Infrastructure
 
