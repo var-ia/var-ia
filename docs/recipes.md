@@ -69,21 +69,7 @@ echo "Climate change" >> pages.txt
 wikihistory cron pages.txt --interval 24
 ```
 
-Returns exit code 1 if new events detected. Combine with `--notify-slack` or `--notify-webhook` for alerts.
-
-**I want this as a GitHub Action:**
-
-```yaml
-- uses: var-ia/varia-action@main
-  with:
-    pages: |
-      Bitcoin
-      Climate change
-    depth: brief
-    since: ${{ github.event.before }}
-```
-
----
+Returns exit code 1 if new events detected.
 
 ## Cross-Wiki Comparison
 
@@ -136,20 +122,6 @@ Then ask: "When did the Bitcoin article first call it a cryptocurrency?"
 
 ---
 
-## Observable Framework
-
-**I want to load Varia analysis into an Observable notebook.**
-
-```js
-import { variaLoader } from "@var-ia/observable";
-
-const report = await variaLoader({ path: "bitcoin-analysis.json" }).load();
-// report.events is the full event stream
-// report.summary has revision count, event type breakdown
-```
-
----
-
 ## Equivalent to WikiWho
 
 **I used WikiWho for token authorship. How do I get claim provenance?**
@@ -158,12 +130,6 @@ const report = await variaLoader({ path: "bitcoin-analysis.json" }).load();
 # WikiWho: who wrote which token
 # Varia: when did a claim appear, change, disappear
 wikihistory analyze "Bitcoin" --depth detailed | grep claim
-```
-
-Run the example script:
-
-```bash
-bun run examples/02-equivalent-to-wikiwho.ts
 ```
 
 ---
@@ -176,10 +142,4 @@ bun run examples/02-equivalent-to-wikiwho.ts
 # ORES: ML score for "likely damaging"
 # Varia: deterministic revert detection + policy signal classification
 wikihistory analyze "Bitcoin" --depth detailed | grep -E "revert|template"
-```
-
-Run the example script:
-
-```bash
-bun run examples/03-equivalent-to-ores.ts
 ```

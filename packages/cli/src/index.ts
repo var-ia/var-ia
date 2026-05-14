@@ -179,6 +179,7 @@ exportCmd.action(async (page, opts) => {
     opts.api as string | undefined,
     !!opts.bundle,
     extractAuth(opts),
+    !!opts.manifest,
   );
 });
 

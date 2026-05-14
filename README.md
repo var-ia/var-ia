@@ -83,17 +83,17 @@ Every interpretation carries a layer tag:
 
 ```bash
 # One Docker command, no install needed:
-docker run --rm $(docker build -q .) analyze "Bitcoin" --depth quick
+docker run --rm $(docker build -q .) analyze "Bitcoin" --depth brief
 
 # Or with bun:
 bun add @var-ia/cli
-wikihistory analyze "Bitcoin" --depth quick
+wikihistory analyze "Bitcoin" --depth brief
 ```
 
 What you'll see:
 
 ```
-Analysis of "Bitcoin" at depth quick found 330 events across 20 revisions.
+Analysis of "Bitcoin" at depth brief found 330 events across 20 revisions.
 
 [2009-03-08T16:41:44Z] wikilink_added (rev 275832581→275832690)
   Section: body

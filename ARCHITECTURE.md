@@ -113,8 +113,7 @@ The L2 adapter must implement:
 
 ```typescript
 interface ModelAdapter {
-  interpret(evidence: EvidenceEvent[]): Promise<InterpretedEvent[]>;
-  confidence(interpretation: ModelInterpretation): number;
+  interpret(events: EvidenceEvent[], lineage?: LineageContext): Promise<InterpretedEvent[]>;
 }
 ```
 

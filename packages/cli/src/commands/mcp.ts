@@ -38,7 +38,7 @@ const TOOLS: McpTool[] = [
         page: { type: "string", description: "Page title (e.g. 'Bitcoin', 'Climate change')" },
         depth: {
           type: "string",
-          enum: ["quick", "brief", "detailed", "forensic"],
+          enum: ["brief", "detailed", "forensic"],
           description: "Analysis depth. quick = 20 revisions, brief = 50, detailed = 200, forensic = all",
         },
         api: {

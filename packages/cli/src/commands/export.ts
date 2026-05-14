@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import type { EvidenceEvent, PolicySignal, Report, Revision } from "@var-ia/evidence-graph";
-import { createEventIdentity } from "@var-ia/evidence-graph";
+import { createEventIdentity, createReplayManifest } from "@var-ia/evidence-graph";
 import type { AuthConfig } from "@var-ia/ingestion";
 import type { ModelConfig } from "@var-ia/interpreter";
 import { runAnalyze } from "./analyze.js";
@@ -22,6 +22,7 @@ export async function runExport(
   apiUrl?: string,
   bundle?: boolean,
   auth?: AuthConfig,
+  manifest?: boolean,
 ): Promise<void> {
   if (bundle) {
     const { events, revisions } = await runAnalyze(
@@ -40,6 +41,31 @@ export async function runExport(
     );
     const bundleData = buildBundle(pageTitle, events, revisions);
     console.log(JSON.stringify(bundleData, null, 2));
+    return;
+  }
+
+  if (manifest) {
+    const { events, revisions } = await runAnalyze(
+      pageTitle,
+      "detailed",
+      undefined,
+      undefined,
+      undefined,
+      false,
+      modelConfig,
+      apiUrl,
+      undefined,
+      undefined,
+      false,
+      auth,
+    );
+    const manifestData = createReplayManifest({
+      pageTitle,
+      analyzerVersions: { "var-ia": "0.3.1" },
+      revisions,
+      events,
+    });
+    console.log(JSON.stringify(manifestData, null, 2));
     return;
   }
 

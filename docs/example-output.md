@@ -1,6 +1,6 @@
 # Example: Analyzing "Bitcoin"
 
-This page shows the output of `wikihistory analyze "Bitcoin" --depth quick` against
+This page shows the output of `wikihistory analyze "Bitcoin" --depth brief` against
 Wikipedia's live API (revision range: 2009–2010, 20 revisions). This is what Varia
 produces — a structured event stream of everything that changed, when, and how.
 
@@ -9,7 +9,7 @@ Full CLI output: [bitcoin-quick-analysis.txt](./bitcoin-quick-analysis.txt) (330
 ## Sample Event Timeline
 
 ```
-Analysis of "Bitcoin" at depth quick found 330 events across 20 revisions.
+Analysis of "Bitcoin" at depth brief found 330 events across 20 revisions.
 
 [2009-03-08T16:41:44Z] wikilink_added (rev 275832581→275832690)
   Section: body
