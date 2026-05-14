@@ -1,52 +1,48 @@
 # Roadmap
 
-Varia is at 0.1.0. This roadmap tracks the next increment of awareness mechanisms
-surfaced by the fandom historian use case. Every item extends the existing
-three-layer architecture without restructuring it.
+Varia is at 0.1.0. This roadmap tracks the next increment of awareness mechanisms.
+Every item extends the existing three-layer architecture without restructuring it.
 
-## Why Fandom?
+## What Varia Observes
 
-Fan wikis are adversarial knowledge environments that surface edge cases Wikipedia's
-editorial norms prevent. Four dynamics make fandom the testing ground for Varia's
-capabilities:
+Varia is a generic MediaWiki observation engine. The `--api` flag accepts any
+`api.php` endpoint — Wikipedia, Fandom.com wikis, independent fan wikis, any
+public MediaWiki instance. Revision history, diffs, talk pages, page moves,
+categories, wikilinks — all extracted deterministically from the API response,
+byte-for-byte reproducible.
+
+Fandom wikis are the hardest public-domain stress test for the architecture:
 
 **Canon disputes.** Multiple official canons coexist — Star Wars Legends vs.
-Disney canon, DC Rebirth vs. New 52. Edits don't just change facts; they change
-which reality a page describes. A "retcon" (retroactive continuity change) makes
-text that was true last month false because the IP owner released new material.
-Detecting _which_ canon an edit aligns with requires tracking claims across
-revisions (L1-06) and correlating with talk page discussions about sourcing
-(L1-02, L2-01).
+Disney canon, DC Rebirth vs. New 52. Edits change which reality a page describes.
+Tracking claims across revisions (L1-06) and correlating with talk page
+discussions about sourcing (L1-02, L2-01) reveals which canon an edit aligns with.
 
-**Warring wikis.** The same fandom topic often has competing wikis — a Game of
-Thrones wiki on Fandom.com vs. an independent Song of Ice and Fire wiki. Editors
-split and fork. The same page diverges under different editorial standards. A
-cross-wiki diff (CW-01) reveals when and how divergence happened — a fork event
-vs. parallel independent development.
+**Warring wikis.** The same topic has competing wikis — a Game of Thrones wiki
+on Fandom.com vs. an independent Song of Ice and Fire wiki. Editors split and
+fork. Cross-wiki diff (CW-01) distinguishes a fork event from parallel
+independent development.
 
-**Headcanon drift.** Fan wikis have weaker sourcing norms. A contributor's
-personal interpretation ("headcanon") seeps into article text. Another editor
-reverts it citing no source. But "source" itself is contested: Is an author
-tweet canon? A deleted Tumblr post? A DVD deleted scene? The revert detector
-fires, but the talk page (L1-01, L1-02) reveals the dispute is about what
-constitutes a source, not mere vandalism.
+**Headcanon drift.** A contributor's personal interpretation seeps into article
+text. Another editor reverts it citing no source. But "source" itself is
+contested: is an author tweet canon? The revert detector fires, but the talk
+page (L1-01, L1-02) reveals the dispute is about what constitutes a source.
 
-**Doctrinal edit wars.** Wikipedia edit wars are usually about factuality. Fan
-wiki edit wars are about interpretation. "Darth Vader turned because of fear of
-loss" vs. "...because of pride and ambition" — both supported by the same films,
-both contradictory. The revision history shows back-and-forth edits; the talk
-page reveals it's a theological dispute about character interpretation. This is
-what talk page correlation (L1-02) surfaces, and what L2 interpretation
-(L2-01) classifies with confidence scores.
+**Doctrinal edit wars.** "Darth Vader turned because of fear of loss" vs.
+"...because of pride and ambition" — both supported by the same films, both
+contradictory. The revision history shows back-and-forth edits; the talk page
+reveals it's a dispute about character interpretation. Talk page correlation
+(L1-02) surfaces the pattern; L2 (L2-01) classifies the discussion type.
 
-**Time-deep and sectarian.** Some fandom wikis span 15+ years with tens of
-thousands of edits. Talk page archives span a decade. A 2008 consensus about
-what's "canon" gets overturned in 2023 because a prequel novel overwrites
-existing material. L3 evaluation (INFRA-01) must handle temporally-valid outcome
-labels — an outcome from 2015 was correct then but is incomplete now. Sub-pages
-factionalize: the "Jedi" page has one editorial group, the "Sith" page has
-another. Category tracking (L1-05) surfaces how the factional structure maps to
-the page topology.
+**Time-deep.** 15+ year revision histories, decade-spanning talk page archives.
+A 2008 consensus about what's canon gets overturned in 2023. L3 outcome labels
+(INFRA-01) must carry temporal validity windows — a label that was correct in
+2015 may be incomplete today. Sub-pages factionalize: category tracking (L1-05)
+surfaces how the editorial-group structure maps to the page topology.
+
+Wikipedia's editorial norms suppress most of these dynamics. Fandom wikis don't.
+That makes them the proving ground — if the engine handles fandom, it handles
+anything.
 
 ## Status
 
