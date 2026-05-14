@@ -7,9 +7,10 @@ export {
   singleEventProof,
   verifyMerkleProof,
 } from "./replay-manifest.js";
-export type { ClaimIdentity, ClaimLineage, ClaimObject, ClaimState, PropositionType } from "./schemas/claim.js";
+export type { ClaimIdentity, ClaimLineage, ClaimObject, ClaimState, ClaimVariant, PropositionType } from "./schemas/claim.js";
 export type {
   DeterministicFact,
+  EventType,
   EvidenceEvent,
   EvidenceLayer,
   FactProvenance,

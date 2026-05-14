@@ -321,7 +321,10 @@ export class MediaWikiClient implements RevisionFetcher, RevisionSource, DiffFet
         headers["X-OAuth-Client-Secret"] = this.auth.oauthClientSecret;
       }
 
-      const response = await fetch(url, { headers });
+      const response = await fetch(url, {
+        headers,
+        signal: AbortSignal.timeout(30000),
+      });
 
       if (response.ok) return response;
 

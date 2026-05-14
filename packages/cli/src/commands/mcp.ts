@@ -39,7 +39,7 @@ const TOOLS: McpTool[] = [
         depth: {
           type: "string",
           enum: ["brief", "detailed", "forensic"],
-          description: "Analysis depth. quick = 20 revisions, brief = 50, detailed = 200, forensic = all",
+          description: "Analysis depth: brief (event metadata only), detailed (text included), forensic (full wikitext)",
         },
         api: {
           type: "string",
@@ -82,7 +82,7 @@ const TOOLS: McpTool[] = [
   {
     name: "cron",
     description:
-      "Re-observe pages since last observation. Returns only new events. For scheduled monitoring — detects edits, claim changes, citation turnover since the last run.",
+      "Re-observe pages and return current analysis results. For scheduled monitoring — detects edits, claim changes, citation turnover.",
     inputSchema: {
       type: "object",
       properties: {

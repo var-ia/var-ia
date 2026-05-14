@@ -34,6 +34,8 @@ export interface ModelConfig {
   model?: string;
   endpoint?: string;
   temperature?: number;
+  maxTokens?: number;
+  timeoutMs?: number;
   systemPrompt?: string;
 }
 
@@ -68,6 +70,8 @@ function createOpenAIAdapter(config: ModelConfig): ModelAdapter {
   const model = config.model ?? "gpt-4o";
   const apiKey = config.apiKey ?? process.env.OPENAI_API_KEY;
   const temperature = config.temperature ?? 0.1;
+  const maxTokens = config.maxTokens ?? 4096;
+  const timeoutMs = config.timeoutMs ?? 120000;
   const systemPrompt = config.systemPrompt ?? defaultSystemPrompt;
   if (!apiKey) throw new Error("OpenAI adapter requires apiKey or OPENAI_API_KEY env var");
 
@@ -85,8 +89,10 @@ function createOpenAIAdapter(config: ModelConfig): ModelAdapter {
             { role: "system", content: systemPrompt },
             { role: "user", content: buildUserPrompt(events, lineage) },
           ],
+          max_tokens: maxTokens,
           temperature,
         }),
+        signal: AbortSignal.timeout(timeoutMs),
       });
 
       if (!response.ok) {
@@ -110,6 +116,8 @@ function createAnthropicAdapter(config: ModelConfig): ModelAdapter {
   const model = config.model ?? "claude-sonnet-4-20250514";
   const apiKey = config.apiKey ?? process.env.ANTHROPIC_API_KEY;
   const temperature = config.temperature ?? 0.1;
+  const maxTokens = config.maxTokens ?? 4096;
+  const timeoutMs = config.timeoutMs ?? 120000;
   const systemPrompt = config.systemPrompt ?? defaultSystemPrompt;
   if (!apiKey) throw new Error("Anthropic adapter requires apiKey or ANTHROPIC_API_KEY env var");
 
@@ -124,11 +132,12 @@ function createAnthropicAdapter(config: ModelConfig): ModelAdapter {
         },
         body: JSON.stringify({
           model,
-          max_tokens: 4096,
+          max_tokens: maxTokens,
           temperature,
           system: systemPrompt,
           messages: [{ role: "user", content: buildUserPrompt(events, lineage) }],
         }),
+        signal: AbortSignal.timeout(timeoutMs),
       });
 
       if (!response.ok) {
@@ -152,6 +161,8 @@ function createDeepSeekAdapter(config: ModelConfig): ModelAdapter {
   const model = config.model ?? "deepseek-chat";
   const apiKey = config.apiKey ?? process.env.DEEPSEEK_API_KEY;
   const temperature = config.temperature ?? 0.1;
+  const maxTokens = config.maxTokens ?? 4096;
+  const timeoutMs = config.timeoutMs ?? 120000;
   const systemPrompt = config.systemPrompt ?? defaultSystemPrompt;
   if (!apiKey) throw new Error("DeepSeek adapter requires apiKey or DEEPSEEK_API_KEY env var");
 
@@ -169,8 +180,10 @@ function createDeepSeekAdapter(config: ModelConfig): ModelAdapter {
             { role: "system", content: systemPrompt },
             { role: "user", content: buildUserPrompt(events, lineage) },
           ],
+          max_tokens: maxTokens,
           temperature,
         }),
+        signal: AbortSignal.timeout(timeoutMs),
       });
 
       if (!response.ok) {
@@ -193,6 +206,8 @@ function createLocalAdapter(config: ModelConfig): ModelAdapter {
   const endpoint = config.endpoint ?? "http://localhost:11434";
   const model = config.model ?? "llama3";
   const temperature = config.temperature ?? 0.1;
+  const maxTokens = config.maxTokens ?? 4096;
+  const timeoutMs = config.timeoutMs ?? 120000;
   const systemPrompt = config.systemPrompt ?? defaultSystemPrompt;
 
   return {
@@ -208,8 +223,9 @@ function createLocalAdapter(config: ModelConfig): ModelAdapter {
           ],
           stream: false,
           format: "json",
-          options: { temperature },
+          options: { temperature, num_predict: maxTokens },
         }),
+        signal: AbortSignal.timeout(timeoutMs),
       });
 
       if (!response.ok) {
@@ -230,6 +246,8 @@ function createByokAdapter(config: ModelConfig): ModelAdapter {
   const model = config.model;
   const apiKey = config.apiKey ?? process.env.BYOK_API_KEY;
   const temperature = config.temperature ?? 0.1;
+  const maxTokens = config.maxTokens ?? 4096;
+  const timeoutMs = config.timeoutMs ?? 120000;
   const systemPrompt = config.systemPrompt ?? defaultSystemPrompt;
   if (!endpoint) throw new Error("BYOK adapter requires endpoint");
   if (!model) throw new Error("BYOK adapter requires model");
@@ -249,8 +267,10 @@ function createByokAdapter(config: ModelConfig): ModelAdapter {
             { role: "system", content: systemPrompt },
             { role: "user", content: buildUserPrompt(events, lineage) },
           ],
+          max_tokens: maxTokens,
           temperature,
         }),
+        signal: AbortSignal.timeout(timeoutMs),
       });
 
       if (!response.ok) {
