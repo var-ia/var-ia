@@ -63,8 +63,8 @@ anything.
 
 ```
 L1-01 ──→ L1-02 ──→ L2-01
-                    L2-01 ──→ INFRA-01
-                    L1-02 ──→ INFRA-01
+L1-01 ──→ INFRA-01
+L1-02 ──→ INFRA-01
 L1-03 (independent)
 L1-04 (independent)
 L1-05 (independent)
@@ -73,7 +73,7 @@ L2-02 (independent)
 CW-01 (independent)
 ```
 
-**Ready now (no blocking dependencies):** L1-02
+**Ready to pick up:** L1-02
 
 ## L1 — Deterministic
 

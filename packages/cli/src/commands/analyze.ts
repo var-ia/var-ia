@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { MediaWikiClient } from "@var-ia/ingestion";
 import type { RevisionOptions } from "@var-ia/ingestion";
 import { sectionDiffer, citationTracker, revertDetector, templateTracker, extractWikilinks, diffWikilinks, buildPageMoveEvents, extractCategories, diffCategories, classifyClaimChange, buildSectionLineage, protectionTracker } from "@var-ia/analyzers";
-import type { TemplateType, ProtectionChange } from "@var-ia/analyzers";
+import type { TemplateType } from "@var-ia/analyzers";
 import type { PageMove, ProtectionLogEvent } from "@var-ia/ingestion";
 import type { EvidenceEvent, EvidenceLayer, Revision, DeterministicFact } from "@var-ia/evidence-graph";
 import { createAdapter } from "@var-ia/interpreter";
@@ -45,9 +45,10 @@ export async function runAnalyze(
   modelConfig?: ModelConfig,
   apiUrl?: string,
   pagesFile?: string,
+  cacheDir?: string,
 ): Promise<{ events: EvidenceEvent[]; revisions: Revision[] }> {
   if (pagesFile) {
-    return runBatch(pagesFile, depth, fromRevId, _toRevId, useCache, modelConfig, apiUrl);
+    return runBatch(pagesFile, depth, fromRevId, _toRevId, useCache, modelConfig, apiUrl, cacheDir);
   }
   const client = new MediaWikiClient(apiUrl ? { apiUrl } : undefined);
   console.log(`Analyzing "${pageTitle}" at depth: ${depth}...`);
@@ -55,7 +56,7 @@ export async function runAnalyze(
   let revisions: Revision[] = [];
 
   if (useCache) {
-    const cached = loadCachedRevisions(pageTitle, 20);
+    const cached = loadCachedRevisions(pageTitle, 20, cacheDir);
     if (cached.length > 0) {
       console.log(`Loaded ${cached.length} revisions from cache.`);
       revisions = cached;
@@ -78,7 +79,7 @@ export async function runAnalyze(
     console.log(`Fetched ${revisions.length} revisions.`);
 
     if (useCache && revisions.length > 0) {
-      saveRevisions(revisions);
+      saveRevisions(revisions, cacheDir);
       console.log(`Cached ${revisions.length} revisions.`);
     }
   }
@@ -488,6 +489,7 @@ async function runBatch(
   useCache = false,
   modelConfig?: ModelConfig,
   apiUrl?: string,
+  cacheDir?: string,
 ): Promise<{ events: EvidenceEvent[]; revisions: Revision[] }> {
   const content = readFileSync(pagesFile, "utf-8");
   const titles = content
@@ -502,7 +504,7 @@ async function runBatch(
 
   for (const title of titles) {
     console.log(`--- Page ${pages.length + 1}/${titles.length}: ${title} ---`);
-    const { events } = await runAnalyze(title, depth, fromRevId, toRevId, useCache, modelConfig, apiUrl, undefined);
+    const { events } = await runAnalyze(title, depth, fromRevId, toRevId, useCache, modelConfig, apiUrl, undefined, cacheDir);
     pages.push({
       pageTitle: title,
       pageId: 0,

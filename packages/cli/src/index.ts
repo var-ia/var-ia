@@ -14,7 +14,7 @@ Usage:
   wikihistory analyze --pages-file <path> [--depth brief|detailed|forensic] [--cache] [--model <provider>]
   wikihistory claim <page> --text "<claim text>" [--cache] [--model <provider>]
   wikihistory export <page> --format json|csv|ndjson [--bundle] [--manifest] [--model <provider>]
-  wikihistory watch <page> [--section <name>]
+  wikihistory watch <page> [--section <name>] [--interval <ms>]
   wikihistory diff <topic> --wiki-a <url> --wiki-b <url> [--depth brief|detailed|forensic] [--model <provider>]
   wikihistory eval [--page <title>]
 
@@ -32,6 +32,10 @@ Options:
   --model-api-key  API key for model provider (or set env var OPENAI_API_KEY etc.)
   --model-name     Model name override (default: provider-specific)
   --model-endpoint API endpoint override
+  --temperature    Model temperature (default: 0.1)
+  --prompt         Override system prompt for model interpretation
+  --interval       Watch polling interval in ms (default: 60000)
+  --cache-dir      Cache directory path (default: ~/.wikihistory)
   --api            MediaWiki API base URL (default: https://en.wikipedia.org/w/api.php)
 `;
 
@@ -48,6 +52,7 @@ export async function cli(args: string[]): Promise<void> {
       const useCache = args.includes("--cache");
       const modelConfig = parseModelConfig(args);
       const apiUrl = parseFlag(args, "api");
+      const cacheDir = parseFlag(args, "cache-dir");
 
       if (pagesFile) {
         const result = await runAnalyze(
@@ -59,6 +64,7 @@ export async function cli(args: string[]): Promise<void> {
           modelConfig,
           apiUrl,
           pagesFile,
+          cacheDir,
         );
         const events = result.events;
         console.log(`\nBatch complete. Total events: ${events.length}`);
@@ -75,6 +81,8 @@ export async function cli(args: string[]): Promise<void> {
           useCache,
           modelConfig,
           apiUrl,
+          undefined,
+          cacheDir,
         );
 
         console.log(`\n=== Analysis Results ===`);
@@ -108,7 +116,8 @@ export async function cli(args: string[]): Promise<void> {
       const useCache = args.includes("--cache");
       const modelConfig = parseModelConfig(args);
       const apiUrl = parseFlag(args, "api");
-      await runClaim(pageTitle, claimText, useCache, modelConfig, apiUrl);
+      const cacheDir = parseFlag(args, "cache-dir");
+      await runClaim(pageTitle, claimText, useCache, modelConfig, apiUrl, cacheDir);
       break;
     }
     case "export": {
@@ -132,7 +141,9 @@ export async function cli(args: string[]): Promise<void> {
       }
       const section = parseFlag(args, "section");
       const apiUrl = parseFlag(args, "api");
-      await runWatch(pageTitle, section, apiUrl);
+      const intervalStr = parseFlag(args, "interval");
+      const interval = intervalStr ? parseInt(intervalStr, 10) : undefined;
+      await runWatch(pageTitle, section, apiUrl, interval);
       break;
     }
     case "diff": {
@@ -182,10 +193,15 @@ function parseModelConfig(args: string[]): ModelConfig | undefined {
     process.exit(1);
   }
 
+  const temperatureStr = parseFlag(args, "temperature");
+  const temperature = temperatureStr ? parseFloat(temperatureStr) : undefined;
+
   return {
     provider: provider as ModelConfig["provider"],
     apiKey: parseFlag(args, "model-api-key"),
     model: parseFlag(args, "model-name"),
     endpoint: parseFlag(args, "model-endpoint"),
+    temperature,
+    systemPrompt: parseFlag(args, "prompt"),
   };
 }

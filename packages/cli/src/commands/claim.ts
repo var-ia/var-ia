@@ -12,6 +12,7 @@ export async function runClaim(
   useCache = false,
   modelConfig?: ModelConfig,
   apiUrl?: string,
+  cacheDir?: string,
 ): Promise<void> {
   const client = new MediaWikiClient(apiUrl ? { apiUrl } : undefined);
   console.log(`Tracking claim in "${pageTitle}"...`);
@@ -20,7 +21,7 @@ export async function runClaim(
   let revisions: Revision[] = [];
 
   if (useCache) {
-    const cached = loadCachedRevisions(pageTitle, 50);
+    const cached = loadCachedRevisions(pageTitle, 50, cacheDir);
     if (cached.length > 0) {
       console.log(`Loaded ${cached.length} revisions from cache.`);
       revisions = cached;
@@ -32,7 +33,7 @@ export async function runClaim(
     console.log(`Fetched ${revisions.length} revisions.\n`);
 
     if (useCache && revisions.length > 0) {
-      saveRevisions(revisions);
+      saveRevisions(revisions, cacheDir);
       console.log(`Cached ${revisions.length} revisions.\n`);
     }
   }

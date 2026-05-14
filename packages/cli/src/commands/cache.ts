@@ -5,22 +5,31 @@ import { existsSync, mkdirSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 
-const CACHE_DIR = join(homedir(), ".wikihistory");
-const DB_PATH = join(CACHE_DIR, "varia.db");
+const DEFAULT_CACHE_DIR = join(homedir(), ".wikihistory");
 
 let _instance: PersistenceAdapter | null = null;
+let _cacheDir: string | null = null;
 
-export function getPersistence(): PersistenceAdapter {
+export function configureCache(cacheDir?: string): void {
+  if (cacheDir) {
+    _cacheDir = cacheDir;
+    _instance = null;
+  }
+}
+
+function getPersistence(): PersistenceAdapter {
+  const dir = _cacheDir ?? DEFAULT_CACHE_DIR;
   if (!_instance) {
-    if (!existsSync(CACHE_DIR)) {
-      mkdirSync(CACHE_DIR, { recursive: true });
+    if (!existsSync(dir)) {
+      mkdirSync(dir, { recursive: true });
     }
-    _instance = new Persistence({ dbPath: DB_PATH });
+    _instance = new Persistence({ dbPath: join(dir, "varia.db") });
   }
   return _instance;
 }
 
-export function loadCachedRevisions(pageTitle: string, limit?: number): Revision[] {
+export function loadCachedRevisions(pageTitle: string, limit?: number, cacheDir?: string): Revision[] {
+  configureCache(cacheDir);
   try {
     const db = getPersistence();
     return db.getRevisions(pageTitle, { limit: limit ?? 500, direction: "newer" });
@@ -29,7 +38,8 @@ export function loadCachedRevisions(pageTitle: string, limit?: number): Revision
   }
 }
 
-export function saveRevisions(revisions: Revision[]): void {
+export function saveRevisions(revisions: Revision[], cacheDir?: string): void {
+  configureCache(cacheDir);
   try {
     const db = getPersistence();
     db.insertRevisions(revisions);

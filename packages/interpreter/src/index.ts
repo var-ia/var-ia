@@ -33,6 +33,8 @@ export interface ModelConfig {
   apiKey?: string;
   model?: string;
   endpoint?: string;
+  temperature?: number;
+  systemPrompt?: string;
 }
 
 export { ConsensusAdapter } from "./consensus-adapter.js";
@@ -59,6 +61,8 @@ function createOpenAIAdapter(config: ModelConfig): ModelAdapter {
   const endpoint = config.endpoint ?? "https://api.openai.com/v1";
   const model = config.model ?? "gpt-4o";
   const apiKey = config.apiKey ?? process.env.OPENAI_API_KEY;
+  const temperature = config.temperature ?? 0.1;
+  const systemPrompt = config.systemPrompt ?? defaultSystemPrompt;
   if (!apiKey) throw new Error("OpenAI adapter requires apiKey or OPENAI_API_KEY env var");
 
   return {
@@ -72,10 +76,10 @@ function createOpenAIAdapter(config: ModelConfig): ModelAdapter {
           body: JSON.stringify({
             model,
             messages: [
-              { role: "system", content: buildSystemPrompt() },
+              { role: "system", content: systemPrompt },
               { role: "user", content: buildUserPrompt(events, lineage) },
             ],
-            temperature: 0.1,
+            temperature,
           }),
         });
 
@@ -99,6 +103,8 @@ function createAnthropicAdapter(config: ModelConfig): ModelAdapter {
   const endpoint = config.endpoint ?? "https://api.anthropic.com/v1";
   const model = config.model ?? "claude-sonnet-4-20250514";
   const apiKey = config.apiKey ?? process.env.ANTHROPIC_API_KEY;
+  const temperature = config.temperature ?? 0.1;
+  const systemPrompt = config.systemPrompt ?? defaultSystemPrompt;
   if (!apiKey) throw new Error("Anthropic adapter requires apiKey or ANTHROPIC_API_KEY env var");
 
   return {
@@ -113,7 +119,8 @@ function createAnthropicAdapter(config: ModelConfig): ModelAdapter {
           body: JSON.stringify({
             model,
             max_tokens: 4096,
-            system: buildSystemPrompt(),
+            temperature,
+            system: systemPrompt,
             messages: [
               { role: "user", content: buildUserPrompt(events, lineage) },
             ],
@@ -140,6 +147,8 @@ function createDeepSeekAdapter(config: ModelConfig): ModelAdapter {
   const endpoint = config.endpoint ?? "https://api.deepseek.com/v1";
   const model = config.model ?? "deepseek-chat";
   const apiKey = config.apiKey ?? process.env.DEEPSEEK_API_KEY;
+  const temperature = config.temperature ?? 0.1;
+  const systemPrompt = config.systemPrompt ?? defaultSystemPrompt;
   if (!apiKey) throw new Error("DeepSeek adapter requires apiKey or DEEPSEEK_API_KEY env var");
 
   return {
@@ -153,10 +162,10 @@ function createDeepSeekAdapter(config: ModelConfig): ModelAdapter {
         body: JSON.stringify({
           model,
           messages: [
-            { role: "system", content: buildSystemPrompt() },
+            { role: "system", content: systemPrompt },
             { role: "user", content: buildUserPrompt(events, lineage) },
           ],
-          temperature: 0.1,
+          temperature,
         }),
       });
 
@@ -179,6 +188,8 @@ function createDeepSeekAdapter(config: ModelConfig): ModelAdapter {
 function createLocalAdapter(config: ModelConfig): ModelAdapter {
   const endpoint = config.endpoint ?? "http://localhost:11434";
   const model = config.model ?? "llama3";
+  const temperature = config.temperature ?? 0.1;
+  const systemPrompt = config.systemPrompt ?? defaultSystemPrompt;
 
   return {
       async interpret(events: EvidenceEvent[], lineage?: LineageContext): Promise<InterpretedEvent[]> {
@@ -188,11 +199,12 @@ function createLocalAdapter(config: ModelConfig): ModelAdapter {
           body: JSON.stringify({
             model,
             messages: [
-              { role: "system", content: buildSystemPrompt() },
+              { role: "system", content: systemPrompt },
               { role: "user", content: buildUserPrompt(events, lineage) },
           ],
           stream: false,
           format: "json",
+          options: { temperature },
         }),
       });
 
@@ -213,6 +225,8 @@ function createByokAdapter(config: ModelConfig): ModelAdapter {
   const endpoint = config.endpoint;
   const model = config.model;
   const apiKey = config.apiKey ?? process.env.BYOK_API_KEY;
+  const temperature = config.temperature ?? 0.1;
+  const systemPrompt = config.systemPrompt ?? defaultSystemPrompt;
   if (!endpoint) throw new Error("BYOK adapter requires endpoint");
   if (!model) throw new Error("BYOK adapter requires model");
   if (!apiKey) throw new Error("BYOK adapter requires apiKey or BYOK_API_KEY env var");
@@ -228,10 +242,10 @@ function createByokAdapter(config: ModelConfig): ModelAdapter {
           body: JSON.stringify({
             model,
             messages: [
-              { role: "system", content: buildSystemPrompt() },
+              { role: "system", content: systemPrompt },
               { role: "user", content: buildUserPrompt(events, lineage) },
             ],
-            temperature: 0.1,
+            temperature,
           }),
         });
 
@@ -251,14 +265,12 @@ function createByokAdapter(config: ModelConfig): ModelAdapter {
   };
 }
 
-function buildSystemPrompt(): string {
-  return `You are a wiki edit classifier. Given a list of evidence events describing what changed between revisions, classify each event's semantic meaning. For each event, respond with:
+const defaultSystemPrompt = `You are a wiki edit classifier. Given a list of evidence events describing what changed between revisions, classify each event's semantic meaning. For each event, respond with:
 - semanticChange: a concise description of what the change means semantically (e.g., "factual claim removed", "attribution strengthened", "sentence reworded without changing meaning")
 - confidence: a score from 0.0 to 1.0 indicating how certain you are
 - policyDimension (optional): if the change touches a Wikipedia policy, use one of: verifiability, npov, blp, due_weight, protection, edit_warring, notability, copyright, civility
 
 Return ONLY a JSON array of objects with fields: eventIndex (matching the input array index), semanticChange, confidence, policyDimension.`;
-}
 
 function buildUserPrompt(events: EvidenceEvent[], lineage?: LineageContext): string {
   let text = `Evidence events to classify:\n${JSON.stringify(
@@ -338,7 +350,7 @@ function parseInterpretations(raw: string, events: EvidenceEvent[]): Interpreted
       modelInterpretation: {
         semanticChange: interp?.semanticChange ?? "unknown",
         confidence: interp?.confidence ?? 0.0,
-        policyDimension: interp?.policyDimension,
+        policyDimension: interp?.policyDimension as PolicyDimension | undefined,
       },
     });
   }

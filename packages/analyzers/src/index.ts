@@ -66,7 +66,7 @@ export { citationTracker, buildSourceLineage, buildSourceId } from "./citation-t
 export { revertDetector } from "./revert-detector.js";
 export { templateTracker } from "./template-tracker.js";
 export { classifyHeuristic } from "./heuristic-classifier.js";
-export type { HeuristicKind } from "./heuristic-classifier.js";
+export type { HeuristicKind, HeuristicOptions } from "./heuristic-classifier.js";
 export { extractWikilinks, diffWikilinks, buildWikilinkEvents } from "./wikilink-extractor.js";
 export { buildPageMoveEvents } from "./page-move-detector.js";
 export { extractCategories, diffCategories, buildCategoryEvents } from "./category-tracker.js";
