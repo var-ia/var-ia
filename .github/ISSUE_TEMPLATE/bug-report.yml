@@ -1,0 +1,36 @@
+name: Bug Report
+description: Report a behavior that doesn't match documented expectations
+labels: ["bug"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What happened vs what you expected
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Exact command, URL, or code snippet
+      placeholder: |
+        wikihistory analyze "Page name" --depth detailed
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Output of `wikihistory --version` or package.json version
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: bun version, OS
+      placeholder: |
+        Bun 1.2.x, macOS 15
+    validations:
+      required: false

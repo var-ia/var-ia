@@ -1,0 +1,37 @@
+name: Feature Request
+description: Suggest a new analyzer, adapter, or capability
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What gap or limitation does this address
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: How you envision it working
+    validations:
+      required: true
+  - type: dropdown
+    id: layer
+    attributes:
+      label: Architecture layer
+      description: Which layer does this affect?
+      options:
+        - L1 (deterministic)
+        - L2 (model-assisted)
+        - L3 (ground truth / eval)
+        - Cross-layer
+    validations:
+      required: true
+  - type: checkboxes
+    id: forbidden
+    attributes:
+      label: Scope check
+      options:
+        - label: This does not target individual editors, score sentiment, predict outcomes, automate editing, or make truth claims
+          required: true
