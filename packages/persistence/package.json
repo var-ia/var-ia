@@ -2,7 +2,7 @@
   "name": "@var-ia/persistence",
   "version": "0.1.1",
   "type": "module",
-  "private": false,
+  "private": true,
   "description": "Local SQLite persistence for Varia observation cache and claim storage",
   "license": "AGPL-3.0",
   "main": "./dist/src/index.js",
