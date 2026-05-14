@@ -32,12 +32,12 @@ function buildReport(pageTitle: string, events: EvidenceEvent[]): Report {
   const policyCount = events.filter((e) => e.layer === "policy_coded").length;
   const modelCount = events.filter((e) => e.modelInterpretation != null).length;
 
-  const layers = [{ label: "observed" as const, description: "Deterministic", events: observedCount, reproducible: true }];
+  const layers: Report["layers"] = [{ label: "observed", description: "Deterministic", events: observedCount, reproducible: true }];
   if (policyCount > 0) {
-    layers.push({ label: "policy_coded" as const, description: "Wikipedia policy signals", events: policyCount, reproducible: true });
+    layers.push({ label: "policy_coded", description: "Wikipedia policy signals", events: policyCount, reproducible: true });
   }
   if (modelCount > 0) {
-    layers.push({ label: "model_interpretation" as const, description: "Model-assisted semantic interpretation", events: modelCount, reproducible: false });
+    layers.push({ label: "model_interpretation", description: "Model-assisted semantic interpretation", events: modelCount, reproducible: false });
   }
 
   const hasModel = modelCount > 0;

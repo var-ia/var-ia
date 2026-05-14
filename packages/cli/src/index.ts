@@ -76,21 +76,23 @@ export async function cli(args: string[]): Promise<void> {
       const pageTitle = args[1];
       const claimText = parseFlag(args, "text");
       if (!pageTitle || !claimText) {
-        console.error('Usage: wikihistory claim <page> --text "<claim text>" [--cache]');
+        console.error('Usage: wikihistory claim <page> --text "<claim text>" [--cache] [--model <provider>]');
         process.exit(1);
       }
       const useCache = args.includes("--cache");
-      await runClaim(pageTitle, claimText, useCache);
+      const modelConfig = parseModelConfig(args);
+      await runClaim(pageTitle, claimText, useCache, modelConfig);
       break;
     }
     case "export": {
       const pageTitle = args[1];
       const format = parseFlag(args, "format") ?? "json";
       if (!pageTitle) {
-        console.error("Usage: wikihistory export <page> --format json|csv");
+        console.error("Usage: wikihistory export <page> --format json|csv [--model <provider>]");
         process.exit(1);
       }
-      await runExport(pageTitle, format);
+      const modelConfig = parseModelConfig(args);
+      await runExport(pageTitle, format, modelConfig);
       break;
     }
     case "watch": {
@@ -121,4 +123,21 @@ export function parseFlag(args: string[], name: string): string | undefined {
     return args[eqIdx].split("=")[1];
   }
   return undefined;
+}
+
+function parseModelConfig(args: string[]): ModelConfig | undefined {
+  const provider = parseFlag(args, "model");
+  if (!provider) return undefined;
+
+  if (!["openai", "anthropic", "deepseek", "local", "byok"].includes(provider)) {
+    console.error(`Unknown model provider: ${provider}. Use openai, anthropic, deepseek, local, or byok.`);
+    process.exit(1);
+  }
+
+  return {
+    provider: provider as ModelConfig["provider"],
+    apiKey: parseFlag(args, "model-api-key"),
+    model: parseFlag(args, "model-name"),
+    endpoint: parseFlag(args, "model-endpoint"),
+  };
 }
