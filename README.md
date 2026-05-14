@@ -1,4 +1,4 @@
-# Varia
+# Var-ia
 
 [![CI](https://github.com/nextconsensus/var-ia/actions/workflows/ci.yml/badge.svg)](https://github.com/nextconsensus/var-ia/actions/workflows/ci.yml)
 [![Version](https://img.shields.io/github/v/release/nextconsensus/var-ia)](https://github.com/nextconsensus/var-ia/releases)
@@ -136,10 +136,10 @@ import { sectionDiffer, citationTracker } from "@var-ia/analyzers";
 
 ## How It Compares
 
-Varia tracks **claim provenance** — structured evidence linking a claim's lifecycle
+Var-ia tracks **claim provenance** — structured evidence linking a claim's lifecycle
 to specific revisions, sources, and policy signals. It complements existing tools:
 
-| Tool | What it does | What varia adds |
+| Tool | What it does | What var-ia adds |
 |------|-------------|-----------------|
 | **WikiWho** | Sentence-level authorship (who wrote which token) | Claim lifecycle: when a sentence first appeared, was reworded, strengthened, softened, or removed |
 | **ORES** | ML edit quality scores (likely damaging, good-faith) | Deterministic edit classification + policy-coded signals with confidence-labeled L2 interpretation |
@@ -166,11 +166,11 @@ Deterministic facts before interpretations.
 
 ## Beyond Wikipedia
 
-Varia works on any public MediaWiki instance — Fandom.com, independent fan wikis,
+Var-ia works on any public MediaWiki instance — Fandom.com, independent fan wikis,
 private wikis. Wikipedia's editorial norms suppress the most interesting dynamics;
 fandom wikis don't.
 
-| Dynamic | What Varia captures |
+| Dynamic | What Var-ia captures |
 |---------|-------------------|
 | **Canon disputes** | `category_removed`: `Canon characters` → `category_added`: `Legends characters` after the 2014 Disney acquisition |
 | **Headcanon drift** | "Vader turned because of fear of loss" vs "pride and ambition" — reversibly edited, both cite the same films |
