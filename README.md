@@ -25,18 +25,18 @@ domain-neutral infrastructure for observing how public knowledge changes.
 
 ## Why It Exists
 
-Knowledge changes. A sentence that has survived 15,000 revisions, 500 reverts, and
-three talk-page disputes carries a different signal than one written yesterday by
-a prompt.
+The printing press made knowledge durable by freezing it into editions. Wikipedia
+made knowledge mutable by letting the record change continuously. But most systems
+still consume only the current surface.
 
-Most tools retrieve knowledge. Varia retrieves how knowledge *arrived*. Every claim
-gets provenance: when it first appeared, what sources backed it, whether it was
-challenged, who reverted it, which policy templates flagged it, and how long it
-survived.
+Varia makes the mutation itself legible: who changed what, when, with what evidence,
+under what dispute, and whether the change survived. That is the difference between
+a library catalogue and an epistemic event log. Revision histories become
+infrastructure when machines need to reason about knowledge, not just retrieve it.
 
-That provenance is a reusable primitive — `claim + source + wording + placement
-+ stability + time` — that enables temporal leakage detection, source cascade
-analysis, editorial consensus mapping, and a hundred other things that need
+Every claim gets provenance — `claim + source + wording + placement + stability
++ time` — a reusable primitive that enables temporal leakage detection, source
+cascade analysis, editorial consensus mapping, and anything else that needs
 versioned knowledge, not snapshots.
 
 ## What It Does
