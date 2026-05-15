@@ -6,13 +6,9 @@ Each Varia event describes what changed at a revision boundary. Events are deter
 
 | Event type | Trigger | Example |
 |---|---|---|
-| `claim_first_seen` | New claim text appears | A sentence about a company appears for the first time |
-| `claim_removed` | Existing claim deleted entirely | A controversial paragraph is removed |
-| `claim_softened` | Direct assertion becomes attributed or hedged | "Company concealed defect" → "Regulators alleged company failed to disclose defect" |
-| `claim_strengthened` | Attributed claim becomes direct assertion | "Critics say the drug is unsafe" → "The drug is unsafe" |
-| `claim_reworded` | Claim text changes without softening/strengthening | "The company lost $2M" → "The company reported a $2M loss" |
-| `claim_moved` | Claim moves to a different section | Lead → Controversy section |
-| `claim_reintroduced` | Previously removed claim returns | A deleted sentence is restored in a later edit |
+| `sentence_first_seen` | New sentence text appears | A sentence about a company appears for the first time |
+| `sentence_removed` | Existing sentence deleted entirely | A controversial paragraph is removed |
+| `sentence_reintroduced` | Previously removed sentence returns | A deleted sentence is restored in a later edit |
 
 ## Citation changes
 

@@ -20,7 +20,7 @@ Varia separates computation into three architecturally isolated layers. No layer
 
 **Output**: Evidence objects with `modelInterpretation` fields, each carrying a `confidence` score (0.0–1.0).
 
-**Package**: `@var-ia/interpreter`
+**Package**: `@var-ia/analyzers`
 
 ## Layer 3 (L3): Independent Ground Truth
 

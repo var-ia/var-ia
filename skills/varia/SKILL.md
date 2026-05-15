@@ -12,7 +12,7 @@ Deterministic claim-provenance engine for MediaWiki knowledge systems. Evidence,
 
 - Integrating MediaWiki edit history analysis into a tool
 - Building claim-provenance tracking across revisions
-- Using `@var-ia/*` packages (evidence-graph, analyzers, ingestion, interpreter)
+- Using `@var-ia/*` packages (evidence-graph, analyzers, ingestion)
 - Running the `wikihistory` CLI for page analysis
 - Extending the engine with new analyzers or model adapters
 - Setting up L2 model-assisted interpretation on top of L1 deterministic evidence
@@ -41,7 +41,6 @@ import type { EvidenceEvent, ClaimIdentity } from "@var-ia/evidence-graph";
 import { createClaimIdentity } from "@var-ia/evidence-graph";
 import { MediaWikiClient } from "@var-ia/ingestion";
 import { sectionDiffer, citationTracker } from "@var-ia/analyzers";
-import { createAdapter } from "@var-ia/interpreter";
 
 // L1: Fetch revisions (deterministic, no model)
 const client = new MediaWikiClient();
@@ -50,13 +49,6 @@ const revisions = await client.fetchRevisions("Earth", { limit: 50 });
 // L1: Extract evidence (deterministic, no model)
 const sections = sectionDiffer.extractSections(revisions[0].content);
 const citations = citationTracker.extractCitations(revisions[0].content);
-
-// L2: Model-assisted interpretation (receives only L1 evidence)
-const adapter = createAdapter({
-  provider: "openai",
-  apiKey: process.env.OPENAI_API_KEY,
-});
-const interpreted = await adapter.interpret(evidenceEvents);
 ```
 
 ## Architecture: Three-Knowledge-Split (Critical)
@@ -84,8 +76,7 @@ Every integration MUST respect these invariants:
 | `evidence-graph` | `@var-ia/evidence-graph` | Core types/schemas (no deps) | Shared |
 | `ingestion` | `@var-ia/ingestion` | Wikipedia API adapters, rate limiting | L1 |
 | `analyzers` | `@var-ia/analyzers` | Section diffing, citation tracking, revert detection, template tracking | L1 |
-| `interpreter` | `@var-ia/interpreter` | Pluggable model adapter (OpenAI, Anthropic, DeepSeek, local, BYOK) | L2 |
-| `cli` | `@var-ia/cli` | `wikihistory` CLI tool | L1+L2 |
+| `cli` | `@var-ia/cli` | `wikihistory` CLI tool | L1 |
 | `persistence` | (internal) | SQLite caching (bun:sqlite) | Shared |
 | `eval` | (internal) | Evaluation harness with benchmark pages | L3 |
 

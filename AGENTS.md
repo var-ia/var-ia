@@ -37,7 +37,6 @@ packages/
 ├── evidence-graph/   # Core types/schemas (no deps) — Published
 ├── ingestion/        # Wikimedia API adapters — Published
 ├── analyzers/        # Deterministic analyzers (section, citation, revert, template) — Published
-├── interpreter/      # Model adapter interface (L2) — Published
 ├── cli/              # CLI tool (wikihistory) — Published
 ├── persistence/      # SQLite persistence (bun:sqlite) — Not published
 ├── eval/             # Evaluation harness (L3) — Not published
@@ -49,7 +48,7 @@ Each package has `src/index.ts` as its public barrel. `dist/` is build output.
 ## Architecture (Three-Knowledge-Split)
 
 - **L1** (Deterministic): Wikipedia fetch, diffs, sections, citations, reverts. No model. Byte-for-byte reproducible.
-- **L2** (Model-Assisted): Pluggable model adapter. Receives only L1 evidence (never raw wikitext). Every interpretation carries a confidence score.
+- **L2** (Model-Assisted): Model interpretation of L1 evidence. Every interpretation carries a confidence score.
 - **L3** (Independent Ground Truth): Talk page consensus, RFC closures, ArbCom decisions. Never redefined by L1/L2.
 
 Invariants (from ARCHITECTURE.md):
