@@ -16,19 +16,14 @@ export interface EditCluster {
   eventCount: number;
 }
 
-export function detectEditClusters(
-  revisions: Revision[],
-  options?: EditClusterOptions,
-): EvidenceEvent[] {
+export function detectEditClusters(revisions: Revision[], options?: EditClusterOptions): EvidenceEvent[] {
   const windowMs = options?.windowMs ?? DEFAULT_WINDOW_MS;
   const minSize = options?.minClusterSize ?? DEFAULT_MIN_CLUSTER_SIZE;
   const events: EvidenceEvent[] = [];
 
   if (revisions.length < minSize) return events;
 
-  const sorted = [...revisions].sort(
-    (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
-  );
+  const sorted = [...revisions].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
   const clustered = new Set<number>();
 

@@ -1,6 +1,6 @@
-import type { AuthConfig } from "@var-ia/ingestion";
-import type { EvidenceEvent, Revision } from "@var-ia/evidence-graph";
 import { createServer } from "node:http";
+import type { EvidenceEvent, Revision } from "@var-ia/evidence-graph";
+import type { AuthConfig } from "@var-ia/ingestion";
 import { runAnalyze } from "./analyze.js";
 
 const EVENT_COLORS: Record<string, string> = {
@@ -71,15 +71,8 @@ export async function runExplore(
   server.listen(port);
 }
 
-function renderExplorePage(
-  pageTitle: string,
-  events: EvidenceEvent[],
-  revisions: Revision[],
-  port: number,
-): string {
-  const sortedRevs = [...revisions].sort(
-    (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
-  );
+function renderExplorePage(pageTitle: string, events: EvidenceEvent[], revisions: Revision[], port: number): string {
+  const sortedRevs = [...revisions].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
   const eventCounts = countBy(events, (e) => e.eventType);
   const sectionList = [...new Set(events.map((e) => e.section).filter(Boolean))];
@@ -170,7 +163,10 @@ main { padding: 24px; max-width: 1400px; margin: 0 auto; }
       </select>
       <select id="sectionFilter" onchange="filterEvents()">
         <option value="">All sections</option>
-        ${sectionList.sort().map((s) => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join("")}
+        ${sectionList
+          .sort()
+          .map((s) => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`)
+          .join("")}
       </select>
     </div>
     <div id="eventList">
@@ -196,17 +192,19 @@ main { padding: 24px; max-width: 1400px; margin: 0 auto; }
 </div>
 <script>
 const api = { port: ${port} };
-const allEvents = ${JSON.stringify(events.map((e) => ({
-  eventType: e.eventType,
-  section: e.section,
-  before: e.before,
-  after: e.after,
-  fromRevisionId: e.fromRevisionId,
-  toRevisionId: e.toRevisionId,
-  timestamp: e.timestamp,
-  deterministicFacts: e.deterministicFacts?.map((f) => `${f.fact}${f.detail ? `: ${f.detail}` : ""}`),
-  confidence: e.modelInterpretation?.confidence,
-})))};
+const allEvents = ${JSON.stringify(
+    events.map((e) => ({
+      eventType: e.eventType,
+      section: e.section,
+      before: e.before,
+      after: e.after,
+      fromRevisionId: e.fromRevisionId,
+      toRevisionId: e.toRevisionId,
+      timestamp: e.timestamp,
+      deterministicFacts: e.deterministicFacts?.map((f) => `${f.fact}${f.detail ? `: ${f.detail}` : ""}`),
+      confidence: e.modelInterpretation?.confidence,
+    })),
+  )};
 
 function showTab(name) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -249,11 +247,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal()
 }
 
 function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
 function renderEventRows(events: EvidenceEvent[]): string {
@@ -261,9 +255,10 @@ function renderEventRows(events: EvidenceEvent[]): string {
   return events
     .map((e) => {
       const color = EVENT_COLORS[e.eventType] ?? "#999";
-      const facts = e.deterministicFacts
-        ?.map((f) => `<span class="fact-chip">${escapeHtml(f.fact + (f.detail ? `: ${f.detail}` : ""))}</span>`)
-        .join("") ?? "";
+      const facts =
+        e.deterministicFacts
+          ?.map((f) => `<span class="fact-chip">${escapeHtml(f.fact + (f.detail ? `: ${f.detail}` : ""))}</span>`)
+          .join("") ?? "";
       const conf = e.modelInterpretation?.confidence;
       const text = e.after || e.before || "";
       const typeClass = e.eventType.replace(/_/g, " ");
@@ -316,9 +311,7 @@ function renderRevisionTable(revisions: Revision[], events: EvidenceEvent[]): st
     eventByRev[e.toRevisionId] = (eventByRev[e.toRevisionId] ?? 0) + 1;
   }
 
-  const sorted = [...revisions].sort(
-    (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
-  );
+  const sorted = [...revisions].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
   return sorted
     .map((r) => {

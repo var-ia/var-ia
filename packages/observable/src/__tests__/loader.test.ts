@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { VariaLoader, variaLoader } from "../loader.js";
 
 vi.mock("node:fs", () => ({
@@ -7,7 +7,7 @@ vi.mock("node:fs", () => ({
 
 vi.mock("bun:sqlite", () => ({
   // biome-ignore lint/complexity/useArrowFunction: constructor mock requires function expression
-  Database: vi.fn(function() {
+  Database: vi.fn(function () {
     return { query: vi.fn().mockReturnValue({ all: vi.fn().mockReturnValue([]) }), close: vi.fn() };
   }),
 }));
@@ -37,9 +37,7 @@ describe("VariaLoader", () => {
   describe("load", () => {
     it("reads and parses JSON files", async () => {
       const { readFileSync } = await import("node:fs");
-      (readFileSync as ReturnType<typeof vi.fn>).mockReturnValue(
-        JSON.stringify({ events: [{ id: 1 }] }),
-      );
+      (readFileSync as ReturnType<typeof vi.fn>).mockReturnValue(JSON.stringify({ events: [{ id: 1 }] }));
       const loader = new VariaLoader({ path: "/data/events.json" });
       const result = await loader.load();
       expect(result).toEqual({ events: [{ id: 1 }] });

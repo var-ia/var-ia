@@ -39,7 +39,8 @@ const TOOLS: McpTool[] = [
         depth: {
           type: "string",
           enum: ["brief", "detailed", "forensic"],
-          description: "Analysis depth: brief (event metadata only), detailed (text included), forensic (full wikitext)",
+          description:
+            "Analysis depth: brief (event metadata only), detailed (text included), forensic (full wikitext)",
         },
         api: {
           type: "string",

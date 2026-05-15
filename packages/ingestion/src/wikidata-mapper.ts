@@ -76,10 +76,7 @@ export async function mapPageToEntity(pageTitle: string): Promise<PageToEntityMa
   return { pageTitle, qid, entity: entity ?? undefined };
 }
 
-export async function mapPagesToEntities(
-  pageTitles: string[],
-  concurrency = 3,
-): Promise<PageToEntityMap[]> {
+export async function mapPagesToEntities(pageTitles: string[], concurrency = 3): Promise<PageToEntityMap[]> {
   const results: PageToEntityMap[] = [];
   for (let i = 0; i < pageTitles.length; i += concurrency) {
     const batch = pageTitles.slice(i, i + concurrency);
@@ -101,9 +98,7 @@ export function wikidataEntityToEvents(entity: WikidataEntity, _pageTitle: strin
     section: "",
     before: "",
     after: `Wikidata entity: ${entity.label}`,
-    deterministicFacts: [
-      { fact: "wikidata_entity_linked", detail: `qid=${entity.qid} label=${entity.label}` },
-    ],
+    deterministicFacts: [{ fact: "wikidata_entity_linked", detail: `qid=${entity.qid} label=${entity.label}` }],
     layer: "observed",
     timestamp: new Date().toISOString(),
   });
@@ -116,9 +111,7 @@ export function wikidataEntityToEvents(entity: WikidataEntity, _pageTitle: strin
       section: "",
       before: "",
       after: instanceOf,
-      deterministicFacts: [
-        { fact: "wikidata_instance_of", detail: `types=${instanceOf} properties=${props}` },
-      ],
+      deterministicFacts: [{ fact: "wikidata_instance_of", detail: `types=${instanceOf} properties=${props}` }],
       layer: "observed",
       timestamp: new Date().toISOString(),
     });
@@ -159,7 +152,9 @@ function extractInstanceOf(entity: WikidataEntityData | undefined): string[] {
   const p31 = entity?.claims?.P31;
   if (!p31) return [];
   return p31
-    .filter((c: WikidataStatement) => c.mainsnak?.snaktype === "value" && c.mainsnak?.datavalue?.type === "wikibase-item")
+    .filter(
+      (c: WikidataStatement) => c.mainsnak?.snaktype === "value" && c.mainsnak?.datavalue?.type === "wikibase-item",
+    )
     .map((c: WikidataStatement) => {
       const dt = c.mainsnak?.datavalue;
       if (!dt || dt.type !== "wikibase-item") return "";

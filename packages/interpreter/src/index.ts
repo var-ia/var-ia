@@ -1,10 +1,9 @@
 import type { EvidenceEvent, ModelInterpretation } from "@var-ia/evidence-graph";
-
-import { createOpenAIAdapter } from "./adapters/openai.js";
 import { createAnthropicAdapter } from "./adapters/anthropic.js";
+import { createByokAdapter } from "./adapters/byok.js";
 import { createDeepSeekAdapter } from "./adapters/deepseek.js";
 import { createLocalAdapter } from "./adapters/local.js";
-import { createByokAdapter } from "./adapters/byok.js";
+import { createOpenAIAdapter } from "./adapters/openai.js";
 
 // Lineage types used by the interpreter but defined here to avoid
 // coupling the interpreter to the analyzers package. The shape is

@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from "vitest";
-import { fetchWikidataId, mapPageToEntity, mapPagesToEntities, wikidataEntityToEvents } from "../wikidata-mapper.js";
+import { describe, expect, it, vi } from "vitest";
+import { fetchWikidataId, mapPagesToEntities, mapPageToEntity, wikidataEntityToEvents } from "../wikidata-mapper.js";
 
 describe("fetchWikidataId", () => {
   it("returns null when page has no Wikidata ID", async () => {
@@ -118,7 +118,11 @@ describe("wikidataEntityToEvents", () => {
       aliases: [],
       instanceOf: ["Q5"],
       claims: {
-        P31: { property: "P31", propertyLabel: "instance of", values: [{ type: "wikibase-item" as const, value: "Q5" }] },
+        P31: {
+          property: "P31",
+          propertyLabel: "instance of",
+          values: [{ type: "wikibase-item" as const, value: "Q5" }],
+        },
       },
     };
 

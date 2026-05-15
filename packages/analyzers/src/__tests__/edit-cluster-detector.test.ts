@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
 import type { Revision } from "@var-ia/evidence-graph";
+import { describe, expect, it } from "vitest";
 import { detectEditClusters } from "../edit-cluster-detector.js";
 
 function makeRev(revId: number, timestamp: string, user?: string): Revision {

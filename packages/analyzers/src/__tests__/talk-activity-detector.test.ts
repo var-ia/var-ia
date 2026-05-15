@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
 import type { Revision } from "@var-ia/evidence-graph";
+import { describe, expect, it } from "vitest";
 import { detectTalkActivitySpikes } from "../talk-activity-detector.js";
 
 function makeTalkRev(revId: number, timestamp: string): Revision {
@@ -25,10 +25,7 @@ describe("detectTalkActivitySpikes", () => {
   });
 
   it("returns empty when insufficient data for moving average", () => {
-    const talkRevs = [
-      makeTalkRev(1, dayOffset(-2)),
-      makeTalkRev(2, dayOffset(-1)),
-    ];
+    const talkRevs = [makeTalkRev(1, dayOffset(-2)), makeTalkRev(2, dayOffset(-1))];
     const result = detectTalkActivitySpikes(talkRevs, []);
     expect(result.spikes).toHaveLength(0);
     expect(result.activityByDay).toHaveLength(2);

@@ -16,6 +16,7 @@ import {
   extractWikilinks,
   revertDetector,
   sectionDiffer,
+  stripWikitext,
   templateTracker,
 } from "@var-ia/analyzers";
 import type { DeterministicFact, EvidenceEvent, EvidenceLayer, Revision, Section } from "@var-ia/evidence-graph";
@@ -25,7 +26,6 @@ import type { ModelConfig } from "@var-ia/interpreter";
 import { createAdapter, ModelRouter } from "@var-ia/interpreter";
 import { loadCachedRevisions, loadLatestCachedTimestamp, saveRevisions } from "./cache.js";
 import { buildSectionCharMap, findSectionForText, fuzzyFindClaim } from "./claim.js";
-import { stripWikitext } from "@var-ia/analyzers";
 
 interface ParsedContent {
   sections: Section[];

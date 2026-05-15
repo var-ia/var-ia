@@ -55,9 +55,9 @@ export interface TemplateChange {
 
 export { buildCategoryEvents, diffCategories, extractCategories } from "./category-tracker.js";
 export { buildSourceId, buildSourceLineage, citationTracker } from "./citation-tracker.js";
+export { classifyClaimChange } from "./claim-differ.js";
 export type { EditClusterOptions } from "./edit-cluster-detector.js";
 export { detectEditClusters } from "./edit-cluster-detector.js";
-export { classifyClaimChange } from "./claim-differ.js";
 export type { HeuristicKind, HeuristicOptions } from "./heuristic-classifier.js";
 export { classifyHeuristic } from "./heuristic-classifier.js";
 export type { ObservationDiff } from "./observation-differ.js";

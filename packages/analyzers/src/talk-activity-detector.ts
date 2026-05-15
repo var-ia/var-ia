@@ -39,9 +39,7 @@ export function detectTalkActivitySpikes(
 
   const recentEnd = Date.now();
   const recentStart = recentEnd - windowMs;
-  const recentDays = sortedDays.filter(
-    (d) => new Date(d).getTime() >= recentStart,
-  );
+  const recentDays = sortedDays.filter((d) => new Date(d).getTime() >= recentStart);
 
   const movingAverages: number[] = [];
   for (let i = maPeriods - 1; i < sortedDays.length; i++) {
@@ -52,8 +50,7 @@ export function detectTalkActivitySpikes(
     movingAverages.push(sum / maPeriods);
   }
 
-  const latestMA =
-    movingAverages.length > 0 ? movingAverages[movingAverages.length - 1] : 0;
+  const latestMA = movingAverages.length > 0 ? movingAverages[movingAverages.length - 1] : 0;
   const threshold = Math.max(latestMA * spikeFactor, 3);
 
   for (const day of recentDays) {
