@@ -67,8 +67,8 @@ Always prefer `import type` for type-only imports. Never import from `dist/` in 
 - **Interfaces/types**: PascalCase (`RevisionFetcher`, `EvidenceEvent`)
 - **Functions**: camelCase (`createClaimIdentity`, `fetchRevisions`)
 - **Const singletons**: camelCase (`sectionDiffer`, `citationTracker`)
-- **String literal union members**: snake_case (`"citation_added"`, `"claim_removed"`)
-- **Config types**: PascalCase with `Config` suffix (`ModelConfig`)
+- **String literal union members**: snake_case (`"citation_added"`, `"page_moved"`)
+- **Config types**: PascalCase with `Config` suffix (`EvalConfig`)
 
 ### Tests
 - Framework: Vitest with `globals: true` (no need to import `describe`/`it`/`expect`)
@@ -77,8 +77,6 @@ Always prefer `import type` for type-only imports. Never import from `dist/` in 
 
 ### General
 - No comments unless explaining a non-obvious constraint (not what code does — what it must not do)
-- Deterministic code before model code in any file
-- Model code never receives raw text — only pre-extracted evidence
 - Export only what's needed from each package's `index.ts`
 
 ## Commit Convention
@@ -89,7 +87,6 @@ Conventional Commits: `feat:`, `fix:`, `refactor:`, `chore:`, `docs:`, `test:`.
 
 - PR description must state what the code shows, not what it claims
 - New analyzers must include an eval (even a single sample page)
-- Model prompt changes must include before/after confidence scores on 3 sample pages
 - Architecture changes require an ARCHITECTURE.md update in the same PR
 
 ## Roadmap & Work Queue

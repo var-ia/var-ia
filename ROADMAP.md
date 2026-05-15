@@ -9,10 +9,9 @@ Varia v0.2.1 — all 20 Phase 1 workqueue items shipped. Maintenance mode: bug f
 | `evidence-graph` | Agent F | Event schema, 29 event types, deterministic hashing, replay manifests |
 | `ingestion` | Agent A | MediaWiki REST client, rate limiter, XML dumps, Wikidata entity mapping |
 | `analyzers` | Agents B/C/D/E | Section differ, citation tracker, revert detector, template tracker, claim differ, wikilink/category extractors, talk correlator, talk thread parser, edit cluster detector, talk activity spike detector, protection tracker, page move detector, heuristic classifier, observation differ |
-| `interpreter` | L2 model adapter | 5 pluggable adapters (OpenAI, Anthropic, DeepSeek, Ollama, BYOK), cascading router, consensus adapter, calibrated confidence |
 | `cli` | Agent G | 10 commands: analyze, claim, cron, diff, eval, explore, export, mcp, visualize, watch |
 | `persistence` | Agent G | SQLite storage (bun:sqlite) |
-| `eval` | — | Evaluation harness: L2 benchmarks, calibration, L3 ground truth validation (public) |
+| `eval` | — | Evaluation harness: L3 ground truth validation (public) |
 | `observable` | — | Observable Framework data loader (internal use) |
 
 ## What Varia Observes
@@ -44,7 +43,7 @@ page reveals the dispute is about what constitutes a source.
 "...because of pride and ambition" — both supported by the same films, both
 contradictory. The revision history shows back-and-forth edits; the talk page
 reveals it's a dispute about character interpretation. Talk page correlation
-surfaces the pattern; L2 classifies the discussion type.
+surfaces the pattern.
 
 **Time-deep.** 15+ year revision histories, decade-spanning talk page archives.
 A 2008 consensus about what's canon gets overturned in 2023. L3 outcome labels
@@ -57,7 +56,7 @@ anything.
 
 ## Status
 
-**Phase 1: Complete.** All 20 workqueue items (L1-01 through L2-02, CW-01 through CW-05, INFRA-01 through INFRA-04) are shipped. See `.github/workqueue/` for task details.
+**Phase 1: Complete.** All 18 workqueue items (L1-01 through L1-09, CW-01 through CW-05, INFRA-01 through INFRA-04) are shipped. See `.github/workqueue/` for task details.
 
 **Phase 2: Complete.** Recent additions:
 - `edit_cluster_detected` and `talk_activity_spike` event types (evidence-graph)
@@ -65,7 +64,6 @@ anything.
 - Wikidata entity mapping — page-to-entity Q-ID lookup (ingestion)
 - `explore` CLI command — local web server with timeline, evidence table, diff viewer
 - `@var-ia/eval` made public with full exports
-- All 5 model adapters now support `timeoutMs` and `maxTokens` configuration
 - `Revision` type now includes optional `user` field
 - Ingestion `fetch()` calls now have 30s timeouts
 - CI pinned to bun 1.2.x, all 602 tests pass
@@ -84,11 +82,6 @@ anything.
 - **L1-08:** Talk Page Section Extractor — `parseTalkThreads` + thread/reply events
 - **L1-09:** Template Parameter Differ — `diffTemplateParams` + `template_parameter_changed` events
 
-## Completed — L2 Model-Assisted
-
-- **L2-01:** Talk Page Interpretation — discussionType classification with confidence
-- **L2-02:** Lineage-Aware Interpretation — full section/source/claim lineage passed to model
-
 ## Completed — Cross-Wiki
 
 - **CW-01:** Cross-Wiki Diff — `wikihistory diff` with 2+ wikis, z-score outlier detection
@@ -101,5 +94,4 @@ anything.
 
 - **INFRA-01:** Real L3 Eval — ground truth labels, calibration, benchmark pages
 - **INFRA-02:** Scheduled Re-Observation — `wikihistory watch` + `cron` with notifications
-- **INFRA-03:** L2 Quality Benchmarks — provider scoring, per-adapter metrics
 - **INFRA-04:** Watch Channels — Slack, email, webhook notifications
