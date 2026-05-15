@@ -15,15 +15,12 @@ Use Conventional Commits: `feat:`, `fix:`, `refactor:`, `chore:`, `docs:`, `test
 
 - TypeScript throughout
 - No comments unless explaining a non-obvious constraint (not what code does — what it must not do)
-- Deterministic code before model code
-- Model code never receives raw text — always pre-extracted evidence
 
 ## Pull Requests
 
 1. PR description must state what the code shows, not what it claims
 2. New analyzers must include an eval (even a single sample page)
-3. Model prompt changes must include before/after confidence scores on 3 sample pages
-4. Architecture changes require an ARCHITECTURE.md update in the same PR
+3. Architecture changes require an ARCHITECTURE.md update in the same PR
 
 ## What Not to Contribute
 

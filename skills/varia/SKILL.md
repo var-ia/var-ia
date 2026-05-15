@@ -1,6 +1,6 @@
 ---
 name: varia
-description: Use when integrating MediaWiki edit history analysis, building claim-provenance tools, or working with @var-ia/* packages — deterministic L1 observation engine with three-layer architecture
+description: Use when integrating MediaWiki edit history analysis, building claim-provenance tools, or working with @var-ia/* packages — deterministic observation engine for public revision histories
 license: AGPL-3.0
 ---
 
@@ -51,34 +51,30 @@ const sections = sectionDiffer.extractSections(revisions[0].content);
 const citations = citationTracker.extractCitations(revisions[0].content);
 ```
 
-## Architecture: Three-Knowledge-Split (Critical)
+## Architecture (Critical)
 
 Every integration MUST respect these invariants:
 
-| Layer | Scope | Can call model? | Sees raw text? | Output |
-|-------|-------|-----------------|----------------|--------|
-| **L1** | Deterministic extraction | Never | Yes (wikitext) | `deterministicFacts` arrays |
-| **L2** | Model-assisted interpretation | Yes | Never — only L1 evidence | `modelInterpretation` with `confidence` |
-| **L3** | Independent ground truth | N/A | N/A | Outcome labels (talk page consensus, RFCs, ArbCom) |
+| Scope | Sees raw text? | Output |
+|-------|----------------|--------|
+| **Deterministic** (L1) | Yes (wikitext) | `deterministicFacts` arrays |
+| **Ground truth** (L3) | N/A | Outcome labels (talk page consensus, RFCs, ArbCom) |
 
 **Invariants (do not violate):**
-1. L1 never calls a model
-2. L2 never receives full revision wikitext — only L1-curated evidence snippets pre-extracted by deterministic analyzers
-3. L3 is never redefined by L1 or L2 output
-4. No single accuracy score conflates layers
-5. Every interpretation carries a confidence score (0.0–1.0)
-6. Deterministic facts always presented before interpretations
+1. Deterministic pipeline never calls a model
+2. Output is byte-for-byte reproducible on the same revision range
+3. Every event is provenance-tagged (revision, section, timestamp)
 
 ## Packages
 
-| Package | npm | Purpose | Layer |
-|---------|-----|---------|-------|
-| `evidence-graph` | `@var-ia/evidence-graph` | Core types/schemas (no deps) | Shared |
-| `ingestion` | `@var-ia/ingestion` | Wikipedia API adapters, rate limiting | L1 |
-| `analyzers` | `@var-ia/analyzers` | Section diffing, citation tracking, revert detection, template tracking | L1 |
-| `cli` | `@var-ia/cli` | `wikihistory` CLI tool | L1 |
-| `persistence` | (internal) | SQLite caching (bun:sqlite) | Shared |
-| `eval` | (internal) | Evaluation harness with benchmark pages | L3 |
+| Package | npm | Purpose |
+|---------|-----|---------|
+| `evidence-graph` | `@var-ia/evidence-graph` | Core types/schemas (no deps) |
+| `ingestion` | `@var-ia/ingestion` | Wikipedia API adapters, rate limiting |
+| `analyzers` | `@var-ia/analyzers` | Section diffing, citation tracking, revert detection, template tracking |
+| `cli` | `@var-ia/cli` | `wikihistory` CLI tool |
+| `persistence` | (internal) | SQLite caching (bun:sqlite) |
+| `eval` | (internal) | Evaluation harness with benchmark pages |
 
 ### Import Conventions
 
@@ -111,8 +107,7 @@ interface EvidenceEvent {
   before: string;
   after: string;
   deterministicFacts: DeterministicFact[];
-  modelInterpretation?: ModelInterpretation;  // Added by L2
-  layer: EvidenceLayer;         // "observed" | "policy_coded" | "model_interpretation" | ...
+  layer: EvidenceLayer;         // "observed" | "policy_coded"
   timestamp: string;            // ISO 8601
 }
 ```
@@ -127,22 +122,6 @@ interface ClaimObject {
   currentState: ClaimState;     // "absent" → "emerging" → "contested" → ... → "deleted"
   propositionType: PropositionType;
   phase: string;                // Phase 0 | Phase 1b | Phase 2a | Phase 2b
-}
-```
-
-### ModelAdapter (L2)
-The pluggable interpretation interface.
-
-```ts
-interface ModelAdapter {
-  interpret(events: EvidenceEvent[]): Promise<InterpretedEvent[]>;
-}
-
-interface ModelConfig {
-  provider: "openai" | "anthropic" | "deepseek" | "local" | "byok";
-  apiKey?: string;
-  model?: string;
-  endpoint?: string;
 }
 ```
 
@@ -177,6 +156,5 @@ When building on top of varia, do NOT create features that:
 
 ## Cross-Skill References
 
-- **Model routing** → Use `model-router` skill for multi-provider L2 configuration
 - **SQLite persistence** → `persistence` package uses bun:sqlite
 - **Testing** → Use `vitest` skill (vitest with `globals: true`, tests in `src/__tests__/*.test.ts`)
