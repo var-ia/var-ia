@@ -1,4 +1,4 @@
-import { classifyClaimChange } from "@var-ia/analyzers";
+import { classifyClaimChange, stripWikitext } from "@var-ia/analyzers";
 import type { ClaimState, EvidenceEvent, Revision } from "@var-ia/evidence-graph";
 import { createClaimIdentity } from "@var-ia/evidence-graph";
 import type { AuthConfig, RevisionOptions } from "@var-ia/ingestion";
@@ -167,23 +167,6 @@ export async function runClaim(
   console.log(
     `Last seen:   ${variants[variants.length - 1].observedAt} (rev ${variants[variants.length - 1].revisionId})`,
   );
-}
-
-export { runClaim as runClaimCommand };
-
-export function stripWikitext(wikitext: string): string {
-  let text = wikitext;
-  text = text.replace(/<!--[\s\S]*?-->/g, "");
-  text = text.replace(/<ref\b[^>]*\/\s*>/gi, "");
-  text = text.replace(/<ref\b[^>]*>[\s\S]*?<\/ref\s*>/gi, "");
-  text = text.replace(/<[^>]+>/g, "");
-  text = text.replace(/\{\{[^{}]*?\}\}/g, "");
-  text = text.replace(/'''(.+?)'''/g, "$1");
-  text = text.replace(/''(.+?)''/g, "$1");
-  text = text.replace(/\[\[([^\]|]+?)\]\]/g, "$1");
-  text = text.replace(/\[\[[^\]]+?\|([^\]]+?)\]\]/g, "$1");
-  text = text.replace(/\n{3,}/g, "\n\n");
-  return text.trim();
 }
 
 export function fuzzyFindClaim(claimText: string, plainText: string, preNormalized?: string): string {

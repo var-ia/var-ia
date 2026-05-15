@@ -13,6 +13,21 @@ export function sanitizeWikitext(value: string): string {
     .trim();
 }
 
+export function stripWikitext(wikitext: string): string {
+  let text = wikitext;
+  text = text.replace(/<!--[\s\S]*?-->/g, "");
+  text = text.replace(/<ref\b[^>]*\/\s*>/gi, "");
+  text = text.replace(/<ref\b[^>]*>[\s\S]*?<\/ref\s*>/gi, "");
+  text = text.replace(/<[^>]+>/g, "");
+  text = text.replace(/\{\{[^{}]*?\}\}/g, "");
+  text = text.replace(/'''(.+?)'''/g, "$1");
+  text = text.replace(/''(.+?)''/g, "$1");
+  text = text.replace(/\[\[([^\]|]+?)\]\]/g, "$1");
+  text = text.replace(/\[\[[^\]]+?\|([^\]]+?)\]\]/g, "$1");
+  text = text.replace(/\n{3,}/g, "\n\n");
+  return text.trim();
+}
+
 export interface HeadingPosition {
   position: number;
   heading: string;

@@ -85,4 +85,5 @@ export {
   extractAnchorSnippet,
   extractHeadingMap,
   sanitizeWikitext,
+  stripWikitext,
 } from "./wikitext-parser.js";

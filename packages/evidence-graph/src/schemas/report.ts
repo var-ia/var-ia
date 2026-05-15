@@ -1,6 +1,8 @@
 // Report — the assembled output of the provenance engine
 
-export type ReportLayerLabel = "observed" | "policy_coded" | "model_interpretation" | "speculative" | "unknown";
+import type { EvidenceLayer } from "./evidence.js";
+
+export type ReportLayerLabel = EvidenceLayer;
 
 export type ExportFormat = "json" | "pdf" | "csv";
 

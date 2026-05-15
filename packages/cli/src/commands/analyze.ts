@@ -24,7 +24,8 @@ import { MediaWikiClient } from "@var-ia/ingestion";
 import type { ModelConfig } from "@var-ia/interpreter";
 import { createAdapter, ModelRouter } from "@var-ia/interpreter";
 import { loadCachedRevisions, loadLatestCachedTimestamp, saveRevisions } from "./cache.js";
-import { buildSectionCharMap, findSectionForText, fuzzyFindClaim, stripWikitext } from "./claim.js";
+import { buildSectionCharMap, findSectionForText, fuzzyFindClaim } from "./claim.js";
+import { stripWikitext } from "@var-ia/analyzers";
 
 interface ParsedContent {
   sections: Section[];
@@ -590,20 +591,7 @@ export async function runAnalyze(
   if (modelConfig && events.length > 0) {
     const adapter = createAdapter(modelConfig);
     console.log(`Interpreting ${events.length} events with ${modelConfig.provider}...`);
-
-    const sectionLineage = buildSectionLineage(sortedRevs);
-    const lineage = {
-      sectionLineages: sectionLineage.map((s) => ({
-        sectionName: s.sectionName,
-        events: s.events.map((e) => `${e.eventType} in rev ${e.revisionId}`),
-        isActive: s.isActive,
-      })),
-    };
-
-    const interpreted = await adapter.interpret(events, lineage);
-    for (let i = 0; i < interpreted.length; i++) {
-      interpreted[i].layer = events[i].layer;
-    }
+    const interpreted = await interpretWithLineage(events, sortedRevs, adapter.interpret.bind(adapter));
     console.log("Interpretation complete.");
     return { events: interpreted, revisions: sortedRevs };
   }
@@ -611,25 +599,32 @@ export async function runAnalyze(
   if (useRouter && events.length > 0) {
     const router = new ModelRouter();
     console.log(`Interpreting ${events.length} events with local open-weight models...`);
-
-    const sectionLineage = buildSectionLineage(sortedRevs);
-    const lineage = {
-      sectionLineages: sectionLineage.map((s) => ({
-        sectionName: s.sectionName,
-        events: s.events.map((e) => `${e.eventType} in rev ${e.revisionId}`),
-        isActive: s.isActive,
-      })),
-    };
-
-    const interpreted = await router.interpret(events, lineage);
-    for (let i = 0; i < interpreted.length; i++) {
-      interpreted[i].layer = events[i].layer;
-    }
+    const interpreted = await interpretWithLineage(events, sortedRevs, router.interpret.bind(router));
     console.log("Interpretation complete.");
     return { events: interpreted, revisions: sortedRevs };
   }
 
   return { events, revisions: sortedRevs };
+}
+
+async function interpretWithLineage(
+  events: EvidenceEvent[],
+  sortedRevs: Revision[],
+  interpret: (events: EvidenceEvent[], lineage: Record<string, unknown>) => Promise<EvidenceEvent[]>,
+): Promise<EvidenceEvent[]> {
+  const sectionLineage = buildSectionLineage(sortedRevs);
+  const lineage = {
+    sectionLineages: sectionLineage.map((s) => ({
+      sectionName: s.sectionName,
+      events: s.events.map((e) => `${e.eventType} in rev ${e.revisionId}`),
+      isActive: s.isActive,
+    })),
+  };
+  const interpreted = await interpret(events, lineage);
+  for (let i = 0; i < interpreted.length; i++) {
+    interpreted[i].layer = events[i].layer;
+  }
+  return interpreted;
 }
 
 async function runBatch(

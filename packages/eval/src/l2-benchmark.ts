@@ -6,10 +6,10 @@ export interface L2TestCase {
   id: string;
   description: string;
   events: EvidenceEvent[];
-  expected: ExpectedInterpretation[];
+  expected: L2ExpectedInterpretation[];
 }
 
-export interface ExpectedInterpretation {
+export interface L2ExpectedInterpretation {
   eventIndex: number;
   semanticChange?: string;
   confidence?: number;

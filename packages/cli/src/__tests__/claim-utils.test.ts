@@ -17,7 +17,8 @@ vi.mock("bun:sqlite", () => {
   return { Database: MockDB };
 });
 
-import { findSectionForText, fuzzyFindClaim, stripWikitext } from "../commands/claim.js";
+import { findSectionForText, fuzzyFindClaim } from "../commands/claim.js";
+import { stripWikitext } from "@var-ia/analyzers";
 
 describe("stripWikitext", () => {
   it("strips HTML comments", () => {

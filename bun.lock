@@ -6,7 +6,7 @@
       "name": "wikipedia-provenance",
       "devDependencies": {
         "@biomejs/biome": "^2.4.15",
-        "@types/node": "^22.15.3",
+        "@types/node": "^22.19.19",
         "typescript": "^6.0.3",
         "vitest": "^4.1.6",
       },
@@ -56,6 +56,13 @@
     "packages/interpreter": {
       "name": "@var-ia/interpreter",
       "version": "0.1.1",
+      "dependencies": {
+        "@var-ia/evidence-graph": "^0.2.1",
+      },
+    },
+    "packages/observable": {
+      "name": "@var-ia/observable",
+      "version": "0.1.0",
       "dependencies": {
         "@var-ia/evidence-graph": "^0.2.1",
       },
@@ -154,6 +161,8 @@
     "@var-ia/ingestion": ["@var-ia/ingestion@workspace:packages/ingestion"],
 
     "@var-ia/interpreter": ["@var-ia/interpreter@workspace:packages/interpreter"],
+
+    "@var-ia/observable": ["@var-ia/observable@workspace:packages/observable"],
 
     "@var-ia/persistence": ["@var-ia/persistence@workspace:packages/persistence"],
 

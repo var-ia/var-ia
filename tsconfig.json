@@ -7,7 +7,6 @@
     { "path": "packages/interpreter" },
     { "path": "packages/cli" },
     { "path": "packages/persistence" },
-    { "path": "packages/eval" },
-    { "path": "packages/observable" }
+    { "path": "packages/eval" }
   ]
 }
