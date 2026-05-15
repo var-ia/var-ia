@@ -1,15 +1,8 @@
-import {
-  createEvalHarness,
-  GROUND_TRUTH_LABELS,
-  validateAgainstGroundTruth,
-} from "@var-ia/eval";
+import { createEvalHarness, GROUND_TRUTH_LABELS, validateAgainstGroundTruth } from "@var-ia/eval";
 import type { EvidenceEvent } from "@var-ia/evidence-graph";
 import { runAnalyze } from "./analyze.js";
 
-export async function runEval(
-  pageTitleOverride?: string,
-  groundTruthPath?: string,
-): Promise<void> {
+export async function runEval(pageTitleOverride?: string, groundTruthPath?: string): Promise<void> {
   if (groundTruthPath) {
     await runGroundTruth(groundTruthPath);
     return;
@@ -52,7 +45,6 @@ export async function runEval(
   console.log(`Passed: ${summary.testsPassed}/${summary.totalTests}`);
   console.log(`Overall precision: ${(summary.overallPrecision * 100).toFixed(1)}%`);
 }
-
 
 async function runGroundTruth(path: string): Promise<void> {
   let labels = GROUND_TRUTH_LABELS;

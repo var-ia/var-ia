@@ -2,11 +2,7 @@ import type { EvidenceEvent, Revision } from "@var-ia/evidence-graph";
 import type { AuthConfig } from "@var-ia/ingestion";
 import { runAnalyze } from "./analyze.js";
 
-const CLAIM_EVENT_TYPES = new Set([
-  "sentence_first_seen",
-  "sentence_removed",
-  "sentence_reintroduced",
-]);
+const CLAIM_EVENT_TYPES = new Set(["sentence_first_seen", "sentence_removed", "sentence_reintroduced"]);
 
 const EVENT_COLORS: Record<string, string> = {
   sentence_first_seen: "#4caf50",

@@ -43,11 +43,7 @@ export interface DiffResult {
   generatedAt: string;
 }
 
-export async function runDiff(
-  topic: string,
-  wikiUrls: string[],
-  depth?: string,
-): Promise<DiffResult> {
+export async function runDiff(topic: string, wikiUrls: string[], depth?: string): Promise<DiffResult> {
   console.log(`Diffing "${topic}" across ${wikiUrls.length} wikis...\n`);
 
   const resolvedDepth = depth ?? "detailed";
@@ -83,15 +79,7 @@ async function buildSummary(
   apiUrl: string,
   depth: string,
 ): Promise<{ summary: WikiSummary; events: EvidenceEvent[] }> {
-  const { events, revisions } = await runAnalyze(
-    topic,
-    depth,
-    undefined,
-    undefined,
-    undefined,
-    false,
-    apiUrl,
-  );
+  const { events, revisions } = await runAnalyze(topic, depth, undefined, undefined, undefined, false, apiUrl);
 
   const sections = new Set<string>();
   for (const e of events) {

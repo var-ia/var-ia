@@ -482,11 +482,11 @@ export async function runAnalyze(
       }
     }
 
-  // Sentence removal detection
-  // In-place sentence changes are not tracked — Varia observes appearance,
-  // disappearance, and reappearance, not directional semantic evolution.
+    // Sentence removal detection
+    // In-place sentence changes are not tracked — Varia observes appearance,
+    // disappearance, and reappearance, not directional semantic evolution.
 
-  for (const sentence of beforeSentences) {
+    for (const sentence of beforeSentences) {
       const trimmed = sentence.trim();
       if (!trimmed) continue;
       const foundInAfter = fuzzyFindText(trimmed, afterPlain, afterNorm);
@@ -499,7 +499,10 @@ export async function runAnalyze(
           section,
           before: isBrief ? "" : trimmed,
           after: "",
-          deterministicFacts: [{ fact: "sentence_removed", detail: `sentence_length=${trimmed.length}` }, ...extraFacts],
+          deterministicFacts: [
+            { fact: "sentence_removed", detail: `sentence_length=${trimmed.length}` },
+            ...extraFacts,
+          ],
           layer: "observed",
           timestamp: after.timestamp,
         });
@@ -578,7 +581,18 @@ async function runBatch(
       chunk.map(async (title, j) => {
         const idx = i + j + 1;
         console.log(`--- Page ${idx}/${titles.length}: ${title} ---`);
-        const { events } = await runAnalyze(title, depth, fromRevId, toRevId, fromTimestamp, useCache, apiUrl, undefined, cacheDir, auth);
+        const { events } = await runAnalyze(
+          title,
+          depth,
+          fromRevId,
+          toRevId,
+          fromTimestamp,
+          useCache,
+          apiUrl,
+          undefined,
+          cacheDir,
+          auth,
+        );
         return { pageTitle: title, pageId: 0, eventCount: events.length, events };
       }),
     );
