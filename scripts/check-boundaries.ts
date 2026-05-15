@@ -26,32 +26,18 @@ function findFiles(dir: string, extensions: string[]): string[] {
   return results;
 }
 
-// L1 packages (analyzers, ingestion) must not import from interpreter
-const L1_PACKAGES = ["analyzers", "ingestion"];
-for (const pkg of L1_PACKAGES) {
-  const srcDir = resolve(packagesDir, pkg, "src");
-  const files = findFiles(srcDir, [".ts"]);
-
-  for (const file of files) {
-    const content = readFileSync(file, "utf-8");
-    if (/from\s+["']@var-ia\/interpreter["']/.test(content)) {
-      errors.push(`L1 violation: ${file} imports from @var-ia/interpreter`);
-    }
-  }
-}
-
-// L2 (interpreter) must not import from ingestion (raw data access boundary)
-const interpreterSrc = resolve(packagesDir, "interpreter", "src");
-const interpreterFiles = findFiles(interpreterSrc, [".ts"]);
-for (const file of interpreterFiles) {
+// ingestion must not import from analyzers (raw data access vs interpreted layers)
+const ingestionDir = resolve(packagesDir, "ingestion", "src");
+const ingestionFiles = findFiles(ingestionDir, [".ts"]);
+for (const file of ingestionFiles) {
   const content = readFileSync(file, "utf-8");
-  if (/from\s+["']@var-ia\/ingestion["']/.test(content)) {
-    errors.push(`L2 violation: ${file} imports from @var-ia/ingestion`);
+  if (/from\s+["']@var-ia\/analyzers["']/.test(content)) {
+    errors.push(`Boundary violation: ${file} imports from @var-ia/analyzers`);
   }
-  if (/\bMediaWikiClient\b|\bRevisionSource\b|\bDiffFetcher\b/.test(content)) {
-    // Skip if in comments or type imports
-    if (!/import type/.test(content) || /\bnew\s+MediaWikiClient\b/.test(content)) {
-      errors.push(`L2 violation: ${file} references ingestion runtime (MediaWikiClient/RevisionSource/DiffFetcher)`);
+  if (/from\s+["']@var-ia\/evidence-graph["']/.test(content) && !/import type/.test(content)) {
+    // evidence-graph types are fine, runtime imports are not
+    if (/from\s+["']@var-ia\/evidence-graph["']\s*;/.test(content)) {
+      errors.push(`Boundary violation: ${file} runtime imports from @var-ia/evidence-graph`);
     }
   }
 }

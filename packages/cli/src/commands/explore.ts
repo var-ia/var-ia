@@ -3,6 +3,15 @@ import type { AuthConfig } from "@var-ia/ingestion";
 import { renderHtmlReport } from "../html-renderer.js";
 import { runAnalyze } from "./analyze.js";
 
+function openBrowser(url: string): void {
+  const cmd = process.platform === "darwin" ? "open" : process.platform === "win32" ? "start" : "xdg-open";
+  import("node:child_process")
+    .then(({ exec }) => {
+      exec(`${cmd} "${url}"`);
+    })
+    .catch(() => {});
+}
+
 export async function runExplore(
   pageTitle: string,
   port: number,
@@ -45,7 +54,7 @@ export async function runExplore(
   console.log(`  Page: ${pageTitle}`);
   console.log(`  Events: ${events.length}  |  Revisions: ${revisions.length}`);
   console.log(`  Press Ctrl+C to stop\n`);
-  if (!noOpen) console.log(`  Open ${url} in your browser`);
+  if (!noOpen) openBrowser(url);
 
   server.listen(port);
 }

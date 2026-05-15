@@ -7,17 +7,19 @@ Varia calls it.
 
 ## Track a Specific Claim
 
-**I want to know when a sentence first appeared, was reworded, or removed.**
+**I want to know when a sentence first appeared, was removed, or reintroduced.**
 
 ```bash
-wikihistory cron pages.txt --interval 24
+wikihistory claim "Bitcoin" --text "cryptocurrency"
 ```
 
-Returns exit code 1 if new events detected. Example output:
+Returns timeline of the claim across revisions. Example output:
 
 ```
-[Bitcoin] 2 events detected (2026-05-14–2026-05-15): 1 claim added, 1 citation removed
-[Climate change] no new events since last observation
+[2009-03-08] sentence_first_seen: "Bitcoin is a cryptocurrency"
+  Section: lead — rev 275832581→275832690
+[2017-06-15] sentence_reintroduced: "Bitcoin is a cryptocurrency" 
+  Section: lead — rev 456789012→456789013
 ```
 
 ## Cross-Wiki Comparison

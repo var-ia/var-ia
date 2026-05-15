@@ -20,12 +20,12 @@ export async function runClaim(
   let revisions: Revision[] = [];
 
   if (useCache) {
-    const cached = loadCachedRevisions(pageTitle, 500, cacheDir);
+    const cached = await loadCachedRevisions(pageTitle, 500, cacheDir);
     if (cached.length > 0) {
       console.log(`Loaded ${cached.length} revisions from cache.`);
       revisions = cached;
 
-      const latestTs = loadLatestCachedTimestamp(pageTitle, cacheDir);
+      const latestTs = await loadLatestCachedTimestamp(pageTitle, cacheDir);
       if (latestTs) {
         const deltaOpts: RevisionOptions = { direction: "newer", start: new Date(latestTs) };
         const newRevisions = await client.fetchRevisions(pageTitle, deltaOpts);
@@ -33,7 +33,7 @@ export async function runClaim(
         if (uniqueNew.length > 0) {
           console.log(`Fetched ${uniqueNew.length} new revisions since ${latestTs}.`);
           revisions = [...revisions, ...uniqueNew];
-          saveRevisions(uniqueNew, cacheDir);
+          await saveRevisions(uniqueNew, cacheDir);
         } else {
           console.log("Cache is up to date.");
         }
@@ -46,7 +46,7 @@ export async function runClaim(
     console.log(`Fetched ${revisions.length} revisions.\n`);
 
     if (useCache && revisions.length > 0) {
-      saveRevisions(revisions, cacheDir);
+      await saveRevisions(revisions, cacheDir);
       console.log(`Cached ${revisions.length} revisions.\n`);
     }
   }

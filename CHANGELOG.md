@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.3.1 (2026-05-15)
+
+### Removed
+- **@var-ia/interpreter** package deleted — L2 model interpretation moved to NextConsensus
+- CLI `--model`, `--model-api-key`, `--model-name`, `--model-endpoint`, `--temperature`, `--prompt`, `--router` flags removed
+- Old claim direction event types (`claim_softened`, `claim_strengthened`, `claim_reworded`, `claim_moved`) replaced with mechanical sentence events
+- Architecture boundary check scripts cleaned up (no longer checks deleted interpreter package)
+
+### Added
+- **@var-ia/evidence-graph**: `buildInterpretationPrompt()`, `parseInterpretationResponse()`, `ModelInterpretationSchema` — format pipeline for bring-your-own-inference
+- **MCP server**: `interpret` tool with host-sampling support — requests host LLM via `sampling/createMessage`, no API key management
+- **`--format html`** on `wikihistory export` — self-contained interactive report
+- **Docker**: GHCR publish workflow (`ghcr.io/var-ia/cli`)
+
+### Fixed
+- `@var-ia/persistence` removed from hard CLI deps — `npx @var-ia/cli` no longer fails to install
+- `@var-ia/persistence` lazy-imported at runtime; `--cache` requires explicit install
+- `wikihistory explore` `--no-open` now actually suppresses browser open (not just the log message)
+- `docs/recipes.md` claim tracking example now shows `wikihistory claim` not `wikihistory cron`
+- `.env.example` no longer references removed model provider API keys
+
 ## 0.3.0 (2026-05-15)
 
 ### New L1 analyzers

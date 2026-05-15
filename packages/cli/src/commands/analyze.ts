@@ -85,12 +85,12 @@ export async function runAnalyze(
   let revisions: Revision[] = [];
 
   if (useCache) {
-    const cached = loadCachedRevisions(pageTitle, 500, cacheDir);
+    const cached = await loadCachedRevisions(pageTitle, 500, cacheDir);
     if (cached.length > 0) {
       console.log(`Loaded ${cached.length} revisions from cache.`);
       revisions = cached;
 
-      const latestTs = loadLatestCachedTimestamp(pageTitle, cacheDir);
+      const latestTs = await loadLatestCachedTimestamp(pageTitle, cacheDir);
       if (latestTs && !fromTimestamp && revisions.length < 500) {
         const deltaOpts: RevisionOptions = { direction: "newer", start: new Date(latestTs) };
         if (toRevId) deltaOpts.endRevId = toRevId;
@@ -99,7 +99,7 @@ export async function runAnalyze(
         if (uniqueNew.length > 0) {
           console.log(`Fetched ${uniqueNew.length} new revisions since ${latestTs}.`);
           revisions = [...revisions, ...uniqueNew];
-          saveRevisions(uniqueNew, cacheDir);
+          await saveRevisions(uniqueNew, cacheDir);
         } else {
           console.log("Cache is up to date.");
         }
@@ -126,7 +126,7 @@ export async function runAnalyze(
     console.log(`Fetched ${revisions.length} revisions.`);
 
     if (useCache && revisions.length > 0) {
-      saveRevisions(revisions, cacheDir);
+      await saveRevisions(revisions, cacheDir);
       console.log(`Cached ${revisions.length} revisions.`);
     }
   }
