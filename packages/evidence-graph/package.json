@@ -3,7 +3,7 @@
   "version": "0.2.2",
   "type": "module",
   "private": false,
-  "description": "Core types and schemas for evidence events, claims, revisions, sources, and reports — the canonical event schema for Varia",
+  "description": "Canonical Refract schemas for evidence events, claims, revisions, sources, timelines, and reports",
   "license": "CC0-1.0",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",

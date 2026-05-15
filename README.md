@@ -3,7 +3,7 @@
 [![CI](https://github.com/refract-org/refract/actions/workflows/ci.yml/badge.svg)](https://github.com/refract-org/refract/actions/workflows/ci.yml)
 [![Version](https://img.shields.io/github/v/release/refract-org/refract)](https://github.com/refract-org/refract/releases)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-0f172a.svg)](./LICENSE)
-[![npm scope](https://img.shields.io/badge/npm-%40refract-org-2563eb.svg)](https://www.npmjs.com/org/var-ia)
+[![npm scope](https://img.shields.io/badge/npm-%40refract-org-2563eb.svg)](https://www.npmjs.com/org/refract-org)
 
 **The git log for public knowledge.**
 
@@ -101,7 +101,7 @@ Full output (330 events): [`docs/example-output.md`](./docs/example-output.md).
 |--------|---------|
 | **Bun** (if installed) | `bunx @refract-org/cli analyze "Bitcoin"` |
 | **Docker** (prebuilt) | `docker run ghcr.io/refract-org/cli analyze "Bitcoin"` |
-| **Local install** | `bun add @refract-org/cli && wikihistory analyze "Bitcoin"` |
+| **Local install** | `bun add @refract-org/cli && refract analyze "Bitcoin"` (or `wikihistory`) |
 | **Build from source** | `git clone https://github.com/refract-org/refract && cd refract && bun install && bun run build` |
 
 ### Use individual packages
@@ -122,7 +122,7 @@ import { sectionDiffer, citationTracker } from "@refract-org/analyzers";
 | `@refract-org/evidence-graph` | [![npm](https://img.shields.io/npm/v/@refract-org/evidence-graph)](https://www.npmjs.com/package/@refract-org/evidence-graph) | Core types and schemas — claim, evidence, source, report |
 | `@refract-org/ingestion` | [![npm](https://img.shields.io/npm/v/@refract-org/ingestion)](https://www.npmjs.com/package/@refract-org/ingestion) | Wikimedia API adapters — fetching, diffing, rate limits |
 | `@refract-org/analyzers` | [![npm](https://img.shields.io/npm/v/@refract-org/analyzers)](https://www.npmjs.com/package/@refract-org/analyzers) | Deterministic analyzers — sections, citations, reverts, templates |
-| `@refract-org/cli` | [![npm](https://img.shields.io/npm/v/@refract-org/cli)](https://www.npmjs.com/package/@refract-org/cli) | CLI tool — `wikihistory` command |
+| `@refract-org/cli` | [![npm](https://img.shields.io/npm/v/@refract-org/cli)](https://www.npmjs.com/package/@refract-org/cli) | CLI tool — `refract` / `wikihistory` commands |
 | `@refract-org/persistence` | — | Local SQLite persistence (bun:sqlite, not published) |
 | `@refract-org/eval` | — | Evaluation harness (not published) |
 | `@refract-org/observable` | — | Observable Framework data loader (not published) |
@@ -132,9 +132,9 @@ import { sectionDiffer, citationTracker } from "@refract-org/analyzers";
 Refract tracks **claim provenance** — structured evidence linking a claim's lifecycle
 to specific revisions, sources, and policy signals. It complements existing tools:
 
-| Tool | What it does | What var-ia adds |
+| Tool | What it does | What Refract adds |
 |------|-------------|-----------------|
-| **WikiWho** | Sentence-level authorship (who wrote which token) | Sentence lifecycle: when a sentence first appeared, was reworded, or removed |
+| **WikiWho** | Sentence-level authorship (who wrote which token) | Sentence lifecycle: when a sentence first appeared, was removed, or was reintroduced |
 | **ORES** | ML edit quality scores (likely damaging, good-faith) | Deterministic edit classification + policy-coded signals |
 | **XTools** | Edit stats, page history summaries, top editors | Structured event stream: section changes, citation turnover, template diffs, page moves, category shifts |
 | **PetScan** | Category intersection queries across pages | Category evolution per-page over time |
@@ -169,14 +169,14 @@ All three methods work with every command:
 
 ```bash
 # Bearer token
-wikihistory analyze "Page" --api https://corp-wiki.example.com/w/api.php --api-key "sk-..."
+refract analyze "Page" --api https://corp-wiki.example.com/w/api.php --api-key "sk-..."
 
 # Basic auth
-wikihistory analyze "Page" --api https://corp-wiki.example.com/w/api.php --api-user "admin" --api-password "..."
+refract analyze "Page" --api https://corp-wiki.example.com/w/api.php --api-user "admin" --api-password "..."
 
 # OAuth2 (via env vars)
 OAUTH_CLIENT_ID="..." OAUTH_CLIENT_SECRET="..." \
-  wikihistory analyze "Page" --api https://corp-wiki.example.com/w/api.php
+  refract analyze "Page" --api https://corp-wiki.example.com/w/api.php
 ```
 
 Credentials are never logged or exposed in error messages.

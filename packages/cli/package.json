@@ -3,7 +3,7 @@
   "version": "0.3.3",
   "type": "module",
   "private": false,
-  "description": "CLI tool for analyzing Wikipedia page histories — observe, timeline, export, diff, visualize, and cache management",
+  "description": "CLI for observing claim and evidence changes across public page histories: ingest, diff, timeline, export, visualize, and cache",
   "license": "AGPL-3.0",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
@@ -21,6 +21,7 @@
     "src"
   ],
   "bin": {
+    "refract": "dist/src/cli.js",
     "wikihistory": "dist/src/cli.js"
   },
   "scripts": {

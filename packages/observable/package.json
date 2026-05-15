@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "type": "module",
   "private": true,
-  "description": "Observable Framework data loader for Varia evidence exports",
+  "description": "Observable Framework data loader for Refract evidence exports",
   "license": "AGPL-3.0",
   "repository": {
     "type": "git",

@@ -1,11 +1,12 @@
 import type { EvidenceEvent } from "@refract-org/evidence-graph";
 import { runAnalyze } from "./analyze.js";
 
+// biome-ignore lint/suspicious/noExplicitAny: dynamic import of optional eval package
 type EvalModule = any;
 
 async function loadEval(): Promise<EvalModule> {
   try {
-    return await import("@refract-org/eval") as EvalModule;
+    return (await import("@refract-org/eval")) as EvalModule;
   } catch {
     throw new Error("eval command requires @refract-org/eval.\nInstall it: bun add @refract-org/eval");
   }

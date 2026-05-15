@@ -3,7 +3,7 @@
   "version": "0.2.1",
   "type": "module",
   "private": false,
-  "description": "MediaWiki API client — fetch revisions, diffs, page metadata from Wikipedia, Fandom, and generic MediaWiki instances",
+  "description": "MediaWiki ingestion client for fetching revisions, diffs, page metadata, and source histories from Wikipedia, Fandom, and generic MediaWiki instances",
   "license": "AGPL-3.0",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
