@@ -5,15 +5,14 @@
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-0f172a.svg)](./LICENSE)
 [![npm scope](https://img.shields.io/badge/npm-%40refract-org-2563eb.svg)](https://www.npmjs.com/org/refract-org)
 
-**The git log for public knowledge.**
+**The open claim-history layer for public knowledge.**
 
-> Evidence, not truth.
->
-> **Refract answers:** "What changed?"
-> **NextConsensus answers:** "Does this change matter for this healthcare decision?"
+> Refract reveals how claims change across public revision histories — where every
+> claim came from, what supported it, what challenged it, when it stabilized, and
+> what context altered its meaning.
 
-Refract is a deterministic observation engine — it ingests revision histories from
-Wikipedia, Fandom, and any MediaWiki instance, extracts a structured event stream
+Refract is the open claim-history layer for public knowledge — it ingests revision histories from
+Wikipedia, Fandom, and any MediaWiki instance, extracts a deterministic event stream
 of every claim, source, section, and dispute, and makes that stream queryable and
 reproducible. No model. No interpretation. Byte-for-byte identical on every run.
 
@@ -25,32 +24,32 @@ domain-neutral infrastructure for observing how public knowledge changes.
 
 ## Why It Exists
 
-The printing press made knowledge durable by freezing it into editions. Wikipedia
-made knowledge mutable by letting the record change continuously. But most systems
-still consume only the current surface.
+Machines do not just need more retrieved text. They need provenance, instability,
+disagreement, and temporal change — six things that a current snapshot cannot provide:
 
-Refract makes the mutation itself legible: who changed what, when, with what evidence,
-under what dispute, and whether the change survived. That is the difference between
-a library catalogue and an epistemic event log. Revision histories become
-infrastructure when machines need to reason about knowledge, not just retrieve it.
+1. **Where it came from** — when a claim first appeared in the public record
+2. **What changed** — every addition, removal, reintroduction, and rewording
+3. **What supported it** — which citations, sources, and evidence backed the claim
+4. **What challenged it** — reverts, template disputes, talk-page disagreements
+5. **When it stabilized** — how long a claim survived without contestation
+6. **What context altered its meaning** — section moves, lead promotions, category shifts
 
-Every claim gets provenance — `claim + source + wording + placement + stability
-+ time` — a reusable primitive that enables temporal leakage detection, source
-cascade analysis, editorial consensus mapping, and anything else that needs
-versioned knowledge, not snapshots.
+Refract makes that knowledge legible to machines by decomposing every statement
+into its history. That is more durable than search, monitoring, or summarization.
 
 ## What It Does
 
-Given a MediaWiki page, the engine produces a structured event stream:
+Given a MediaWiki page, the engine produces a structured event stream that tracks
+every claim through six dimensions:
 
 | Dimension | What Refract tracks |
 |-----------|-------------------|
-| **Claim** | When a sentence first appeared, was removed, or was reintroduced — across every revision |
-| **Source** | Which citations were added, replaced, or removed — and in what sequence |
-| **Wording** | Text-level changes: sentence additions, removals, section reorganization, lead promotions |
-| **Placement** | Where a claim lives: lead, body, infobox, footnote — and when it moved between them |
-| **Stability** | Revert cycles, template disputes, talk-page correlations, edit clusters, protection changes |
-| **Time** | Every event timestamped, every revision provenance-tagged — byte-for-byte reproducible |
+| **Provenance** | When a sentence first appeared, what sources backed it, where it was placed |
+| **Change** | Additions, removals, reintroductions, rewording across every revision |
+| **Support** | Which citations were added, replaced, or removed — and in what sequence |
+| **Contestation** | Revert cycles, template disputes, talk-page correlations, edit clusters |
+| **Stabilization** | How long a claim survived without challenge, protection changes |
+| **Context** | Section reorganization, lead promotions, category shifts, page moves |
 
 ## Who This Is For
 
