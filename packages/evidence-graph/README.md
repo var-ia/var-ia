@@ -11,7 +11,7 @@ bun add @var-ia/evidence-graph
 ### Types
 
 - `ClaimIdentity`, `ClaimLineage`, `ClaimState`, `ClaimObject` — claim tracing
-- `EvidenceEvent`, `DeterministicFact`, `ModelInterpretation`, `EvidenceLayer` — event model
+- `EvidenceEvent`, `DeterministicFact`, `EvidenceLayer` — event model
 - `SourceRecord`, `SourceLineage`, `SourceReplacement`, `SourceType`, `SourceAuthority` — citation tracking
 - `Report`, `ReportLayer`, `ReportLayerLabel`, `ExportFormat`, `Depth`, `PageTimeline`, `TimelineEvent`, `PolicySignal` — report assembly
 - `Revision`, `DiffResult`, `DiffLine`, `Section`, `SectionChange` — revision model

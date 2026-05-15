@@ -24,8 +24,6 @@ bun add @var-ia/cli
 
 - `--depth brief|detailed|forensic` — analysis depth
 - `--cache` — cache revisions in local SQLite
-- `--model <provider>` — enable L2 model interpretation (openai, anthropic, deepseek, local, byok)
-- `--router` — route to local open-weight models via Ollama
 - `--from <revId>`, `--to <revId>` — scope to revision range
 - `--pages-file <path>` — batch analyze multiple pages
 - `--bundle` — export as signed evidence bundle with SHA-256 hash

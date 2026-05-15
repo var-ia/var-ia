@@ -1,6 +1,10 @@
 # @var-ia/eval
 
-Generic evaluation harness for L2 model quality — benchmarks, calibration, L3 ground truth validation.
+Evaluation harness for ground truth validation and benchmark pages.
+
+```bash
+bun add @var-ia/eval
+```
 
 ## Exports
 
@@ -12,27 +16,16 @@ Generic evaluation harness for L2 model quality — benchmarks, calibration, L3 
 - `EvalResult` — per-test result with precision, matches, misses, false positives
 - `EvalScoreSummary` — aggregate scores across all tests
 
-### L2 Benchmark
+### Ground Truth
 
-- `runL2Benchmark()` — run L2 interpretation benchmark across a synthetic dataset
-- `buildL2Dataset()` — construct a benchmark dataset of test cases
-- `printBenchmarkResult()` — format benchmark results for display
-
-### Calibration
-
-- `computeCalibration()` — compute calibration scores for model interpretations against expected labels
-- `ExpectedInterpretation` — expected interpretation for a calibration case
-
-### L3 Ground Truth
-
-- `validateAgainstGroundTruth()` — validate L1 events against L3 outcome labels
+- `validateAgainstGroundTruth()` — validate events against outcome labels
 - `GROUND_TRUTH_LABELS` — built-in ground truth labels
 - `getGroundTruthById()` / `getGroundTruthForPage()` — lookup helpers
-- `OutcomeLabel` — L3 ground truth label type
+- `OutcomeLabel` — ground truth label type
 - `L3ValidationResult` / `L3ValidationSummary` — validation result types
 
-## License
+```ts
+import { createEvalHarness, validateAgainstGroundTruth } from "@var-ia/eval";
+```
 
-AGPL-3.0
-
-[Varia](https://github.com/var-ia/var-ia) · [Docs](https://github.com/var-ia/varia-docs)
+[Varia](https://github.com/var-ia/var-ia) · [Docs](https://github.com/var-ia/varia-docs) · [npm](https://www.npmjs.com/package/@var-ia/eval)
