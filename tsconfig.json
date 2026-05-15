@@ -1,5 +1,8 @@
 {
   "files": [],
+  "compilerOptions": {
+    "skipLibCheck": true
+  },
   "references": [
     { "path": "packages/evidence-graph" },
     { "path": "packages/ingestion" },

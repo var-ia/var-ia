@@ -1,15 +1,31 @@
-import { createEvalHarness, GROUND_TRUTH_LABELS, validateAgainstGroundTruth } from "@refract-org/eval";
 import type { EvidenceEvent } from "@refract-org/evidence-graph";
 import { runAnalyze } from "./analyze.js";
 
+type EvalModule = any;
+
+async function loadEval(): Promise<EvalModule> {
+  try {
+    return await import("@refract-org/eval") as EvalModule;
+  } catch {
+    throw new Error("eval command requires @refract-org/eval.\nInstall it: bun add @refract-org/eval");
+  }
+}
+
 export async function runEval(pageTitleOverride?: string, groundTruthPath?: string): Promise<void> {
+  const mod = await loadEval();
+
   if (groundTruthPath) {
-    await runGroundTruth(groundTruthPath);
+    await runGroundTruth(groundTruthPath, mod.validateAgainstGroundTruth, mod.GROUND_TRUTH_LABELS);
     return;
   }
 
-  const harness = createEvalHarness();
-  const testCases = harness.benchmarkPages();
+  const harness = mod.createEvalHarness();
+  const testCases = harness.benchmarkPages() as Array<{
+    id: string;
+    pageTitle: string;
+    description: string;
+    expectedEvents: { description: string }[];
+  }>;
 
   const filtered = pageTitleOverride ? testCases.filter((t) => t.pageTitle === pageTitleOverride) : testCases;
 
@@ -34,7 +50,7 @@ export async function runEval(pageTitleOverride?: string, groundTruthPath?: stri
         precision: 0,
         eventCount: { expected: test.expectedEvents.length, actual: 0 },
         matches: [],
-        misses: test.expectedEvents.map((e) => ({ expected: e })),
+        misses: test.expectedEvents.map((e: { description: string }) => ({ expected: e })),
         falsePositives: [],
       });
     }
@@ -46,7 +62,13 @@ export async function runEval(pageTitleOverride?: string, groundTruthPath?: stri
   console.log(`Overall precision: ${(summary.overallPrecision * 100).toFixed(1)}%`);
 }
 
-async function runGroundTruth(path: string): Promise<void> {
+async function runGroundTruth(
+  path: string,
+  validateAgainstGroundTruth: (...args: unknown[]) => {
+    perOutcome: { outcomeId: string; passed: boolean; precision: number; recall: number; matchedEvents: unknown[] }[];
+  },
+  GROUND_TRUTH_LABELS: unknown[],
+): Promise<void> {
   let labels = GROUND_TRUTH_LABELS;
 
   if (path !== "builtin") {
@@ -54,18 +76,18 @@ async function runGroundTruth(path: string): Promise<void> {
       const { readFileSync } = await import("node:fs");
       const raw = readFileSync(path, "utf-8");
       labels = JSON.parse(raw);
-      console.log(`Loaded ${labels.length} ground truth labels from ${path}`);
+      console.log(`Loaded ${(labels as unknown[]).length} ground truth labels from ${path}`);
     } catch (err) {
       console.error(`Failed to load ground truth from ${path}: ${(err as Error).message}`);
       process.exit(1);
     }
   } else {
-    console.log(`Using ${labels.length} built-in ground truth labels.\n`);
+    console.log(`Using ${(labels as unknown[]).length} built-in ground truth labels.\n`);
   }
 
   const allEvents: Array<{ outcomeId: string; events: EvidenceEvent[] }> = [];
 
-  for (const label of labels) {
+  for (const label of labels as Array<{ id: string; pageTitle: string; description: string }>) {
     console.log(`[${label.id}] ${label.description}...`);
     try {
       const { events } = await runAnalyze(label.pageTitle, "detailed");
@@ -77,7 +99,7 @@ async function runGroundTruth(path: string): Promise<void> {
     }
   }
 
-  const allResults = labels.map((label) => {
+  const allResults = (labels as Array<{ id: string }>).map((label) => {
     const entry = allEvents.find((e) => e.outcomeId === label.id);
     return validateAgainstGroundTruth([label], entry?.events ?? []);
   });

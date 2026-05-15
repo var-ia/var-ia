@@ -23,7 +23,7 @@ jobs:
 
       - name: Publish packages
         run: |
-          for pkg in packages/evidence-graph packages/ingestion packages/analyzers packages/cli; do
+          for pkg in packages/evidence-graph packages/ingestion packages/analyzers packages/cli packages/eval; do
             echo "Publishing $pkg..."
             cd $pkg
             bun publish --access public --provenance --no-git-checks
