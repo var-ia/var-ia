@@ -10,7 +10,7 @@ export const GROUND_TRUTH_LABELS: OutcomeLabel[] = [
     resolution: "keep",
     referenceUrl:
       "https://en.wikipedia.org/wiki/Talk:COVID-19_vaccine_mandates_in_the_United_States/Archive_1#RFC_on_merger",
-    expectedEventTypes: ["claim_first_seen", "revert_detected"],
+    expectedEventTypes: ["sentence_first_seen", "revert_detected"],
     expectedSection: "body",
   },
   {
@@ -22,7 +22,7 @@ export const GROUND_TRUTH_LABELS: OutcomeLabel[] = [
     observedAt: "2021-11-20T00:00:00Z",
     resolution: "merge",
     referenceUrl: "https://starwars.fandom.com/wiki/Talk:Darth_Vader?oldid=12345",
-    expectedEventTypes: ["section_reorganized", "claim_removed"],
+    expectedEventTypes: ["section_reorganized", "sentence_removed"],
     expectedSection: "(lead)",
   },
   {
@@ -56,7 +56,7 @@ export const GROUND_TRUTH_LABELS: OutcomeLabel[] = [
     observedAt: "2022-05-10T00:00:00Z",
     resolution: "delete",
     referenceUrl: "https://en.wikipedia.org/wiki/Talk:CRISPR_gene_editing/Archive_2#Safety_section",
-    expectedEventTypes: ["section_reorganized", "claim_removed"],
+    expectedEventTypes: ["section_reorganized", "sentence_removed"],
     expectedSection: "",
   },
 ];

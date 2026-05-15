@@ -169,11 +169,9 @@ async function handleCallTool(
         to,
         since,
         false,
-        undefined,
         apiUrl,
         undefined,
         undefined,
-        false,
         auth,
       );
 
@@ -215,7 +213,7 @@ async function handleCallTool(
       };
 
       try {
-        await runClaim(page, text, false, undefined, apiUrl, undefined, auth);
+        await runClaim(page, text, false, apiUrl, undefined, auth);
       } finally {
         console.log = origLog;
       }
@@ -236,11 +234,9 @@ async function handleCallTool(
         undefined,
         undefined,
         false,
-        undefined,
         apiUrl,
         undefined,
         undefined,
-        false,
         auth,
       );
 
@@ -280,11 +276,9 @@ async function handleCallTool(
             undefined,
             undefined,
             false,
-            undefined,
             apiUrl,
             undefined,
             undefined,
-            false,
             auth,
           );
           results.push({ page, newEvents: events.length, ok: true });

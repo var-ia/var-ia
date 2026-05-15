@@ -1,17 +1,14 @@
-import { classifyClaimChange, stripWikitext } from "@var-ia/analyzers";
-import type { ClaimState, EvidenceEvent, Revision } from "@var-ia/evidence-graph";
+import { stripWikitext } from "@var-ia/analyzers";
+import type { ClaimState, Revision } from "@var-ia/evidence-graph";
 import { createClaimIdentity } from "@var-ia/evidence-graph";
 import type { AuthConfig, RevisionOptions } from "@var-ia/ingestion";
 import { MediaWikiClient } from "@var-ia/ingestion";
-import type { ModelConfig } from "@var-ia/interpreter";
-import { createAdapter } from "@var-ia/interpreter";
 import { loadCachedRevisions, loadLatestCachedTimestamp, saveRevisions } from "./cache.js";
 
 export async function runClaim(
   pageTitle: string,
   claimText: string,
   useCache = false,
-  modelConfig?: ModelConfig,
   apiUrl?: string,
   cacheDir?: string,
   auth?: AuthConfig,
@@ -76,7 +73,7 @@ export async function runClaim(
 
   for (const rev of revs) {
     const plainText = stripWikitext(rev.content);
-    const foundText = fuzzyFindClaim(claimText, plainText);
+    const foundText = fuzzyFindText(claimText, plainText);
 
     if (foundText) {
       if (currentState === "absent") {
@@ -88,11 +85,8 @@ export async function runClaim(
         const oldLen = lastKnownText.length;
         const newLen = foundText.length;
         if (Math.abs(newLen - oldLen) > oldLen * 0.2) {
-          const section = findSectionForText(rev.content, foundText);
-          const prevSection = variants.length > 0 ? variants[variants.length - 1].section : section;
-          const changeType = classifyClaimChange(lastKnownText, foundText, prevSection, section);
           currentState = "contested";
-          console.log(`[${rev.timestamp}] ${changeType.toUpperCase()} (rev ${rev.revId})`);
+          console.log(`[${rev.timestamp}] TEXT CHANGED (rev ${rev.revId})`);
           console.log(`  State: → contested`);
           console.log(`  Previous: "${lastKnownText.slice(0, 150)}"`);
           console.log(`  Current:  "${foundText.slice(0, 150)}"`);
@@ -122,38 +116,6 @@ export async function runClaim(
     return;
   }
 
-  if (modelConfig && variants.length >= 2) {
-    const adapter = createAdapter(modelConfig);
-    const comparisonEvents: EvidenceEvent[] = [];
-    for (let i = 1; i < variants.length; i++) {
-      comparisonEvents.push({
-        eventType: "claim_reworded",
-        fromRevisionId: variants[i - 1].revisionId,
-        toRevisionId: variants[i].revisionId,
-        section: variants[i].section,
-        before: variants[i - 1].text,
-        after: variants[i].text,
-        deterministicFacts: [{ fact: "claim_variant_compared", detail: `pair=${i}` }],
-        layer: "observed",
-        timestamp: variants[i].observedAt,
-      });
-    }
-
-    if (comparisonEvents.length > 0) {
-      console.log(
-        `\nSemantically comparing ${comparisonEvents.length} claim variant pairs with ${modelConfig.provider}...`,
-      );
-      const interpreted = await adapter.interpret(comparisonEvents);
-      for (const ie of interpreted) {
-        const conf = ie.modelInterpretation.confidence;
-        const label = conf >= 0.7 ? "similar" : conf >= 0.4 ? "moderate change" : "substantial change";
-        console.log(
-          `[rev ${ie.fromRevisionId}→${ie.toRevisionId}] ${label} (confidence: ${conf.toFixed(2)}) — ${ie.modelInterpretation.semanticChange}`,
-        );
-      }
-    }
-  }
-
   if (currentState !== "absent" && currentState !== "deleted") {
     currentState = "stabilizing";
   }
@@ -169,7 +131,7 @@ export async function runClaim(
   );
 }
 
-export function fuzzyFindClaim(claimText: string, plainText: string, preNormalized?: string): string {
+export function fuzzyFindText(claimText: string, plainText: string, preNormalized?: string): string {
   const normalized = claimText.toLowerCase().replace(/\s+/g, " ").trim();
   const searchText = preNormalized ?? plainText.toLowerCase().replace(/\s+/g, " ");
 

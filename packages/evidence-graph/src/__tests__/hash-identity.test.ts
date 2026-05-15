@@ -104,7 +104,7 @@ describe("createEventIdentity", () => {
   });
 
   it("differs for different event types", () => {
-    const a = createEventIdentity({ ...base, eventType: "claim_removed" });
+    const a = createEventIdentity({ ...base, eventType: "sentence_removed" });
     const b = createEventIdentity(base);
     expect(a).not.toBe(b);
   });

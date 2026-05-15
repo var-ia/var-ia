@@ -27,11 +27,11 @@ describe("validateAgainstGroundTruth", () => {
       observedAt: "2022-01-01T00:00:00Z",
       resolution: "keep",
       referenceUrl: "https://en.wikipedia.org/wiki/Talk:Test",
-      expectedEventTypes: ["section_reorganized", "claim_removed"],
+      expectedEventTypes: ["section_reorganized", "sentence_removed"],
       expectedSection: "",
     };
 
-    const events = [makeEvent("section_reorganized"), makeEvent("claim_removed")];
+    const events = [makeEvent("section_reorganized"), makeEvent("sentence_removed")];
 
     const result = validateAgainstGroundTruth([outcome], events);
 
@@ -50,7 +50,7 @@ describe("validateAgainstGroundTruth", () => {
       observedAt: "2022-01-01T00:00:00Z",
       resolution: "delete",
       referenceUrl: "https://en.wikipedia.org/wiki/Talk:Test",
-      expectedEventTypes: ["claim_removed", "section_reorganized"],
+      expectedEventTypes: ["sentence_removed", "section_reorganized"],
     };
 
     const result = validateAgainstGroundTruth([outcome], []);

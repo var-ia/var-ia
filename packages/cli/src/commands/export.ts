@@ -2,7 +2,6 @@ import { createHash } from "node:crypto";
 import type { EvidenceEvent, PolicySignal, Report, Revision } from "@var-ia/evidence-graph";
 import { createEventIdentity, createReplayManifest } from "@var-ia/evidence-graph";
 import type { AuthConfig } from "@var-ia/ingestion";
-import type { ModelConfig } from "@var-ia/interpreter";
 import { runAnalyze } from "./analyze.js";
 
 interface EvidenceBundle {
@@ -18,7 +17,6 @@ interface EvidenceBundle {
 export async function runExport(
   pageTitle: string,
   format: string,
-  modelConfig?: ModelConfig,
   apiUrl?: string,
   bundle?: boolean,
   auth?: AuthConfig,
@@ -32,11 +30,9 @@ export async function runExport(
       undefined,
       undefined,
       false,
-      modelConfig,
       apiUrl,
       undefined,
       undefined,
-      false,
       auth,
     );
     const bundleData = buildBundle(pageTitle, events, revisions);
@@ -52,11 +48,9 @@ export async function runExport(
       undefined,
       undefined,
       false,
-      modelConfig,
       apiUrl,
       undefined,
       undefined,
-      false,
       auth,
     );
     const manifestData = createReplayManifest({
@@ -76,11 +70,9 @@ export async function runExport(
     undefined,
     undefined,
     false,
-    modelConfig,
     apiUrl,
     undefined,
     undefined,
-    false,
     auth,
   );
 

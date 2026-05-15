@@ -3,13 +3,9 @@
 export type EvidenceLayer = "observed" | "policy_coded" | "model_interpretation" | "speculative" | "unknown";
 
 export type EventType =
-  | "claim_first_seen"
-  | "claim_removed"
-  | "claim_softened"
-  | "claim_strengthened"
-  | "claim_reworded"
-  | "claim_moved"
-  | "claim_reintroduced"
+  | "sentence_first_seen"
+  | "sentence_removed"
+  | "sentence_reintroduced"
   | "citation_added"
   | "citation_removed"
   | "citation_replaced"

@@ -128,7 +128,7 @@ describe("wikidataEntityToEvents", () => {
 
     const events = wikidataEntityToEvents(entity, "Test_Page");
     expect(events.length).toBeGreaterThanOrEqual(1);
-    expect(events[0].eventType).toBe("claim_first_seen");
+    expect(events[0].eventType).toBe("sentence_first_seen");
     expect(events[0].deterministicFacts[0].fact).toBe("wikidata_entity_linked");
   });
 });

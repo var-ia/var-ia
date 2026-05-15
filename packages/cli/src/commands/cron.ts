@@ -84,11 +84,9 @@ export async function runCron(
       undefined,
       fromTimestamp,
       false,
-      undefined,
       apiUrl,
       undefined,
       undefined,
-      false,
       auth,
     );
 

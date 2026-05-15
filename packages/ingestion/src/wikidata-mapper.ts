@@ -92,7 +92,7 @@ export function wikidataEntityToEvents(entity: WikidataEntity, _pageTitle: strin
   const instanceOf = entity.instanceOf.join(", ");
 
   events.push({
-    eventType: "claim_first_seen",
+    eventType: "sentence_first_seen",
     fromRevisionId: 0,
     toRevisionId: 0,
     section: "",

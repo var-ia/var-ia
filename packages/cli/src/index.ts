@@ -1,5 +1,4 @@
 import type { AuthConfig } from "@var-ia/ingestion";
-import type { ModelConfig } from "@var-ia/interpreter";
 import { Command } from "commander";
 import { runAnalyze } from "./commands/analyze.js";
 import { runClaim } from "./commands/claim.js";
@@ -13,16 +12,6 @@ import { runMcpServer } from "./commands/mcp.js";
 import { runVisualize } from "./commands/visualize.js";
 import { runWatch } from "./commands/watch.js";
 import { bold, cyan, dim, formatEvent, gray, green, heading, red, success } from "./render.js";
-
-function withModel(cmd: Command): Command {
-  return cmd
-    .option("-m, --model <provider>", "model provider: openai, anthropic, deepseek, local, byok")
-    .option("--model-api-key <key>", "API key for model provider")
-    .option("--model-name <name>", "model name override")
-    .option("--model-endpoint <url>", "API endpoint override")
-    .option("--temperature <n>", "model temperature (default: 0.1)", parseFloat)
-    .option("--prompt <text>", "override system prompt for interpretation");
-}
 
 function withGlobal(cmd: Command): Command {
   return cmd
@@ -45,18 +34,6 @@ function extractAuth(opts: Record<string, unknown>): AuthConfig | undefined {
   return { apiKey, apiUser, apiPassword, oauthClientId, oauthClientSecret };
 }
 
-function extractModel(opts: Record<string, unknown>): ModelConfig | undefined {
-  if (!opts.model) return undefined;
-  return {
-    provider: opts.model as ModelConfig["provider"],
-    apiKey: opts.modelApiKey as string | undefined,
-    model: opts.modelName as string | undefined,
-    endpoint: opts.modelEndpoint as string | undefined,
-    temperature: opts.temperature as number | undefined,
-    systemPrompt: opts.prompt as string | undefined,
-  };
-}
-
 const program = new Command();
 
 program
@@ -74,13 +51,10 @@ const analyzeCmd = program
   .option("--to <revId>", "end revision ID")
   .option("--since <timestamp>", "re-observe from ISO timestamp")
   .option("-c, --cache", "cache revisions in SQLite (~/.wikihistory/varia.db)")
-  .option("--pages-file <path>", "batch file of page titles (one per line)")
-  .option("--router", "use local open-weight models via Ollama");
-withModel(analyzeCmd);
+  .option("--pages-file <path>", "batch file of page titles (one per line)");
 withGlobal(analyzeCmd);
 analyzeCmd.action(async (page, opts) => {
   const pagesFile = opts.pagesFile as string | undefined;
-  const modelConfig = extractModel(opts);
   const auth = extractAuth(opts);
 
   if (pagesFile) {
@@ -91,11 +65,9 @@ analyzeCmd.action(async (page, opts) => {
       opts.to ? parseInt(opts.to as string, 10) : undefined,
       opts.since as string | undefined,
       !!opts.cache,
-      modelConfig,
       opts.api as string | undefined,
       pagesFile,
       opts.cacheDir as string | undefined,
-      !!opts.router,
       auth,
     );
     console.log(`\n${success(`Batch complete. ${result.events.length} events total.`)}`);
@@ -115,11 +87,9 @@ analyzeCmd.action(async (page, opts) => {
     opts.to ? parseInt(opts.to as string, 10) : undefined,
     opts.since as string | undefined,
     !!opts.cache,
-    modelConfig,
     opts.api as string | undefined,
     undefined,
     opts.cacheDir as string | undefined,
-    !!opts.router,
     auth,
   );
 
@@ -144,7 +114,6 @@ const claimCmd = program
   .description("track a specific claim across revisions")
   .option("-t, --text <text>", "claim text to track (required)")
   .option("-c, --cache", "cache revisions in SQLite");
-withModel(claimCmd);
 withGlobal(claimCmd);
 claimCmd.action(async (page, opts) => {
   const claimText = opts.text as string | undefined;
@@ -156,7 +125,6 @@ claimCmd.action(async (page, opts) => {
     page,
     claimText,
     !!opts.cache,
-    extractModel(opts),
     opts.api as string | undefined,
     opts.cacheDir as string | undefined,
     extractAuth(opts),
@@ -170,13 +138,11 @@ const exportCmd = program
   .option("-f, --format <format>", "output format: json, csv, ndjson", "json")
   .option("--bundle", "export as signed evidence bundle with SHA-256 hash")
   .option("--manifest", "export as replay manifest listing all hashes");
-withModel(exportCmd);
 withGlobal(exportCmd);
 exportCmd.action(async (page, opts) => {
   await runExport(
     page,
     opts.format as string,
-    extractModel(opts),
     opts.api as string | undefined,
     !!opts.bundle,
     extractAuth(opts),
@@ -264,7 +230,6 @@ const diffCmd = program
   .option("--wiki-e <url>", "fifth wiki API URL (optional)")
   .option("--wiki-f <url>", "sixth wiki API URL (optional)")
   .option("-d, --depth <depth>", "analysis depth: brief, detailed, forensic", "detailed");
-withModel(diffCmd);
 diffCmd.action(async (topic, opts) => {
   const wikiUrls = [
     opts.wikiA as string,
@@ -275,7 +240,7 @@ diffCmd.action(async (topic, opts) => {
     ...(opts.wikiF ? [opts.wikiF as string] : []),
   ];
 
-  const result = await runDiff(topic, wikiUrls, opts.depth as string, extractModel(opts));
+  const result = await runDiff(topic, wikiUrls, opts.depth as string);
   printUserFacingDiff(result);
 });
 
@@ -336,11 +301,9 @@ const evalCmd = program
   .command("eval")
   .description("run evaluation harness against benchmark pages or ground truth")
   .option("--page <title>", "run only benchmarks for a specific page")
-  .option("--ground-truth <path|builtin>", "validate against L3 ground truth labels")
-  .option("--l2", "run L2 quality benchmarks against synthetic dataset");
-withModel(evalCmd);
+  .option("--ground-truth <path|builtin>", "validate against L3 ground truth labels");
 evalCmd.action(async (opts) => {
-  await runEval(opts.page as string | undefined, opts.groundTruth as string | undefined, !!opts.l2, extractModel(opts));
+  await runEval(opts.page as string | undefined, opts.groundTruth as string | undefined);
 });
 
 // ── mcp ──

@@ -1,6 +1,5 @@
 import { extractCategories, extractWikilinks } from "@var-ia/analyzers";
 import type { EvidenceEvent } from "@var-ia/evidence-graph";
-import type { ModelConfig } from "@var-ia/interpreter";
 import { runAnalyze } from "./analyze.js";
 
 interface WikiSummary {
@@ -48,12 +47,10 @@ export async function runDiff(
   topic: string,
   wikiUrls: string[],
   depth?: string,
-  modelConfig?: ModelConfig,
 ): Promise<DiffResult> {
   console.log(`Diffing "${topic}" across ${wikiUrls.length} wikis...\n`);
 
   const resolvedDepth = depth ?? "detailed";
-  const sharedConfig = modelConfig ? { ...modelConfig } : undefined;
 
   const labels =
     wikiUrls.length <= 26 ? wikiUrls.map((_, i) => String.fromCharCode(65 + i)) : wikiUrls.map((_, i) => `W${i + 1}`);
@@ -62,7 +59,7 @@ export async function runDiff(
     console.log(`Analyzing wiki ${labels[i]}: ${wikiUrls[i]}`);
   }
 
-  const results = await Promise.all(wikiUrls.map((url) => buildSummary(topic, url, resolvedDepth, sharedConfig)));
+  const results = await Promise.all(wikiUrls.map((url) => buildSummary(topic, url, resolvedDepth)));
   const summaries = results.map((r) => r.summary);
   const allEvents = results.map((r) => r.events);
 
@@ -85,7 +82,6 @@ async function buildSummary(
   topic: string,
   apiUrl: string,
   depth: string,
-  modelConfig?: ModelConfig,
 ): Promise<{ summary: WikiSummary; events: EvidenceEvent[] }> {
   const { events, revisions } = await runAnalyze(
     topic,
@@ -94,7 +90,6 @@ async function buildSummary(
     undefined,
     undefined,
     false,
-    modelConfig,
     apiUrl,
   );
 

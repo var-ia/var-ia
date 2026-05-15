@@ -3,23 +3,15 @@ import type { AuthConfig } from "@var-ia/ingestion";
 import { runAnalyze } from "./analyze.js";
 
 const CLAIM_EVENT_TYPES = new Set([
-  "claim_first_seen",
-  "claim_removed",
-  "claim_softened",
-  "claim_strengthened",
-  "claim_reworded",
-  "claim_moved",
-  "claim_reintroduced",
+  "sentence_first_seen",
+  "sentence_removed",
+  "sentence_reintroduced",
 ]);
 
 const EVENT_COLORS: Record<string, string> = {
-  claim_first_seen: "#4caf50",
-  claim_reintroduced: "#8bc34a",
-  claim_removed: "#f44336",
-  claim_softened: "#ffc107",
-  claim_strengthened: "#ff9800",
-  claim_reworded: "#2196f3",
-  claim_moved: "#9c27b0",
+  sentence_first_seen: "#4caf50",
+  sentence_reintroduced: "#8bc34a",
+  sentence_removed: "#f44336",
   citation_added: "#00bcd4",
   citation_removed: "#e91e63",
   citation_replaced: "#ff5722",
@@ -39,11 +31,9 @@ export async function runVisualize(
     undefined,
     undefined,
     false,
-    undefined,
     apiUrl,
     undefined,
     undefined,
-    false,
     auth,
   );
 

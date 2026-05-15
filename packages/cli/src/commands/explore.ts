@@ -4,13 +4,9 @@ import type { AuthConfig } from "@var-ia/ingestion";
 import { runAnalyze } from "./analyze.js";
 
 const EVENT_COLORS: Record<string, string> = {
-  claim_first_seen: "#4caf50",
-  claim_reintroduced: "#8bc34a",
-  claim_removed: "#f44336",
-  claim_softened: "#ffc107",
-  claim_strengthened: "#ff9800",
-  claim_reworded: "#2196f3",
-  claim_moved: "#9c27b0",
+  sentence_first_seen: "#4caf50",
+  sentence_reintroduced: "#8bc34a",
+  sentence_removed: "#f44336",
   citation_added: "#00bcd4",
   citation_removed: "#e91e63",
   citation_replaced: "#ff5722",
@@ -36,11 +32,9 @@ export async function runExplore(
     undefined,
     undefined,
     false,
-    undefined,
     apiUrl,
     undefined,
     undefined,
-    false,
     auth,
   );
 

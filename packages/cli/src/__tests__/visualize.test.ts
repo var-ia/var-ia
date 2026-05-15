@@ -14,7 +14,7 @@ function makeRev(id: number, ts: string): Revision {
 
 function makeEvent(overrides: Partial<EvidenceEvent> = {}): EvidenceEvent {
   return {
-    eventType: "claim_first_seen",
+    eventType: "sentence_first_seen",
     fromRevisionId: 1,
     toRevisionId: 2,
     section: "lead",
@@ -42,7 +42,7 @@ describe("visualize command", () => {
     expect(result).toContain("graph LR");
     expect(result).toContain("rev 1");
     expect(result).toContain("rev 2");
-    expect(result).toContain("claim_first_seen");
+    expect(result).toContain("sentence_first_seen");
   });
 
   it("generates dot output", async () => {
@@ -79,7 +79,7 @@ describe("visualize command", () => {
 
   it("shows only claim events by default", async () => {
     const revisions = [makeRev(1, "2024-01-01T00:00:00Z"), makeRev(2, "2024-01-02T00:00:00Z")];
-    const events = [makeEvent({ eventType: "citation_added" }), makeEvent({ eventType: "claim_first_seen" })];
+    const events = [makeEvent({ eventType: "citation_added" }), makeEvent({ eventType: "sentence_first_seen" })];
     vi.mocked(runAnalyze).mockResolvedValue({ events, revisions });
 
     const output: string[] = [];
@@ -88,7 +88,7 @@ describe("visualize command", () => {
     await runVisualize("Earth", "mermaid");
 
     const result = output.join("\n");
-    expect(result).toContain("claim_first_seen");
+    expect(result).toContain("sentence_first_seen");
     expect(result).not.toContain("citation_added");
   });
 

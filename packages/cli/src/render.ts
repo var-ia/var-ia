@@ -26,7 +26,7 @@ export function heading(text: string): string {
 export function eventIcon(eventType: string): string {
   if (eventType.startsWith("citation_")) return yellow("◆");
   if (eventType.startsWith("template_")) return cyan("◇");
-  if (eventType.startsWith("claim_")) return green("●");
+  if (eventType.startsWith("sentence_")) return green("●");
   if (eventType === "revert_detected") return red("◉");
   if (eventType.startsWith("section_")) return gray("○");
   if (eventType.startsWith("category_")) return dim("△");
@@ -44,13 +44,9 @@ export function eventLabel(eventType: string): string {
     template_removed: "template removed",
     template_parameter_changed: "param changed",
     section_reorganized: "section changed",
-    claim_first_seen: "claim introduced",
-    claim_removed: "claim removed",
-    claim_reintroduced: "claim reintroduced",
-    claim_reworded: "claim reworded",
-    claim_softened: "claim softened",
-    claim_strengthened: "claim strengthened",
-    claim_moved: "claim moved",
+    sentence_first_seen: "sentence introduced",
+    sentence_removed: "sentence removed",
+    sentence_reintroduced: "sentence reintroduced",
     wikilink_added: "wikilink added",
     wikilink_removed: "wikilink removed",
     category_added: "category added",

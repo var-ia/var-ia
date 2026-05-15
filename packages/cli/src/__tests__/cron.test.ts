@@ -13,7 +13,7 @@ import { runCron } from "../commands/cron.js";
 
 function makeEvent(overrides: Partial<EvidenceEvent> = {}): EvidenceEvent {
   return {
-    eventType: "claim_first_seen",
+    eventType: "sentence_first_seen",
     fromRevisionId: 1,
     toRevisionId: 2,
     section: "lead",
@@ -121,8 +121,6 @@ describe("cron command", () => {
       undefined,
       undefined,
       undefined,
-      undefined,
-      false,
       undefined,
     );
 

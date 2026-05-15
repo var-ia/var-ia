@@ -5,9 +5,7 @@ import type { CitationRef, Template, TemplateType } from "@var-ia/analyzers";
 import {
   buildPageMoveEvents,
   buildParamChangeEvents,
-  buildSectionLineage,
   citationTracker,
-  classifyClaimChange,
   correlateTalkRevisions,
   diffCategories,
   diffObservations,
@@ -22,10 +20,9 @@ import {
 import type { DeterministicFact, EvidenceEvent, EvidenceLayer, Revision, Section } from "@var-ia/evidence-graph";
 import type { AuthConfig, RevisionOptions } from "@var-ia/ingestion";
 import { MediaWikiClient } from "@var-ia/ingestion";
-import type { ModelConfig } from "@var-ia/interpreter";
-import { createAdapter, ModelRouter } from "@var-ia/interpreter";
+
 import { loadCachedRevisions, loadLatestCachedTimestamp, saveRevisions } from "./cache.js";
-import { buildSectionCharMap, findSectionForText, fuzzyFindClaim } from "./claim.js";
+import { buildSectionCharMap, findSectionForText, fuzzyFindText } from "./claim.js";
 
 interface ParsedContent {
   sections: Section[];
@@ -74,27 +71,13 @@ export async function runAnalyze(
   toRevId?: number,
   fromTimestamp?: string,
   useCache = false,
-  modelConfig?: ModelConfig,
   apiUrl?: string,
   pagesFile?: string,
   cacheDir?: string,
-  useRouter = false,
   auth?: AuthConfig,
 ): Promise<{ events: EvidenceEvent[]; revisions: Revision[] }> {
   if (pagesFile) {
-    return runBatch(
-      pagesFile,
-      depth,
-      fromRevId,
-      toRevId,
-      fromTimestamp,
-      useCache,
-      modelConfig,
-      apiUrl,
-      cacheDir,
-      useRouter,
-      auth,
-    );
+    return runBatch(pagesFile, depth, fromRevId, toRevId, fromTimestamp, useCache, apiUrl, cacheDir, auth);
   }
   const client = new MediaWikiClient(apiUrl ? { apiUrl, auth } : auth ? { auth } : undefined);
   console.log(`Analyzing "${pageTitle}" at depth: ${depth}...`);
@@ -480,13 +463,13 @@ export async function runAnalyze(
     for (const sentence of afterSentences) {
       const trimmed = sentence.trim();
       if (!trimmed) continue;
-      const foundInBefore = fuzzyFindClaim(trimmed, beforePlain, beforeNorm);
+      const foundInBefore = fuzzyFindText(trimmed, beforePlain, beforeNorm);
       if (!foundInBefore) {
         const normalized = trimmed.toLowerCase().replace(/\s+/g, " ");
         const wasSeenBefore = allSeenSentences.has(normalized);
         const section = findSectionForText(after.content, trimmed, afterPlain, afterSecMap);
         events.push({
-          eventType: wasSeenBefore ? "claim_reintroduced" : "claim_first_seen",
+          eventType: wasSeenBefore ? "sentence_reintroduced" : "sentence_first_seen",
           fromRevisionId: before.revId,
           toRevisionId: after.revId,
           section,
@@ -496,52 +479,27 @@ export async function runAnalyze(
           layer: "observed",
           timestamp: after.timestamp,
         });
-      } else {
-        const oldLen = foundInBefore.length;
-        const newLen = trimmed.length;
-        if (Math.abs(newLen - oldLen) > oldLen * 0.2) {
-          const section = findSectionForText(after.content, trimmed, afterPlain, afterSecMap);
-          const beforeSection = findSectionForText(before.content, foundInBefore, beforePlain, beforeSecMap);
-          const changeType = classifyClaimChange(foundInBefore, trimmed, beforeSection, section);
-          events.push({
-            eventType:
-              changeType === "moved"
-                ? "claim_moved"
-                : changeType === "softened"
-                  ? "claim_softened"
-                  : changeType === "strengthened"
-                    ? "claim_strengthened"
-                    : "claim_reworded",
-            fromRevisionId: before.revId,
-            toRevisionId: after.revId,
-            section,
-            before: isBrief ? "" : foundInBefore,
-            after: isBrief ? "" : trimmed,
-            deterministicFacts: [
-              { fact: "claim_changed", detail: `change=${changeType} old_length=${oldLen} new_length=${newLen}` },
-              ...extraFacts,
-            ],
-            layer: "observed",
-            timestamp: after.timestamp,
-          });
-        }
       }
     }
 
-    for (const sentence of beforeSentences) {
+  // Sentence removal detection
+  // In-place sentence changes are not tracked — Varia observes appearance,
+  // disappearance, and reappearance, not directional semantic evolution.
+
+  for (const sentence of beforeSentences) {
       const trimmed = sentence.trim();
       if (!trimmed) continue;
-      const foundInAfter = fuzzyFindClaim(trimmed, afterPlain, afterNorm);
+      const foundInAfter = fuzzyFindText(trimmed, afterPlain, afterNorm);
       if (!foundInAfter) {
         const section = findSectionForText(before.content, trimmed, beforePlain, beforeSecMap);
         events.push({
-          eventType: "claim_removed",
+          eventType: "sentence_removed",
           fromRevisionId: before.revId,
           toRevisionId: after.revId,
           section,
           before: isBrief ? "" : trimmed,
           after: "",
-          deterministicFacts: [{ fact: "claim_removed", detail: `sentence_length=${trimmed.length}` }, ...extraFacts],
+          deterministicFacts: [{ fact: "sentence_removed", detail: `sentence_length=${trimmed.length}` }, ...extraFacts],
           layer: "observed",
           timestamp: after.timestamp,
         });
@@ -588,43 +546,7 @@ export async function runAnalyze(
     writeFileSync(obsFile, JSON.stringify(events, null, 2), "utf-8");
   }
 
-  if (modelConfig && events.length > 0) {
-    const adapter = createAdapter(modelConfig);
-    console.log(`Interpreting ${events.length} events with ${modelConfig.provider}...`);
-    const interpreted = await interpretWithLineage(events, sortedRevs, adapter.interpret.bind(adapter));
-    console.log("Interpretation complete.");
-    return { events: interpreted, revisions: sortedRevs };
-  }
-
-  if (useRouter && events.length > 0) {
-    const router = new ModelRouter();
-    console.log(`Interpreting ${events.length} events with local open-weight models...`);
-    const interpreted = await interpretWithLineage(events, sortedRevs, router.interpret.bind(router));
-    console.log("Interpretation complete.");
-    return { events: interpreted, revisions: sortedRevs };
-  }
-
   return { events, revisions: sortedRevs };
-}
-
-async function interpretWithLineage(
-  events: EvidenceEvent[],
-  sortedRevs: Revision[],
-  interpret: (events: EvidenceEvent[], lineage: Record<string, unknown>) => Promise<EvidenceEvent[]>,
-): Promise<EvidenceEvent[]> {
-  const sectionLineage = buildSectionLineage(sortedRevs);
-  const lineage = {
-    sectionLineages: sectionLineage.map((s) => ({
-      sectionName: s.sectionName,
-      events: s.events.map((e) => `${e.eventType} in rev ${e.revisionId}`),
-      isActive: s.isActive,
-    })),
-  };
-  const interpreted = await interpret(events, lineage);
-  for (let i = 0; i < interpreted.length; i++) {
-    interpreted[i].layer = events[i].layer;
-  }
-  return interpreted;
 }
 
 async function runBatch(
@@ -634,10 +556,8 @@ async function runBatch(
   toRevId?: number,
   fromTimestamp?: string,
   useCache = false,
-  modelConfig?: ModelConfig,
   apiUrl?: string,
   cacheDir?: string,
-  useRouter = false,
   auth?: AuthConfig,
 ): Promise<{ events: EvidenceEvent[]; revisions: Revision[] }> {
   const content = readFileSync(pagesFile, "utf-8");
@@ -658,20 +578,7 @@ async function runBatch(
       chunk.map(async (title, j) => {
         const idx = i + j + 1;
         console.log(`--- Page ${idx}/${titles.length}: ${title} ---`);
-        const { events } = await runAnalyze(
-          title,
-          depth,
-          fromRevId,
-          toRevId,
-          fromTimestamp,
-          useCache,
-          modelConfig,
-          apiUrl,
-          undefined,
-          cacheDir,
-          useRouter,
-          auth,
-        );
+        const { events } = await runAnalyze(title, depth, fromRevId, toRevId, fromTimestamp, useCache, apiUrl, undefined, cacheDir, auth);
         return { pageTitle: title, pageId: 0, eventCount: events.length, events };
       }),
     );
