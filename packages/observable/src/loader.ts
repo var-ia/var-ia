@@ -32,6 +32,6 @@ export class RefractLoader {
   }
 }
 
-export function sequentLoader(options: RefractLoaderOptions): RefractLoader {
+export function refractLoader(options: RefractLoaderOptions): RefractLoader {
   return new RefractLoader(options);
 }

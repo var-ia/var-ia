@@ -15,7 +15,7 @@ bun run examples/02-equivalent-to-wikiwho.ts
 | 01 | [claim-provenance.ts](01-claim-provenance.ts) | Track a specific sentence across revision history — first appearance, changes, and removal |
 | 02 | [equivalent-to-wikiwho.ts](02-equivalent-to-wikiwho.ts) | Token attribution vs. structured evidence with citation + template context |
 | 03 | [equivalent-to-ores.ts](03-equivalent-to-ores.ts) | Black-box ML scores vs. deterministic, reproducible edit classification with provenance |
-| 04 | [from-scratch-to-varia.ts](04-from-scratch-to-varia.ts) | The ~800 lines of brittle Wikipedia analysis code you don't need to write |
+| 04 | [from-scratch-to-refract.ts](04-from-scratch-to-refract.ts) | The ~800 lines of brittle Wikipedia analysis code you don't need to write |
 | 05 | [wikidata-editorial-depth.ts](05-wikidata-editorial-depth.ts) | Current claim state vs. full editorial history — sources tried, replaced, removed |
 
 ## Audience

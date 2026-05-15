@@ -29,7 +29,7 @@ export interface ClaimIdentity {
   pageId: number;
 }
 
-export interface ClaimVariant {
+export interface ClaimRefractnt {
   revisionId: number;
   text: string;
   section: string;
@@ -41,7 +41,7 @@ export interface ClaimLineage {
   firstSeenAt: string; // ISO 8601
   lastSeenRevisionId?: number;
   lastSeenAt?: string;
-  variants: ClaimVariant[];
+  variants: ClaimRefractnt[];
   mergeSourceIds?: string[];
   splitTargetIds?: string[];
   deprecatedAt?: string;

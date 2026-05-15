@@ -1,6 +1,6 @@
 # CLI Reference
 
-The `wikihistory` CLI is the primary entry point for running varia analyses.
+The `wikihistory` CLI is the primary entry point for running refract analyses.
 
 ## Commands
 

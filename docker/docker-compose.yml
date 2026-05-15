@@ -1,7 +1,7 @@
 services:
   mediawiki:
     image: mediawiki:1.42
-    container_name: sequent-mw
+    container_name: refract-mw
     expose:
       - "80"
     environment:
@@ -21,7 +21,7 @@ services:
 
   nginx-auth:
     image: nginx:alpine
-    container_name: sequent-mw-auth
+    container_name: refract-mw-auth
     ports:
       - "8081:80"
     volumes:

@@ -56,7 +56,7 @@ export async function runExport(
     );
     const manifestData = createReplayManifest({
       pageTitle,
-      analyzerVersions: { "var-ia": "0.3.1" },
+      analyzerVersions: { "refract": "0.3.1" },
       revisions,
       events,
     });

@@ -50,7 +50,7 @@ const analyzeCmd = program
   .option("--from <revId>", "start revision ID")
   .option("--to <revId>", "end revision ID")
   .option("--since <timestamp>", "re-observe from ISO timestamp")
-  .option("-c, --cache", "cache revisions in SQLite (~/.wikihistory/varia.db)")
+  .option("-c, --cache", "cache revisions in SQLite (~/.wikihistory/refract.db)")
   .option("--pages-file <path>", "batch file of page titles (one per line)");
 withGlobal(analyzeCmd);
 analyzeCmd.action(async (page, opts) => {

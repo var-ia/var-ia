@@ -102,7 +102,7 @@ Full output (330 events): [`docs/example-output.md`](./docs/example-output.md).
 | **Bun** (if installed) | `bunx @refract-org/cli analyze "Bitcoin"` |
 | **Docker** (prebuilt) | `docker run ghcr.io/refract-org/cli analyze "Bitcoin"` |
 | **Local install** | `bun add @refract-org/cli && wikihistory analyze "Bitcoin"` |
-| **Build from source** | `git clone https://github.com/refract-org/refract && cd varia && bun install && bun run build` |
+| **Build from source** | `git clone https://github.com/refract-org/refract && cd refract && bun install && bun run build` |
 
 ### Use individual packages
 
@@ -248,7 +248,7 @@ These repos extend the core engine:
 
 | Repo | Purpose |
 |------|---------|
-| [sequent-docs](https://github.com/refract-org/sequent-docs) | Public documentation site (quickstart, CLI, SDK, tutorials) |
-| [sequent-labs](https://github.com/refract-org/sequent-labs) | Experimental probes applying the engine to adjacent verticals |
-| [sequent-ui](https://github.com/refract-org/sequent-ui) | Standalone visualization — load JSONL, render timelines, diffs, citations |
-| [sequent-demo-data](https://github.com/refract-org/sequent-demo-data) | Safe, fictional datasets for the eval harness (no real PII or medical data) |
+| [refract-docs](https://github.com/refract-org/refract-docs) | Public documentation site (quickstart, CLI, SDK, tutorials) |
+| [refract-labs](https://github.com/refract-org/refract-labs) | Experimental probes applying the engine to adjacent verticals |
+| [refract-ui](https://github.com/refract-org/refract-ui) | Standalone visualization — load JSONL, render timelines, diffs, citations |
+| [refract-demo-data](https://github.com/refract-org/refract-demo-data) | Safe, fictional datasets for the eval harness (no real PII or medical data) |

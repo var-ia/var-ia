@@ -84,7 +84,7 @@ import { join } from "node:path";
 import type { ClaimObject, ClaimState, PropositionType, Revision } from "@refract-org/evidence-graph";
 import { Persistence } from "../index.js";
 
-const dbPath = join(tmpdir(), `varia-test-${Date.now()}.db`);
+const dbPath = join(tmpdir(), `refract-test-${Date.now()}.db`);
 
 function makeRev(revId: number, title = "Test", ts?: string): Revision {
   return {

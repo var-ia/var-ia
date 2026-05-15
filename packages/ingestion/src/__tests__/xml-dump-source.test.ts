@@ -61,7 +61,7 @@ const SAMPLE_ENTITIES = `<?xml version="1.0"?>
 
 describe("XmlDumpRevisionSource", () => {
   it("yields revisions for matching page title", async () => {
-    const dir = mkdtempSync(join(tmpdir(), "varia-xml-test-"));
+    const dir = mkdtempSync(join(tmpdir(), "refract-xml-test-"));
     const filePath = join(dir, "dump.xml");
     writeFileSync(filePath, SAMPLE_DUMP, "utf-8");
 
@@ -82,7 +82,7 @@ describe("XmlDumpRevisionSource", () => {
   });
 
   it("returns empty for non-existent page", async () => {
-    const dir = mkdtempSync(join(tmpdir(), "varia-xml-test-"));
+    const dir = mkdtempSync(join(tmpdir(), "refract-xml-test-"));
     const filePath = join(dir, "dump.xml");
     writeFileSync(filePath, SAMPLE_DUMP, "utf-8");
 
@@ -97,7 +97,7 @@ describe("XmlDumpRevisionSource", () => {
   });
 
   it("respects limit option", async () => {
-    const dir = mkdtempSync(join(tmpdir(), "varia-xml-test-"));
+    const dir = mkdtempSync(join(tmpdir(), "refract-xml-test-"));
     const filePath = join(dir, "dump.xml");
     writeFileSync(filePath, SAMPLE_DUMP, "utf-8");
 
@@ -113,7 +113,7 @@ describe("XmlDumpRevisionSource", () => {
   });
 
   it("respects timestamp filtering", async () => {
-    const dir = mkdtempSync(join(tmpdir(), "varia-xml-test-"));
+    const dir = mkdtempSync(join(tmpdir(), "refract-xml-test-"));
     const filePath = join(dir, "dump.xml");
     writeFileSync(filePath, SAMPLE_DUMP, "utf-8");
 
@@ -131,7 +131,7 @@ describe("XmlDumpRevisionSource", () => {
   });
 
   it("handles XML entities in title and content", async () => {
-    const dir = mkdtempSync(join(tmpdir(), "varia-xml-test-"));
+    const dir = mkdtempSync(join(tmpdir(), "refract-xml-test-"));
     const filePath = join(dir, "dump.xml");
     writeFileSync(filePath, SAMPLE_ENTITIES, "utf-8");
 

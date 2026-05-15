@@ -17,7 +17,7 @@ export type {
   ClaimLineage,
   ClaimObject,
   ClaimState,
-  ClaimVariant,
+  ClaimRefractnt,
   PropositionType,
 } from "./schemas/claim.js";
 export type {

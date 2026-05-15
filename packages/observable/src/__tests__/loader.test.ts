@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { RefractLoader, sequentLoader } from "../loader.js";
+import { RefractLoader, refractLoader } from "../loader.js";
 
 vi.mock("node:fs", () => ({
   readFileSync: vi.fn(),
@@ -51,7 +51,7 @@ describe("RefractLoader", () => {
     });
 
     it("opens SQLite database and queries tables", async () => {
-      const loader = new RefractLoader({ path: "/data/varia.db" });
+      const loader = new RefractLoader({ path: "/data/refract.db" });
       const result = await loader.load();
       expect(result).toHaveProperty("events");
       expect(result).toHaveProperty("revisions");
@@ -59,9 +59,9 @@ describe("RefractLoader", () => {
   });
 });
 
-describe("sequentLoader factory", () => {
+describe("refractLoader factory", () => {
   it("returns a RefractLoader instance", () => {
-    const loader = sequentLoader({ path: "/data/events.json" });
+    const loader = refractLoader({ path: "/data/events.json" });
     expect(loader).toBeInstanceOf(RefractLoader);
   });
 });

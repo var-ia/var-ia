@@ -1,4 +1,4 @@
-# Agent Instructions for varia
+# Agent Instructions for refract
 
 Refract is the open-source deterministic observation engine built and maintained
 by [NextConsensus](https://nextconsensus.com). It is domain-neutral

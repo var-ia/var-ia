@@ -13,7 +13,7 @@
  * This script shows the "from scratch" pipeline you're rebuilding
  * every time, then shows the Refract equivalent.
  *
- * Usage: bun run examples/04-from-scratch-to-varia.ts
+ * Usage: bun run examples/04-from-scratch-to-refract.ts
  */
 
 import { MediaWikiClient } from "@refract-org/ingestion";
