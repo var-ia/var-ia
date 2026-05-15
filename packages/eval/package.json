@@ -22,8 +22,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@var-ia/evidence-graph": "workspace:*",
-    "@var-ia/interpreter": "workspace:*"
+    "@var-ia/evidence-graph": "^0.2.1",
+    "@var-ia/interpreter": "^0.1.1"
   },
   "devDependencies": {}
 }

@@ -71,7 +71,7 @@ export async function runAnalyze(
   pageTitle: string,
   depth: string,
   fromRevId?: number,
-  _toRevId?: number,
+  toRevId?: number,
   fromTimestamp?: string,
   useCache = false,
   modelConfig?: ModelConfig,
@@ -86,7 +86,7 @@ export async function runAnalyze(
       pagesFile,
       depth,
       fromRevId,
-      _toRevId,
+      toRevId,
       fromTimestamp,
       useCache,
       modelConfig,
@@ -110,7 +110,7 @@ export async function runAnalyze(
       const latestTs = loadLatestCachedTimestamp(pageTitle, cacheDir);
       if (latestTs && !fromTimestamp && revisions.length < 500) {
         const deltaOpts: RevisionOptions = { direction: "newer", start: new Date(latestTs) };
-        if (_toRevId) deltaOpts.endRevId = _toRevId;
+        if (toRevId) deltaOpts.endRevId = toRevId;
         const newRevisions = await client.fetchRevisions(pageTitle, deltaOpts);
         const uniqueNew = newRevisions.filter((r) => !revisions.some((cr) => cr.revId === r.revId));
         if (uniqueNew.length > 0) {
@@ -133,10 +133,10 @@ export async function runAnalyze(
     } else if (fromRevId) {
       options.startRevId = fromRevId;
     }
-    if (_toRevId) {
-      options.endRevId = _toRevId;
+    if (toRevId) {
+      options.endRevId = toRevId;
     }
-    if (!fromTimestamp && !fromRevId && !_toRevId) {
+    if (!fromTimestamp && !fromRevId && !toRevId) {
       options.limit = 20;
     }
     revisions = await client.fetchRevisions(pageTitle, options);
