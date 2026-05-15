@@ -17,13 +17,13 @@ wikihistory analyze "Page" --api-key "$WIKI_API_KEY"
 
 ## Local storage
 
-When using `--cache`, revision content is persisted to `~/.wikihistory/sequent.db` (SQLite). This file contains full wikitext from every revision fetched. If you analyze private wikis, this database becomes a local copy of private content.
+When using `--cache`, revision content is persisted to `~/.wikihistory/refract.db` (SQLite). This file contains full wikitext from every revision fetched. If you analyze private wikis, this database becomes a local copy of private content.
 
 **Recommendation:** Don't use `--cache` with private wikis on shared machines, or configure `--cache-dir` to an encrypted volume.
 
 ## Network
 
-Sequent makes outbound HTTPS requests to:
+Refract makes outbound HTTPS requests to:
 - The configured MediaWiki API (`--api`)
 - Slack/email/webhook endpoints when notifications are configured (`--notify-*`)
 

@@ -35,4 +35,4 @@ bun add @var-ia/analyzers
 import { sectionDiffer, citationTracker, revertDetector } from "@var-ia/analyzers";
 ```
 
-[Sequent](https://github.com/var-ia/sequent) · [Docs](https://github.com/var-ia/sequent-docs) · [npm](https://www.npmjs.com/package/@var-ia/analyzers)
+[Refract](https://github.com/var-ia/sequent) · [Docs](https://github.com/var-ia/sequent-docs) · [npm](https://www.npmjs.com/package/@var-ia/analyzers)

@@ -1,2 +1,2 @@
-export type { SequentLoaderOptions } from "./loader.js";
-export { SequentLoader } from "./loader.js";
+export type { RefractLoaderOptions } from "./loader.js";
+export { RefractLoader } from "./loader.js";

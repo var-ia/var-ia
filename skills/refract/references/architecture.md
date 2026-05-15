@@ -1,6 +1,6 @@
 # Architecture
 
-Sequent separates computation into two layers. No layer's output contaminates another.
+Refract separates computation into two layers. No layer's output contaminates another.
 
 ## Layer 1: Deterministic
 
@@ -58,7 +58,7 @@ Wikipedia API
 
 ## Downstream consumption
 
-Domain-specific interpretation layers (e.g., NextConsensus) consume Sequent's event stream. They must:
+Domain-specific interpretation layers (e.g., NextConsensus) consume Refract's event stream. They must:
 
-- Never modify Sequent's event types or schemas
-- Attribute provenance: "deterministic observation from Sequent" vs. their own interpretation
+- Never modify Refract's event types or schemas
+- Attribute provenance: "deterministic observation from Refract" vs. their own interpretation

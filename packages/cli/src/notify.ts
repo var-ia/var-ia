@@ -48,7 +48,7 @@ function formatSlackMessage(deltas: DeltaNotification[]): string {
   });
 
   return [
-    `*Sequent Observation Report*`,
+    `*Refract Observation Report*`,
     `${deltas.length} page(s) changed`,
     "",
     ...lines,
@@ -72,7 +72,7 @@ async function sendSlackNotification(webhookUrl: string, deltas: DeltaNotificati
 }
 
 async function sendEmailNotification(deltas: DeltaNotification[]): Promise<void> {
-  const subject = `Sequent: ${deltas.length} page(s) changed`;
+  const subject = `Refract: ${deltas.length} page(s) changed`;
   const body = deltas
     .map((d) => {
       const summary =
@@ -106,7 +106,7 @@ async function sendEmailNotification(deltas: DeltaNotification[]): Promise<void>
 
 async function sendWebhookNotification(webhookUrl: string, deltas: DeltaNotification[]): Promise<void> {
   const payload = {
-    event: "sequent.observation",
+    event: "refract.observation",
     pages: deltas,
     totalNewEvents: deltas.reduce((s, d) => s + d.eventsNew, 0),
     totalResolved: deltas.reduce((s, d) => s + d.eventsResolved, 0),

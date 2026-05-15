@@ -3,7 +3,7 @@
 ## Repository Boundary
 
 Contributions must stay inside the open-source observability boundary described
-in [docs/repository-boundary.md](./docs/repository-boundary.md). Sequent must not
+in [docs/repository-boundary.md](./docs/repository-boundary.md). Refract must not
 include healthcare-specific logic, domain-specific source weighting, or
 customer-workflow rules.
 

@@ -1,15 +1,15 @@
 import { readFileSync } from "node:fs";
 
-export interface SequentLoaderOptions {
+export interface RefractLoaderOptions {
   path: string;
   format?: "json" | "sqlite";
 }
 
-export class SequentLoader {
+export class RefractLoader {
   private path: string;
   private format: "json" | "sqlite";
 
-  constructor(options: SequentLoaderOptions) {
+  constructor(options: RefractLoaderOptions) {
     this.path = options.path;
     this.format = options.format ?? (options.path.endsWith(".db") ? "sqlite" : "json");
   }
@@ -32,6 +32,6 @@ export class SequentLoader {
   }
 }
 
-export function sequentLoader(options: SequentLoaderOptions): SequentLoader {
-  return new SequentLoader(options);
+export function sequentLoader(options: RefractLoaderOptions): RefractLoader {
+  return new RefractLoader(options);
 }

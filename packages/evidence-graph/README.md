@@ -26,4 +26,4 @@ import type { EvidenceEvent, Revision } from "@var-ia/evidence-graph";
 import { createClaimIdentity } from "@var-ia/evidence-graph";
 ```
 
-[Sequent](https://github.com/var-ia/sequent) · [Docs](https://github.com/var-ia/sequent-docs) · [npm](https://www.npmjs.com/package/@var-ia/evidence-graph)
+[Refract](https://github.com/var-ia/sequent) · [Docs](https://github.com/var-ia/sequent-docs) · [npm](https://www.npmjs.com/package/@var-ia/evidence-graph)

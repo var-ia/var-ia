@@ -4,7 +4,7 @@ description: Use when integrating MediaWiki edit history analysis, building clai
 license: AGPL-3.0
 ---
 
-# Sequent
+# Refract
 
 Deterministic claim-provenance engine for MediaWiki knowledge systems. Evidence, not truth.
 

@@ -1,7 +1,7 @@
 # Recipes
 
 Task-first guide. Find what you need by what you want to do, not by what
-Sequent calls it.
+Refract calls it.
 
 ---
 
@@ -68,7 +68,7 @@ OAUTH_CLIENT_ID="..." OAUTH_CLIENT_SECRET="..." \
 
 ## MCP: AI Agent Integration
 
-**I want Claude/Cursor/Copilot to call Sequent deterministically.**
+**I want Claude/Cursor/Copilot to call Refract deterministically.**
 
 Add to your MCP client config:
 
@@ -93,7 +93,7 @@ Then ask: "When did the Bitcoin article first call it a cryptocurrency?"
 
 ```bash
 # WikiWho: who wrote which token
-# Sequent: when did a claim appear, change, disappear
+# Refract: when did a claim appear, change, disappear
 wikihistory analyze "Bitcoin" --depth detailed | grep claim
 ```
 
@@ -105,6 +105,6 @@ wikihistory analyze "Bitcoin" --depth detailed | grep claim
 
 ```bash
 # ORES: ML score for "likely damaging"
-# Sequent: deterministic revert detection + policy signal classification
+# Refract: deterministic revert detection + policy signal classification
 wikihistory analyze "Bitcoin" --depth detailed | grep -E "revert|template"
 ```

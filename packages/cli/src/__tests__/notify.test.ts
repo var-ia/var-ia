@@ -50,7 +50,7 @@ describe("notify", () => {
 
     expect(mockFetch).toHaveBeenCalledTimes(1);
     const callBody = JSON.parse(mockFetch.mock.calls[0][1].body);
-    expect(callBody.event).toBe("sequent.observation");
+    expect(callBody.event).toBe("refract.observation");
     expect(callBody.pages[0].pageTitle).toBe("Mars");
     expect(callBody.totalNewEvents).toBe(1);
   });

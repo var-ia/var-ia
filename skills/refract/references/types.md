@@ -93,7 +93,7 @@ interface ClaimLineage {
   firstSeenAt: string;
   lastSeenRevisionId?: number;
   lastSeenAt?: string;
-  variants: ClaimSequentnt[];
+  variants: ClaimRefractnt[];
   mergeSourceIds?: string[];
   splitTargetIds?: string[];
   deprecatedAt?: string;

@@ -1,6 +1,6 @@
 # Roadmap
 
-Sequent v0.2.1 — all 20 Phase 1 workqueue items shipped. Maintenance mode: bug fixes and polish.
+Refract v0.2.1 — all 20 Phase 1 workqueue items shipped. Maintenance mode: bug fixes and polish.
 
 ## Agent Workstream Mapping
 
@@ -14,9 +14,9 @@ Sequent v0.2.1 — all 20 Phase 1 workqueue items shipped. Maintenance mode: bug
 | `eval` | — | Evaluation harness: L3 ground truth validation (public) |
 | `observable` | — | Observable Framework data loader (internal use) |
 
-## What Sequent Observes
+## What Refract Observes
 
-Sequent is a generic MediaWiki observation engine. The `--api` flag accepts any
+Refract is a generic MediaWiki observation engine. The `--api` flag accepts any
 `api.php` endpoint — Wikipedia, Fandom.com wikis, independent fan wikis, any
 public MediaWiki instance. Revision history, diffs, talk pages, page moves,
 categories, wikilinks — all extracted deterministically from the API response,

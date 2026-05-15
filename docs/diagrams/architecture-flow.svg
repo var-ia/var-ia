@@ -37,7 +37,7 @@
   <rect width="720" height="920" fill="#fafbfc" rx="8"/>
 
   <!-- Title -->
-  <text x="360" y="40" text-anchor="middle" class="title">Sequent — Data Flow</text>
+  <text x="360" y="40" text-anchor="middle" class="title">Refract — Data Flow</text>
   <text x="360" y="60" text-anchor="middle" class="subtitle">Three-Knowledge-Split Architecture</text>
 
   <!-- === LAYER 1: Deterministic === -->

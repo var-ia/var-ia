@@ -35,7 +35,7 @@ describe("createReplayManifest", () => {
       generatedAt: "2026-01-01T00:00:00.000Z",
     });
 
-    expect(manifest.format).toBe("sequent-replay-manifest/v1");
+    expect(manifest.format).toBe("refract-replay-manifest/v1");
     expect(manifest.pageTitle).toBe("Test");
     expect(manifest.analyzerVersions["revert-detector"]).toBe("0.1.0");
   });

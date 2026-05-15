@@ -33,7 +33,7 @@ async function getPersistence(): Promise<{
     }
     try {
       const { Persistence } = await import("@var-ia/persistence");
-      _instance = new Persistence({ dbPath: join(dir, "varia.db") }) as unknown as typeof _instance;
+      _instance = new Persistence({ dbPath: join(dir, "refract.db") }) as unknown as typeof _instance;
     } catch (_err) {
       throw new Error(
         "Caching requires the optional @var-ia/persistence package.\n" +

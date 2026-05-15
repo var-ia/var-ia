@@ -3,7 +3,7 @@
  * 02 — Equivalent to WikiWho
  *
  * WikiWho provides token-level attribution — who wrote which word.
- * Sequent provides structured evidence — what changed, how, and what
+ * Refract provides structured evidence — what changed, how, and what
  * policy signals surrounded it.
  *
  * This script produces the WikiWho-equivalent output (who touched
@@ -37,7 +37,7 @@ const revisions = await client.fetchRevisions(PAGE, {
 console.log(`"${PAGE}" — last ${revisions.length} revisions`);
 console.log();
 console.log("WikiWho gives you:  editor | token | revision");
-console.log("Sequent gives you:    event type | section | editor | diff context | citations | templates");
+console.log("Refract gives you:    event type | section | editor | diff context | citations | templates");
 console.log();
 
 const events: EvidenceEvent[] = [];

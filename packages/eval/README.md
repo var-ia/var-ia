@@ -28,4 +28,4 @@ bun add @var-ia/eval
 import { createEvalHarness, validateAgainstGroundTruth } from "@var-ia/eval";
 ```
 
-[Sequent](https://github.com/var-ia/sequent) · [Docs](https://github.com/var-ia/sequent-docs) · [npm](https://www.npmjs.com/package/@var-ia/eval)
+[Refract](https://github.com/var-ia/sequent) · [Docs](https://github.com/var-ia/sequent-docs) · [npm](https://www.npmjs.com/package/@var-ia/eval)

@@ -483,7 +483,7 @@ export async function runAnalyze(
     }
 
     // Sentence removal detection
-    // In-place sentence changes are not tracked — Sequent observes appearance,
+    // In-place sentence changes are not tracked — Refract observes appearance,
     // disappearance, and reappearance, not directional semantic evolution.
 
     for (const sentence of beforeSentences) {

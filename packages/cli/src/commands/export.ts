@@ -6,7 +6,7 @@ import { renderHtmlReport } from "../html-renderer.js";
 import { runAnalyze } from "./analyze.js";
 
 interface EvidenceBundle {
-  format: "sequent-evidence-bundle/v1";
+  format: "refract-evidence-bundle/v1";
   generatedAt: string;
   pageTitle: string;
   revisionRange: { from: number; to: number };
@@ -116,7 +116,7 @@ function buildBundle(pageTitle: string, events: EvidenceEvent[], revisions: Revi
   }));
 
   const bundle = {
-    format: "sequent-evidence-bundle/v1" as const,
+    format: "refract-evidence-bundle/v1" as const,
     generatedAt: new Date().toISOString(),
     pageTitle,
     revisionRange: { from, to },

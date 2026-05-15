@@ -1,6 +1,6 @@
 # Event taxonomy
 
-Each Sequent event describes what changed at a revision boundary. Events are deterministic — the same input always produces the same output.
+Each Refract event describes what changed at a revision boundary. Events are deterministic — the same input always produces the same output.
 
 ## Claim lifecycle
 

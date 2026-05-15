@@ -1,16 +1,16 @@
 # Agent Instructions for varia
 
-Sequent is the open-source deterministic observation engine built and maintained
+Refract is the open-source deterministic observation engine built and maintained
 by [NextConsensus](https://nextconsensus.com). It is domain-neutral
 infrastructure for MediaWiki and public revision histories.
 
 ## Repository Boundary
 
-Sequent = generic public-knowledge observability
+Refract = generic public-knowledge observability
 NextConsensus = healthcare-specific decision intelligence
 
 Repository boundary: read `docs/repository-boundary.md` before adding scope.
-Sequent observes change. NextConsensus judges healthcare decision relevance.
+Refract observes change. NextConsensus judges healthcare decision relevance.
 
 ## Build & Verify Commands
 
@@ -49,7 +49,7 @@ Each package has `src/index.ts` as its public barrel. `dist/` is build output.
 
 - **Layer 1** (Deterministic): Wikipedia fetch, diffs, sections, citations, reverts. No model. Byte-for-byte reproducible.
 - **Layer 2** (Independent Ground Truth): Talk page consensus, RFC closures, ArbCom decisions. Never redefined by pipeline output.
-- **Downstream interpretation**: Model-assisted L2 lives in NextConsensus, which consumes Sequent's deterministic event stream without modifying it.
+- **Downstream interpretation**: Model-assisted L2 lives in NextConsensus, which consumes Refract's deterministic event stream without modifying it.
 
 ## Code Conventions
 
@@ -105,4 +105,4 @@ Do not add payer, guideline, clinical, regulatory, customer-workflow,
 healthcare decision-judgment, domain-specific source-weighting, decision
 threshold, production-backtest, outcome-data, model interpretation,
 model adapters, model routing, model consensus, or NextConsensus-private
-logic to this repo. Keep Sequent agents focused on determinism, not judgment.
+logic to this repo. Keep Refract agents focused on determinism, not judgment.

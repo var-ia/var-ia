@@ -159,7 +159,7 @@ function downloadJSON() {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Sequent — ${escapeHtml(pageTitle)}</title>
+<title>Refract — ${escapeHtml(pageTitle)}</title>
 <style>
 :root {
   --bg: #0d1117; --fg: #c9d1d9; --accent: #58a6ff;

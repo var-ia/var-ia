@@ -1,6 +1,6 @@
 # MCP — model context protocol
 
-`wikihistory mcp` starts a JSON-RPC server over stdio that exposes the Sequent engine to AI agents via the Model Context Protocol.
+`wikihistory mcp` starts a JSON-RPC server over stdio that exposes the Refract engine to AI agents via the Model Context Protocol.
 
 ## Usage
 

@@ -33,7 +33,7 @@ interface McpTool {
   };
 }
 
-const CLIENT_NAME = "sequent-mcp";
+const CLIENT_NAME = "refract-mcp";
 const CLIENT_VERSION = "0.2.0";
 const PROTOCOL_VERSION = "2025-06-18";
 
@@ -297,7 +297,7 @@ async function handleToolCall(
         auth,
       );
       const report = {
-        format: "sequent-export/v1",
+        format: "refract-export/v1",
         generatedAt: new Date().toISOString(),
         pageTitle: page,
         revisionCount: revisions.length,
@@ -449,7 +449,7 @@ async function handleRequest(request: JsonRpcRequest): Promise<void> {
   switch (request.method) {
     case "initialize": {
       clientCapabilities = (request.params?.capabilities as Record<string, unknown>) ?? null;
-      process.stderr.write("Sequent MCP server initialized.\n");
+      process.stderr.write("Refract MCP server initialized.\n");
       send({
         jsonrpc: "2.0",
         id: request.id,
@@ -496,7 +496,7 @@ async function handleRequest(request: JsonRpcRequest): Promise<void> {
 }
 
 export async function runMcpServer(): Promise<void> {
-  process.stderr.write("Sequent MCP server starting...\n");
+  process.stderr.write("Refract MCP server starting...\n");
 
   let buffer = "";
 

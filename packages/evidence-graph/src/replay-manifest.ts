@@ -11,7 +11,7 @@ export interface MerkleProof {
 }
 
 export interface ReplayManifest {
-  format: "sequent-replay-manifest/v1";
+  format: "refract-replay-manifest/v1";
   generatedAt: string;
   pageTitle: string;
   analyzerVersions: Record<string, string>;
@@ -90,7 +90,7 @@ export function createReplayManifest(params: {
   const merkleRoot = buildMerkleTree(outputHashes).at(-1)?.[0] ?? "";
 
   const partial = {
-    format: "sequent-replay-manifest/v1" as const,
+    format: "refract-replay-manifest/v1" as const,
     generatedAt: params.generatedAt ?? new Date().toISOString(),
     pageTitle: params.pageTitle,
     analyzerVersions: params.analyzerVersions,

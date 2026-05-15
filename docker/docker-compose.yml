@@ -5,7 +5,7 @@ services:
     expose:
       - "80"
     environment:
-      - MW_SITE_NAME=SequentTest
+      - MW_SITE_NAME=RefractTest
       - MW_SITE_LANG=en
       - MW_ADMIN_USER=Admin
       - MW_ADMIN_PASS=testpassword123!

@@ -123,7 +123,7 @@ export async function runClaim(
   console.log(`\n=== Claim Lineage Summary ===`);
   console.log(`Claim ID:    ${identity.claimId}`);
   console.log(`Page:        ${pageTitle}`);
-  console.log(`Sequentnts:    ${variants.length}`);
+  console.log(`Refractnts:    ${variants.length}`);
   console.log(`State:       ${currentState}`);
   console.log(`First seen:  ${variants[0].observedAt} (rev ${variants[0].revisionId})`);
   console.log(

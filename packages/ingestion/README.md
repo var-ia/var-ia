@@ -24,4 +24,4 @@ import { MediaWikiClient, RateLimiter } from "@var-ia/ingestion";
 import type { RevisionFetcher, RevisionOptions } from "@var-ia/ingestion";
 ```
 
-[Sequent](https://github.com/var-ia/sequent) · [Docs](https://github.com/var-ia/sequent-docs) · [npm](https://www.npmjs.com/package/@var-ia/ingestion)
+[Refract](https://github.com/var-ia/sequent) · [Docs](https://github.com/var-ia/sequent-docs) · [npm](https://www.npmjs.com/package/@var-ia/ingestion)

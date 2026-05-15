@@ -1,7 +1,7 @@
 # Example: Analyzing "Bitcoin"
 
 This page shows the output of `wikihistory analyze "Bitcoin" --depth brief` against
-Wikipedia's live API (revision range: 2009–2010, 20 revisions). This is what Sequent
+Wikipedia's live API (revision range: 2009–2010, 20 revisions). This is what Refract
 produces — a structured event stream of everything that changed, when, and how.
 
 Full CLI output: [bitcoin-quick-analysis.txt](./bitcoin-quick-analysis.txt) (330 events).
