@@ -4,7 +4,7 @@ description: Use when integrating MediaWiki edit history analysis, building clai
 license: AGPL-3.0
 ---
 
-# Var-ia
+# Sequent
 
 Deterministic claim-provenance engine for MediaWiki knowledge systems. Evidence, not truth.
 

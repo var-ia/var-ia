@@ -1,6 +1,6 @@
 # MCP — model context protocol
 
-`wikihistory mcp` starts a JSON-RPC server over stdio that exposes the Varia engine to AI agents via the Model Context Protocol.
+`wikihistory mcp` starts a JSON-RPC server over stdio that exposes the Sequent engine to AI agents via the Model Context Protocol.
 
 ## Usage
 
@@ -17,7 +17,7 @@ The server runs indefinitely on stdin/stdout. It accepts JSON-RPC 2.0 requests a
 ```json
 {
   "mcpServers": {
-    "varia": {
+    "sequent": {
       "command": "npx",
       "args": ["wikihistory", "mcp"]
     }
@@ -30,7 +30,7 @@ The server runs indefinitely on stdin/stdout. It accepts JSON-RPC 2.0 requests a
 ```json
 {
   "mcpServers": {
-    "varia": {
+    "sequent": {
       "command": "bunx",
       "args": ["wikihistory", "mcp"]
     }

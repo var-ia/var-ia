@@ -44,4 +44,4 @@ wikihistory diff --wiki-a https://starwars.fandom.com/api.php --wiki-b https://m
 wikihistory eval
 ```
 
-[Varia](https://github.com/var-ia/var-ia) · [Docs](https://github.com/var-ia/varia-docs) · [npm](https://www.npmjs.com/package/@var-ia/cli)
+[Sequent](https://github.com/var-ia/sequent) · [Docs](https://github.com/var-ia/sequent-docs) · [npm](https://www.npmjs.com/package/@var-ia/cli)

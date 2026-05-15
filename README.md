@@ -1,4 +1,4 @@
-# Var-ia
+# Sequent
 
 [![CI](https://github.com/var-ia/var-ia/actions/workflows/ci.yml/badge.svg)](https://github.com/var-ia/var-ia/actions/workflows/ci.yml)
 [![Version](https://img.shields.io/github/v/release/var-ia/var-ia)](https://github.com/var-ia/var-ia/releases)
@@ -9,15 +9,15 @@
 
 > Evidence, not truth.
 >
-> **Varia answers:** "What changed?"
+> **Sequent answers:** "What changed?"
 > **NextConsensus answers:** "Does this change matter for this healthcare decision?"
 
-Varia is a deterministic observation engine — it ingests revision histories from
+Sequent is a deterministic observation engine — it ingests revision histories from
 Wikipedia, Fandom, and any MediaWiki instance, extracts a structured event stream
 of every claim, source, section, and dispute, and makes that stream queryable and
 reproducible. No model. No interpretation. Byte-for-byte identical on every run.
 
-Built and maintained by [NextConsensus](https://nextconsensus.com). Varia is
+Built and maintained by [NextConsensus](https://nextconsensus.com). Sequent is
 domain-neutral infrastructure for observing how public knowledge changes.
 [Repository boundary](./docs/repository-boundary.md).
 
@@ -29,7 +29,7 @@ The printing press made knowledge durable by freezing it into editions. Wikipedi
 made knowledge mutable by letting the record change continuously. But most systems
 still consume only the current surface.
 
-Varia makes the mutation itself legible: who changed what, when, with what evidence,
+Sequent makes the mutation itself legible: who changed what, when, with what evidence,
 under what dispute, and whether the change survived. That is the difference between
 a library catalogue and an epistemic event log. Revision histories become
 infrastructure when machines need to reason about knowledge, not just retrieve it.
@@ -43,7 +43,7 @@ versioned knowledge, not snapshots.
 
 Given a MediaWiki page, the engine produces a structured event stream:
 
-| Dimension | What Varia tracks |
+| Dimension | What Sequent tracks |
 |-----------|-------------------|
 | **Claim** | When a sentence first appeared, was removed, or was reintroduced — across every revision |
 | **Source** | Which citations were added, replaced, or removed — and in what sequence |
@@ -73,7 +73,7 @@ Given a MediaWiki page, the engine produces a structured event stream:
 npx @var-ia/cli analyze "Bitcoin" --depth brief
 ```
 
-> **What you're seeing**: These are observed changes — deterministic facts extracted from revision history. Varia reports what changed, not whether a claim is true or false.
+> **What you're seeing**: These are observed changes — deterministic facts extracted from revision history. Sequent reports what changed, not whether a claim is true or false.
 
 What you'll see:
 
@@ -129,7 +129,7 @@ import { sectionDiffer, citationTracker } from "@var-ia/analyzers";
 
 ## How It Compares
 
-Var-ia tracks **claim provenance** — structured evidence linking a claim's lifecycle
+Sequent tracks **claim provenance** — structured evidence linking a claim's lifecycle
 to specific revisions, sources, and policy signals. It complements existing tools:
 
 | Tool | What it does | What var-ia adds |
@@ -153,7 +153,7 @@ The engine follows a two-knowledge-split:
 
 ## Private Instances
 
-Var-ia connects to any MediaWiki instance — corporate wikis, institutional
+Sequent connects to any MediaWiki instance — corporate wikis, institutional
 knowledge bases, private fan wikis. Use the `--api` flag with the wiki's
 `api.php` URL.
 
@@ -198,11 +198,11 @@ token, basic auth, and OAuth2 paths.
 
 ## Beyond Wikipedia
 
-Var-ia works on any public MediaWiki instance — Fandom.com, independent fan wikis,
+Sequent works on any public MediaWiki instance — Fandom.com, independent fan wikis,
 private wikis. Wikipedia's editorial norms suppress the most interesting dynamics;
 fandom wikis don't.
 
-| Dynamic | What Var-ia captures |
+| Dynamic | What Sequent captures |
 |---------|-------------------|
 | **Canon disputes** | `category_removed`: `Canon characters` → `category_added`: `Legends characters` after the 2014 Disney acquisition |
 | **Headcanon drift** | "Vader turned because of fear of loss" vs "pride and ambition" — reversibly edited, both cite the same films |
@@ -248,7 +248,7 @@ These repos extend the core engine:
 
 | Repo | Purpose |
 |------|---------|
-| [varia-docs](https://github.com/var-ia/varia-docs) | Public documentation site (quickstart, CLI, SDK, tutorials) |
-| [varia-labs](https://github.com/var-ia/varia-labs) | Experimental probes applying the engine to adjacent verticals |
-| [varia-ui](https://github.com/var-ia/varia-ui) | Standalone visualization — load JSONL, render timelines, diffs, citations |
-| [varia-demo-data](https://github.com/var-ia/varia-demo-data) | Safe, fictional datasets for the eval harness (no real PII or medical data) |
+| [sequent-docs](https://github.com/var-ia/sequent-docs) | Public documentation site (quickstart, CLI, SDK, tutorials) |
+| [sequent-labs](https://github.com/var-ia/sequent-labs) | Experimental probes applying the engine to adjacent verticals |
+| [sequent-ui](https://github.com/var-ia/sequent-ui) | Standalone visualization — load JSONL, render timelines, diffs, citations |
+| [sequent-demo-data](https://github.com/var-ia/sequent-demo-data) | Safe, fictional datasets for the eval harness (no real PII or medical data) |

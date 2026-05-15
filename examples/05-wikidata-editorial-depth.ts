@@ -7,7 +7,7 @@
  * You don't know if that claim was recently added, has been
  * contested for years, or was originally cited to a different source.
  *
- * Varia tracks the full edit history: when a claim first appeared,
+ * Sequent tracks the full edit history: when a claim first appeared,
  * how it was reworded, which sources have been attached and
  * replaced, and what policy signals surrounded each change.
  *
@@ -34,7 +34,7 @@ const revisions = await client.fetchRevisions(PAGE, {
 });
 
 console.log(`Wikidata tells you the current citation for "${PAGE}".`);
-console.log(`Varia tells you the citation history:`);
+console.log(`Sequent tells you the citation history:`);
 console.log();
 
 const allSources = buildSourceLineage(
@@ -66,5 +66,5 @@ for (const source of allSources.sources) {
 }
 
 console.log("Current Wikipedia state shows only the surviving sources.");
-console.log("Varia shows the full editorial journey — sources that were tried,");
+console.log("Sequent shows the full editorial journey — sources that were tried,");
 console.log("replaced, or removed, and the claims they supported at each step.");

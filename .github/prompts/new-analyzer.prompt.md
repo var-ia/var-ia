@@ -9,7 +9,7 @@ Scaffold a new deterministic (L1) analyzer package. Use `${input:name}` for the 
 Copy the pattern from `packages/analyzers/`:
 ```
 packages/${input:name}/
-├── package.json       # @varia/${input:name}, type:module, main: dist/src/index.js
+├── package.json       # @var-ia/${input:name}, type:module, main: dist/src/index.js
 ├── tsconfig.json      # composite:true, target:ES2022, module:NodeNext
 │                      # references: ["../evidence-graph"], exclude: ["src/__tests__"]
 └── src/

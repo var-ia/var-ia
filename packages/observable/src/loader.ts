@@ -1,15 +1,15 @@
 import { readFileSync } from "node:fs";
 
-export interface VariaLoaderOptions {
+export interface SequentLoaderOptions {
   path: string;
   format?: "json" | "sqlite";
 }
 
-export class VariaLoader {
+export class SequentLoader {
   private path: string;
   private format: "json" | "sqlite";
 
-  constructor(options: VariaLoaderOptions) {
+  constructor(options: SequentLoaderOptions) {
     this.path = options.path;
     this.format = options.format ?? (options.path.endsWith(".db") ? "sqlite" : "json");
   }
@@ -32,6 +32,6 @@ export class VariaLoader {
   }
 }
 
-export function variaLoader(options: VariaLoaderOptions): VariaLoader {
-  return new VariaLoader(options);
+export function sequentLoader(options: SequentLoaderOptions): SequentLoader {
+  return new SequentLoader(options);
 }

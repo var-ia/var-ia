@@ -1,11 +1,11 @@
 services:
   mediawiki:
     image: mediawiki:1.42
-    container_name: varia-mw
+    container_name: sequent-mw
     expose:
       - "80"
     environment:
-      - MW_SITE_NAME=VariaTest
+      - MW_SITE_NAME=SequentTest
       - MW_SITE_LANG=en
       - MW_ADMIN_USER=Admin
       - MW_ADMIN_PASS=testpassword123!
@@ -21,7 +21,7 @@ services:
 
   nginx-auth:
     image: nginx:alpine
-    container_name: varia-mw-auth
+    container_name: sequent-mw-auth
     ports:
       - "8081:80"
     volumes:

@@ -1,6 +1,6 @@
 # Architecture: Two-Knowledge-Split Design
 
-Varia is the git log for public knowledge — a deterministic observation substrate
+Sequent is the git log for public knowledge — a deterministic observation substrate
 that ingests revision histories and emits structured, provenance-tagged event
 streams. No model. No interpretation. Byte-for-byte reproducible.
 
@@ -8,7 +8,7 @@ This architecture lives in the **varia** repository (open-source, generic
 public-knowledge observability). Healthcare-specific logic lives in private
 repos, which consume this engine's output without modifying it.
 
-Varia separates computation into two architecturally isolated layers. No
+Sequent separates computation into two architecturally isolated layers. No
 layer's output feeds into another layer's input in a way that would contaminate
 evidence with interpretation.
 
@@ -97,8 +97,8 @@ Every user-facing output carries layer provenance:
 
 ## Consuming L1 Output
 
-Varia's deterministic event stream is consumed by domain-specific interpretation
+Sequent's deterministic event stream is consumed by domain-specific interpretation
 layers in downstream systems (e.g., NextConsensus). Those systems must:
-- Never modify Varia's event types or schemas (consume, don't fork)
-- Attribute provenance: "deterministic observation from Varia" vs. their own
+- Never modify Sequent's event types or schemas (consume, don't fork)
+- Attribute provenance: "deterministic observation from Sequent" vs. their own
   model-assisted interpretation

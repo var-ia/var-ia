@@ -50,7 +50,7 @@
 ### Documentation
 
 - `docs/events.md` — full event taxonomy with triggers and examples (all 29 event types).
-- `docs/naming.md` — explains Varia/var-ia/@var-ia/wikihistory split.
+- `docs/naming.md` — explains Sequent/var-ia/@var-ia/wikihistory split.
 - `docs/mcp.md` — MCP tool reference with connection configs.
 - `docs/security.md` — credential exposure, local cache, L2 data flow.
 - `docs/recipes.md` — example JSON output added to claim, cron, and diff recipes.

@@ -1,6 +1,6 @@
 # Roadmap
 
-Varia v0.2.1 — all 20 Phase 1 workqueue items shipped. Maintenance mode: bug fixes and polish.
+Sequent v0.2.1 — all 20 Phase 1 workqueue items shipped. Maintenance mode: bug fixes and polish.
 
 ## Agent Workstream Mapping
 
@@ -14,9 +14,9 @@ Varia v0.2.1 — all 20 Phase 1 workqueue items shipped. Maintenance mode: bug f
 | `eval` | — | Evaluation harness: L3 ground truth validation (public) |
 | `observable` | — | Observable Framework data loader (internal use) |
 
-## What Varia Observes
+## What Sequent Observes
 
-Varia is a generic MediaWiki observation engine. The `--api` flag accepts any
+Sequent is a generic MediaWiki observation engine. The `--api` flag accepts any
 `api.php` endpoint — Wikipedia, Fandom.com wikis, independent fan wikis, any
 public MediaWiki instance. Revision history, diffs, talk pages, page moves,
 categories, wikilinks — all extracted deterministically from the API response,

@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * 04 — From Scratch to Varia
+ * 04 — From Scratch to Sequent
  *
  * If you've ever built a Wikipedia analysis tool, you've probably
  * written: (1) a revision fetcher, (2) a wikitext section parser,
@@ -8,10 +8,10 @@
  * classifier, and (6) a diff engine. That's ~800 lines of brittle
  * code that breaks when Wikimedia changes their API response format.
  *
- * Varia gives you all six in ~200 lines you don't write.
+ * Sequent gives you all six in ~200 lines you don't write.
  *
  * This script shows the "from scratch" pipeline you're rebuilding
- * every time, then shows the Varia equivalent.
+ * every time, then shows the Sequent equivalent.
  *
  * Usage: bun run examples/04-from-scratch-to-varia.ts
  */
@@ -50,7 +50,7 @@ console.log();
 console.log(`~800 lines of fragile code that breaks when Wikimedia changes APIs.`);
 console.log();
 
-console.log(`=== Varia Equivalent ===`);
+console.log(`=== Sequent Equivalent ===`);
 console.log(`3 imports. 1 client. 6 analyzer calls. ~20 lines of glue.`);
 console.log();
 

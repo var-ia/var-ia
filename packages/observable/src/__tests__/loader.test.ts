@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { VariaLoader, variaLoader } from "../loader.js";
+import { SequentLoader, sequentLoader } from "../loader.js";
 
 vi.mock("node:fs", () => ({
   readFileSync: vi.fn(),
@@ -12,24 +12,24 @@ vi.mock("bun:sqlite", () => ({
   }),
 }));
 
-describe("VariaLoader", () => {
+describe("SequentLoader", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   describe("constructor", () => {
     it("sets format to json when path does not end with .db", () => {
-      const loader = new VariaLoader({ path: "/data/events.json" });
+      const loader = new SequentLoader({ path: "/data/events.json" });
       expect(loader.format).toBe("json");
     });
 
     it("sets format to sqlite when path ends with .db", () => {
-      const loader = new VariaLoader({ path: "/data/events.db" });
+      const loader = new SequentLoader({ path: "/data/events.db" });
       expect(loader.format).toBe("sqlite");
     });
 
     it("respects explicit format option over path inference", () => {
-      const loader = new VariaLoader({ path: "/data/events.db", format: "json" });
+      const loader = new SequentLoader({ path: "/data/events.db", format: "json" });
       expect(loader.format).toBe("json");
     });
   });
@@ -38,7 +38,7 @@ describe("VariaLoader", () => {
     it("reads and parses JSON files", async () => {
       const { readFileSync } = await import("node:fs");
       (readFileSync as ReturnType<typeof vi.fn>).mockReturnValue(JSON.stringify({ events: [{ id: 1 }] }));
-      const loader = new VariaLoader({ path: "/data/events.json" });
+      const loader = new SequentLoader({ path: "/data/events.json" });
       const result = await loader.load();
       expect(result).toEqual({ events: [{ id: 1 }] });
     });
@@ -46,12 +46,12 @@ describe("VariaLoader", () => {
     it("rejects on invalid JSON", async () => {
       const { readFileSync } = await import("node:fs");
       (readFileSync as ReturnType<typeof vi.fn>).mockReturnValue("not json{");
-      const loader = new VariaLoader({ path: "/data/bad.json" });
+      const loader = new SequentLoader({ path: "/data/bad.json" });
       await expect(loader.load()).rejects.toThrow();
     });
 
     it("opens SQLite database and queries tables", async () => {
-      const loader = new VariaLoader({ path: "/data/varia.db" });
+      const loader = new SequentLoader({ path: "/data/varia.db" });
       const result = await loader.load();
       expect(result).toHaveProperty("events");
       expect(result).toHaveProperty("revisions");
@@ -59,9 +59,9 @@ describe("VariaLoader", () => {
   });
 });
 
-describe("variaLoader factory", () => {
-  it("returns a VariaLoader instance", () => {
-    const loader = variaLoader({ path: "/data/events.json" });
-    expect(loader).toBeInstanceOf(VariaLoader);
+describe("sequentLoader factory", () => {
+  it("returns a SequentLoader instance", () => {
+    const loader = sequentLoader({ path: "/data/events.json" });
+    expect(loader).toBeInstanceOf(SequentLoader);
   });
 });

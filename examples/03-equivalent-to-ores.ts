@@ -6,7 +6,7 @@
  * 87% probability"). You cannot reproduce it, audit it, or explain
  * why a particular score was assigned.
  *
- * Varia's L1 analyzers produce the same classifications
+ * Sequent's L1 analyzers produce the same classifications
  * deterministically — no model, no hidden state, byte-for-byte
  * reproducible. Every classification carries a provenance chain
  * (which analyzer, which version, which input hashes).
@@ -36,7 +36,7 @@ const revisions = await client.fetchRevisions(PAGE, {
 });
 
 console.log(`ORES:  "edit is damaging (p=0.87)" — unanswerable, unverifiable`);
-console.log(`Varia: "revert detected (matched revert pattern in comment)" — reproducible`);
+console.log(`Sequent: "revert detected (matched revert pattern in comment)" — reproducible`);
 console.log();
 console.log(`Classifying last ${revisions.length} edits of "${PAGE}":`);
 console.log();

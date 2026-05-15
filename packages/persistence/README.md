@@ -21,4 +21,4 @@ import { Persistence } from "@var-ia/persistence";
 import type { PersistenceAdapter, PersistenceConfig } from "@var-ia/persistence";
 ```
 
-[Varia](https://github.com/var-ia/var-ia) · [Docs](https://github.com/var-ia/varia-docs)
+[Sequent](https://github.com/var-ia/sequent) · [Docs](https://github.com/var-ia/sequent-docs)

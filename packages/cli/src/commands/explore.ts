@@ -50,7 +50,7 @@ export async function runExplore(
   });
 
   const url = `http://localhost:${port}`;
-  console.log(`\n  Varia Explorer running at ${url}`);
+  console.log(`\n  Sequent Explorer running at ${url}`);
   console.log(`  Page: ${pageTitle}`);
   console.log(`  Events: ${events.length}  |  Revisions: ${revisions.length}`);
   console.log(`  Press Ctrl+C to stop\n`);

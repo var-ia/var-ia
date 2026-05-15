@@ -1,2 +1,2 @@
-export type { VariaLoaderOptions } from "./loader.js";
-export { VariaLoader } from "./loader.js";
+export type { SequentLoaderOptions } from "./loader.js";
+export { SequentLoader } from "./loader.js";
