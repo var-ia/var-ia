@@ -17,8 +17,8 @@ import {
   stripWikitext,
   templateTracker,
 } from "@refract-org/analyzers";
-import type { AnalyzerConfig, DeterministicFact, EvidenceEvent, EvidenceLayer, Revision, Section } from "@refract-org/evidence-graph";
-import { DEFAULT_ANALYZER_CONFIG } from "@refract-org/evidence-graph";
+import type { AnalyzerConfig, ClaimLedger, ClaimLedgerEntry, ClaimState, DeterministicFact, EvidenceEvent, EvidenceLayer, ObservationReport, Revision, Section } from "@refract-org/evidence-graph";
+import { createClaimIdentity, createEventIdentity, createReplayManifest, DEFAULT_ANALYZER_CONFIG } from "@refract-org/evidence-graph";
 import type { AuthConfig, RevisionOptions } from "@refract-org/ingestion";
 import { MediaWikiClient } from "@refract-org/ingestion";
 
@@ -768,4 +768,116 @@ async function runBatch(
   }
 
   return { events: allEvents, revisions: [] };
+}
+
+export function buildObservationReport(
+  pageTitle: string,
+  pageId: number,
+  events: EvidenceEvent[],
+  revisions: Revision[],
+): ObservationReport {
+  const claimEventTypes = new Set([
+    "sentence_first_seen",
+    "sentence_reintroduced",
+    "sentence_modified",
+    "sentence_removed",
+  ]);
+
+  const claimEvents = events.filter((e) => claimEventTypes.has(e.eventType));
+
+  const claimGroups = new Map<string, EvidenceEvent[]>();
+  for (const event of claimEvents) {
+    const text = event.after || event.before;
+    if (!text) continue;
+    const identity = createClaimIdentity({
+      text,
+      section: event.section,
+      pageTitle,
+      pageId,
+    });
+    const existing = claimGroups.get(identity.claimId) || [];
+    existing.push(event);
+    claimGroups.set(identity.claimId, existing);
+  }
+
+  const claims: Record<string, ClaimLedger> = {};
+  let minRev = Infinity;
+  let maxRev = -Infinity;
+
+  for (const [claimId, groupEvents] of claimGroups) {
+    groupEvents.sort(
+      (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
+    );
+
+    const text = groupEvents[0].after || groupEvents[0].before;
+    const firstSeenAt = groupEvents[0].timestamp;
+    const lastSeenAt = groupEvents[groupEvents.length - 1].timestamp;
+
+    const lastEvent = groupEvents[groupEvents.length - 1];
+    let currentState: ClaimState;
+    switch (lastEvent.eventType) {
+      case "sentence_first_seen":
+        currentState = "emerging";
+        break;
+      case "sentence_reintroduced":
+        currentState = "stabilizing";
+        break;
+      case "sentence_modified":
+        currentState = "contested";
+        break;
+      case "sentence_removed":
+        currentState = "absent";
+        break;
+      default:
+        currentState = "emerging";
+    }
+
+    for (const e of groupEvents) {
+      if (e.toRevisionId < minRev) minRev = e.toRevisionId;
+      if (e.toRevisionId > maxRev) maxRev = e.toRevisionId;
+    }
+
+    const eventIds = groupEvents.map((e) => e.eventId ?? createEventIdentity(e));
+
+    const entry: ClaimLedgerEntry = {
+      observedAt: new Date().toISOString(),
+      revisionRange: {
+        from: minRev === Infinity ? 0 : minRev,
+        to: maxRev === -Infinity ? 0 : maxRev,
+      },
+      state: currentState,
+      eventCount: groupEvents.length,
+      eventIds,
+    };
+
+    claims[claimId] = {
+      claimId,
+      text,
+      firstSeenAt,
+      lastSeenAt,
+      currentState,
+      history: [entry],
+    };
+  }
+
+  const manifest = createReplayManifest({
+    pageTitle,
+    analyzerVersions: { refract: "0.3.1" },
+    revisions,
+    events: claimEvents,
+  });
+
+  return {
+    pageTitle,
+    pageId,
+    observedAt: new Date().toISOString(),
+    revisionRange: {
+      from: minRev === Infinity ? 0 : minRev,
+      to: maxRev === -Infinity ? 0 : maxRev,
+    },
+    claims,
+    eventCount: events.length,
+    merkleRoot: manifest.merkleRoot,
+    analyzerVersion: "0.3.1",
+  };
 }

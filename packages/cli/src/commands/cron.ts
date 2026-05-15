@@ -2,11 +2,11 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { diffObservations } from "@refract-org/analyzers";
-import type { EvidenceEvent } from "@refract-org/evidence-graph";
+import type { EvidenceEvent, ObservationReport } from "@refract-org/evidence-graph";
 import type { AuthConfig } from "@refract-org/ingestion";
 import type { NotifyConfig } from "../notify.js";
 import { sendNotifications } from "../notify.js";
-import { runAnalyze } from "./analyze.js";
+import { buildObservationReport, runAnalyze } from "./analyze.js";
 
 export interface CronReport {
   pageTitle: string;
@@ -23,6 +23,34 @@ export interface CronResult {
   totalNewEvents: number;
   pagesProcessed: number;
   generatedAt: string;
+}
+
+function mergeObservationReports(prior: ObservationReport | null, current: ObservationReport): ObservationReport {
+  if (!prior) return current;
+
+  const mergedClaims: Record<string, ObservationReport["claims"][string]> = { ...prior.claims };
+
+  for (const [claimId, currentLedger] of Object.entries(current.claims)) {
+    if (mergedClaims[claimId]) {
+      const existing = mergedClaims[claimId];
+      existing.lastSeenAt = currentLedger.lastSeenAt;
+      existing.currentState = currentLedger.currentState;
+      existing.history.push(...currentLedger.history);
+    } else {
+      mergedClaims[claimId] = currentLedger;
+    }
+  }
+
+  return {
+    pageTitle: current.pageTitle,
+    pageId: current.pageId,
+    observedAt: current.observedAt,
+    revisionRange: current.revisionRange,
+    claims: mergedClaims,
+    eventCount: current.eventCount,
+    merkleRoot: current.merkleRoot,
+    analyzerVersion: current.analyzerVersion,
+  };
 }
 
 export async function runCron(
@@ -77,7 +105,7 @@ export async function runCron(
 
     console.log(`  ${title}: observing since ${fromTimestamp ?? "beginning"}...`);
 
-    const { events } = await runAnalyze(
+    const { events, revisions } = await runAnalyze(
       title,
       "detailed",
       undefined,
@@ -116,8 +144,20 @@ export async function runCron(
     };
     reports.push(report);
 
-    const reportFile = join(reportsDir, `${safeName}.json`);
-    writeFileSync(reportFile, JSON.stringify(report, null, 2), "utf-8");
+    const pageId = revisions[0]?.pageId ?? 0;
+    const currentReport = buildObservationReport(title, pageId, events, revisions);
+
+    let priorObservationReport: ObservationReport | null = null;
+    const observationReportFile = join(reportsDir, `${safeName}.json`);
+    try {
+      const raw = readFileSync(observationReportFile, "utf-8");
+      priorObservationReport = JSON.parse(raw) as ObservationReport;
+    } catch {
+      /* no prior observation report yet */
+    }
+
+    const mergedReport = mergeObservationReports(priorObservationReport, currentReport);
+    writeFileSync(observationReportFile, JSON.stringify(mergedReport, null, 2), "utf-8");
 
     if (!isFirstObservation && obsDiff.new.length > 0) {
       totalNewEvents += obsDiff.new.length;

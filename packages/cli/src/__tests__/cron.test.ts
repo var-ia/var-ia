@@ -5,6 +5,16 @@ import { describe, expect, it, vi } from "vitest";
 
 vi.mock("../commands/analyze.js", () => ({
   runAnalyze: vi.fn(),
+  buildObservationReport: vi.fn(() => ({
+    pageTitle: "",
+    pageId: 0,
+    observedAt: new Date().toISOString(),
+    revisionRange: { from: 0, to: 0 },
+    claims: {},
+    eventCount: 0,
+    merkleRoot: "",
+    analyzerVersion: "0.3.1",
+  })),
 }));
 
 import type { EvidenceEvent } from "@refract-org/evidence-graph";

@@ -28,8 +28,11 @@ export type {
   PolicyDimension,
 } from "./schemas/evidence.js";
 export type {
+  ClaimLedger,
+  ClaimLedgerEntry,
   Depth,
   ExportFormat,
+  ObservationReport,
   PageTimeline,
   PolicySignal,
   Report,

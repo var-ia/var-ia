@@ -1,6 +1,6 @@
 import type { AuthConfig } from "@refract-org/ingestion";
 import { Command } from "commander";
-import { buildConfig, runAnalyze } from "./commands/analyze.js";
+import { buildConfig, buildObservationReport, runAnalyze } from "./commands/analyze.js";
 import { runClaim } from "./commands/claim.js";
 import { runCron } from "./commands/cron.js";
 import type { DiffResult } from "./commands/diff.js";
@@ -62,7 +62,8 @@ const analyzeCmd = program
   .option("--to <revId>", "end revision ID")
   .option("--since <timestamp>", "re-observe from ISO timestamp")
   .option("-c, --cache", "cache revisions in SQLite (~/.wikihistory/refract.db)")
-  .option("--pages-file <path>", "batch file of page titles (one per line)");
+  .option("--pages-file <path>", "batch file of page titles (one per line)")
+  .option("-r, --report", "output ObservationReport JSON instead of raw events");
 withGlobal(analyzeCmd);
 withAnalyzerConfig(analyzeCmd);
 analyzeCmd.action(async (page, opts) => {
@@ -95,7 +96,7 @@ analyzeCmd.action(async (page, opts) => {
     process.exit(1);
   }
 
-  const { events } = await runAnalyze(
+  const { events, revisions } = await runAnalyze(
     page,
     opts.depth as string,
     opts.from ? parseInt(opts.from as string, 10) : undefined,
@@ -108,6 +109,13 @@ analyzeCmd.action(async (page, opts) => {
     auth,
     config,
   );
+
+  if (opts.report) {
+    const pageId = revisions[0]?.pageId ?? 0;
+    const report = buildObservationReport(page, pageId, events, revisions);
+    console.log(JSON.stringify(report, null, 2));
+    return;
+  }
 
   console.log(heading("Analysis Results"));
   console.log(`  ${bold("Page:")}    ${page}`);

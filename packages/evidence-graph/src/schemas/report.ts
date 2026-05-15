@@ -1,6 +1,7 @@
 // Report — the assembled output of the provenance engine
 
 import type { EvidenceLayer } from "./evidence.js";
+import type { ClaimState } from "./claim.js";
 
 export type ReportLayerLabel = EvidenceLayer;
 
@@ -51,4 +52,33 @@ export interface PolicySignal {
   firstSeenRevisionId: number;
   lastSeenRevisionId?: number;
   active: boolean;
+}
+
+export interface ClaimLedgerEntry {
+  observedAt: string;
+  revisionRange: { from: number; to: number };
+  state: ClaimState;
+  eventCount: number;
+  eventIds: string[];
+  merkleProof?: string;
+}
+
+export interface ClaimLedger {
+  claimId: string;
+  text: string;
+  firstSeenAt: string;
+  lastSeenAt: string;
+  currentState: ClaimState;
+  history: ClaimLedgerEntry[];
+}
+
+export interface ObservationReport {
+  pageTitle: string;
+  pageId: number;
+  observedAt: string;
+  revisionRange: { from: number; to: number };
+  claims: Record<string, ClaimLedger>;
+  eventCount: number;
+  merkleRoot: string;
+  analyzerVersion: string;
 }
