@@ -17,7 +17,8 @@ import {
   stripWikitext,
   templateTracker,
 } from "@refract-org/analyzers";
-import type { DeterministicFact, EvidenceEvent, EvidenceLayer, Revision, Section } from "@refract-org/evidence-graph";
+import type { AnalyzerConfig, DeterministicFact, EvidenceEvent, EvidenceLayer, Revision, Section } from "@refract-org/evidence-graph";
+import { DEFAULT_ANALYZER_CONFIG } from "@refract-org/evidence-graph";
 import type { AuthConfig, RevisionOptions } from "@refract-org/ingestion";
 import { MediaWikiClient } from "@refract-org/ingestion";
 
@@ -64,6 +65,115 @@ function templateTypeToPolicyDimension(type: TemplateType): string | null {
   }
 }
 
+function toCamelCase(str: string): string {
+  return str.replace(/[-_](.)/g, (_, c: string) => c.toUpperCase());
+}
+
+function deepCamelCaseKeys(obj: unknown): unknown {
+  if (Array.isArray(obj)) return obj.map(deepCamelCaseKeys);
+  if (obj && typeof obj === "object") {
+    const result: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(obj as Record<string, unknown>)) {
+      result[toCamelCase(key)] = deepCamelCaseKeys(value);
+    }
+    return result;
+  }
+  return obj;
+}
+
+function deepMerge(target: Record<string, unknown>, source: Record<string, unknown>): void {
+  for (const [key, value] of Object.entries(source)) {
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      if (!(key in target) || target[key] === undefined || typeof target[key] !== "object") {
+        target[key] = {};
+      }
+      deepMerge(target[key] as Record<string, unknown>, value as Record<string, unknown>);
+    } else {
+      target[key] = value;
+    }
+  }
+}
+
+function compilePatterns(config: AnalyzerConfig): void {
+  if (config.revert?.patterns) {
+    config.revert.patterns = config.revert.patterns.map((p) =>
+      typeof p === "string" ? new RegExp(p) : p,
+    );
+  }
+  if (config.talkParser?.resolvedPatterns) {
+    config.talkParser.resolvedPatterns = config.talkParser.resolvedPatterns.map((p) =>
+      typeof p === "string" ? new RegExp(p) : p,
+    );
+  }
+  if (config.heuristic?.vandalismPatterns) {
+    config.heuristic.vandalismPatterns = config.heuristic.vandalismPatterns.map((p) =>
+      typeof p === "string" ? new RegExp(p) : p,
+    );
+  }
+  if (config.heuristic?.sourcingPatterns) {
+    config.heuristic.sourcingPatterns = config.heuristic.sourcingPatterns.map((p) =>
+      typeof p === "string" ? new RegExp(p) : p,
+    );
+  }
+}
+
+export function buildConfig(options: Record<string, unknown>): AnalyzerConfig {
+  const config: AnalyzerConfig = structuredClone(DEFAULT_ANALYZER_CONFIG);
+
+  if (options.config) {
+    const content = readFileSync(options.config as string, "utf-8");
+    const fileOverrides = JSON.parse(content);
+    const camelCased = deepCamelCaseKeys(fileOverrides) as Record<string, unknown>;
+    deepMerge(config as unknown as Record<string, unknown>, camelCased);
+    compilePatterns(config);
+  }
+
+  if (options.similarity !== undefined) {
+    config.section ??= {};
+    config.section.similarityThreshold = Number(options.similarity);
+  }
+
+  if (options.revertPatterns) {
+    const content = readFileSync(options.revertPatterns as string, "utf-8");
+    config.revert ??= {};
+    config.revert.patterns = content
+      .split("\n")
+      .filter(Boolean)
+      .map((line) => new RegExp(line.trim()));
+  }
+
+  if (options.clusterWindow !== undefined) {
+    config.editCluster ??= {};
+    config.editCluster.windowMs = Number(options.clusterWindow) * 60 * 1000;
+  }
+
+  if (options.spikeFactor !== undefined) {
+    config.talkSpike ??= {};
+    config.talkSpike.spikeFactor = Number(options.spikeFactor);
+  }
+
+  if (options.talkWindow) {
+    const parts = (options.talkWindow as string).split("/");
+    if (parts.length === 2) {
+      const beforeDays = Number(parts[0]);
+      const afterDays = Number(parts[1]);
+      config.talkCorrelation ??= {};
+      config.talkCorrelation.windowBeforeMs = beforeDays * 24 * 60 * 60 * 1000;
+      config.talkCorrelation.windowAfterMs = afterDays * 24 * 60 * 60 * 1000;
+    }
+  }
+
+  if (options.sectionRename) {
+    const mode = options.sectionRename as string;
+    if (mode === "exact" || mode === "similarity" || mode === "none") {
+      config.section ??= {};
+      config.section.renameDetection = mode;
+    }
+  }
+
+  return config;
+}
+
 export async function runAnalyze(
   pageTitle: string,
   depth: string,
@@ -75,9 +185,10 @@ export async function runAnalyze(
   pagesFile?: string,
   cacheDir?: string,
   auth?: AuthConfig,
+  config?: AnalyzerConfig,
 ): Promise<{ events: EvidenceEvent[]; revisions: Revision[] }> {
   if (pagesFile) {
-    return runBatch(pagesFile, depth, fromRevId, toRevId, fromTimestamp, useCache, apiUrl, cacheDir, auth);
+    return runBatch(pagesFile, depth, fromRevId, toRevId, fromTimestamp, useCache, apiUrl, cacheDir, auth, config);
   }
   const client = new MediaWikiClient(apiUrl ? { apiUrl, auth } : auth ? { auth } : undefined);
   console.log(`Analyzing "${pageTitle}" at depth: ${depth}...`);
@@ -457,7 +568,7 @@ export async function runAnalyze(
     const beforeSecMap = getSectionCharMap(before);
     const afterSecMap = getSectionCharMap(after);
 
-    const similarityThreshold = 1.0; // TODO: make configurable via CLI flag (Task 4)
+    const similarityThreshold = config?.section?.similarityThreshold ?? 0.8;
 
     function wordOverlapRatio(a: string, b: string): number {
       const wordsA = new Set(a.toLowerCase().split(/\s+/).filter(Boolean));
@@ -599,6 +710,7 @@ async function runBatch(
   apiUrl?: string,
   cacheDir?: string,
   auth?: AuthConfig,
+  config?: AnalyzerConfig,
 ): Promise<{ events: EvidenceEvent[]; revisions: Revision[] }> {
   const content = readFileSync(pagesFile, "utf-8");
   const titles: string[] = content
@@ -629,6 +741,7 @@ async function runBatch(
           undefined,
           cacheDir,
           auth,
+          config,
         );
         return { pageTitle: title, pageId: 0, eventCount: events.length, events };
       }),

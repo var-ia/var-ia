@@ -1,4 +1,5 @@
-import type { EvidenceEvent } from "@refract-org/evidence-graph";
+import type { AnalyzerConfig, EvidenceEvent } from "@refract-org/evidence-graph";
+import { DEFAULT_ANALYZER_CONFIG } from "@refract-org/evidence-graph";
 import type { AuthConfig } from "@refract-org/ingestion";
 import { runAnalyze } from "./analyze.js";
 import { runClaim } from "./claim.js";
@@ -22,12 +23,19 @@ interface SamplingMessage {
   content: { type: "text"; text: string };
 }
 
+interface McpProperty {
+  type: string;
+  description?: string;
+  enum?: string[];
+  properties?: Record<string, McpProperty>;
+}
+
 interface McpTool {
   name: string;
   description: string;
   inputSchema: {
     type: "object";
-    properties: Record<string, { type: string; description: string; enum?: string[] }>;
+    properties: Record<string, McpProperty>;
     required?: string[];
   };
 }
@@ -58,6 +66,18 @@ const TOOLS: McpTool[] = [
         from: { type: "string", description: "Start revision ID" },
         to: { type: "string", description: "End revision ID" },
         since: { type: "string", description: "Re-observe from ISO timestamp" },
+        config: {
+          type: "object",
+          description: "Analyzer configuration overrides",
+          properties: {
+            similarityThreshold: { type: "number", description: "Sentence matching threshold (0-1)" },
+            spikeFactor: { type: "number", description: "Talk activity spike multiplier" },
+            clusterWindowMinutes: { type: "number", description: "Edit cluster window in minutes" },
+            talkWindowBeforeDays: { type: "number", description: "Talk correlation window before (days)" },
+            talkWindowAfterDays: { type: "number", description: "Talk correlation window after (days)" },
+            renameDetection: { type: "string", description: "Section rename: exact, similarity, none" },
+          },
+        },
       },
       required: ["page"],
     },
@@ -206,6 +226,39 @@ async function handleToolCall(
       const to = params.to ? parseInt(params.to as string, 10) : undefined;
       const since = params.since as string | undefined;
 
+      const mcpConfig = params.config as Record<string, unknown> | undefined;
+      let config: AnalyzerConfig | undefined;
+      if (mcpConfig) {
+        config = structuredClone(DEFAULT_ANALYZER_CONFIG);
+        if (mcpConfig.similarityThreshold !== undefined) {
+          config.section ??= {};
+          config.section.similarityThreshold = mcpConfig.similarityThreshold as number;
+        }
+        if (mcpConfig.spikeFactor !== undefined) {
+          config.talkSpike ??= {};
+          config.talkSpike.spikeFactor = mcpConfig.spikeFactor as number;
+        }
+        if (mcpConfig.clusterWindowMinutes !== undefined) {
+          config.editCluster ??= {};
+          config.editCluster.windowMs = (mcpConfig.clusterWindowMinutes as number) * 60 * 1000;
+        }
+        if (mcpConfig.talkWindowBeforeDays !== undefined) {
+          config.talkCorrelation ??= {};
+          config.talkCorrelation.windowBeforeMs = (mcpConfig.talkWindowBeforeDays as number) * 24 * 60 * 60 * 1000;
+        }
+        if (mcpConfig.talkWindowAfterDays !== undefined) {
+          config.talkCorrelation ??= {};
+          config.talkCorrelation.windowAfterMs = (mcpConfig.talkWindowAfterDays as number) * 24 * 60 * 60 * 1000;
+        }
+        if (mcpConfig.renameDetection !== undefined) {
+          const mode = mcpConfig.renameDetection as string;
+          if (mode === "exact" || mode === "similarity" || mode === "none") {
+            config.section ??= {};
+            config.section.renameDetection = mode;
+          }
+        }
+      }
+
       const { events, revisions } = await runAnalyze(
         page,
         depth,
@@ -217,6 +270,7 @@ async function handleToolCall(
         undefined,
         undefined,
         auth,
+        config,
       );
       const summary = summarizeEvents(events);
       const lines = [

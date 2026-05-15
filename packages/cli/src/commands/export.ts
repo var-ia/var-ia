@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import type { EvidenceEvent, PolicySignal, Report, Revision } from "@refract-org/evidence-graph";
+import type { AnalyzerConfig, EvidenceEvent, PolicySignal, Report, Revision } from "@refract-org/evidence-graph";
 import { createEventIdentity, createReplayManifest } from "@refract-org/evidence-graph";
 import type { AuthConfig } from "@refract-org/ingestion";
 import { renderHtmlReport } from "../html-renderer.js";
@@ -22,6 +22,7 @@ export async function runExport(
   bundle?: boolean,
   auth?: AuthConfig,
   manifest?: boolean,
+  config?: AnalyzerConfig,
 ): Promise<void> {
   if (bundle) {
     const { events, revisions } = await runAnalyze(
@@ -35,6 +36,7 @@ export async function runExport(
       undefined,
       undefined,
       auth,
+      config,
     );
     const bundleData = buildBundle(pageTitle, events, revisions);
     console.log(JSON.stringify(bundleData, null, 2));
@@ -53,6 +55,7 @@ export async function runExport(
       undefined,
       undefined,
       auth,
+      config,
     );
     const manifestData = createReplayManifest({
       pageTitle,
@@ -75,6 +78,7 @@ export async function runExport(
     undefined,
     undefined,
     auth,
+    config,
   );
 
   if (format === "html") {

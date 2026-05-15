@@ -1,4 +1,5 @@
 import { createServer } from "node:http";
+import type { AnalyzerConfig } from "@refract-org/evidence-graph";
 import type { AuthConfig } from "@refract-org/ingestion";
 import { renderHtmlReport } from "../html-renderer.js";
 import { runAnalyze } from "./analyze.js";
@@ -18,6 +19,7 @@ export async function runExplore(
   noOpen: boolean,
   apiUrl?: string,
   auth?: AuthConfig,
+  config?: AnalyzerConfig,
 ): Promise<void> {
   const { events, revisions } = await runAnalyze(
     pageTitle,
@@ -30,6 +32,7 @@ export async function runExplore(
     undefined,
     undefined,
     auth,
+    config,
   );
 
   const server = createServer((req, res) => {

@@ -1,6 +1,6 @@
 import type { AuthConfig } from "@refract-org/ingestion";
 import { Command } from "commander";
-import { runAnalyze } from "./commands/analyze.js";
+import { buildConfig, runAnalyze } from "./commands/analyze.js";
 import { runClaim } from "./commands/claim.js";
 import { runCron } from "./commands/cron.js";
 import type { DiffResult } from "./commands/diff.js";
@@ -20,6 +20,17 @@ function withGlobal(cmd: Command): Command {
     .option("--api-key <token>", "API key for bearer token auth")
     .option("--api-user <user>", "username for basic auth")
     .option("--api-password <pass>", "password for basic auth");
+}
+
+function withAnalyzerConfig(cmd: Command): Command {
+  return cmd
+    .option("--config <path>", "JSON file with AnalyzerConfig overrides")
+    .option("--similarity <n>", "Sentence matching threshold (0-1, default 0.8)")
+    .option("--revert-patterns <path>", "File with revert regex patterns (one per line)")
+    .option("--cluster-window <min>", "Edit cluster window in minutes (default 60)")
+    .option("--spike-factor <n>", "Talk activity spike multiplier (default 3.0)")
+    .option("--talk-window <fmt>", "Talk correlation window in days. Format: before/after e.g. 7/3")
+    .option("--section-rename <mode>", "Section rename detection: exact | similarity | none");
 }
 
 function extractAuth(opts: Record<string, unknown>): AuthConfig | undefined {
@@ -53,9 +64,12 @@ const analyzeCmd = program
   .option("-c, --cache", "cache revisions in SQLite (~/.wikihistory/refract.db)")
   .option("--pages-file <path>", "batch file of page titles (one per line)");
 withGlobal(analyzeCmd);
+withAnalyzerConfig(analyzeCmd);
 analyzeCmd.action(async (page, opts) => {
   const pagesFile = opts.pagesFile as string | undefined;
   const auth = extractAuth(opts);
+
+  const config = buildConfig(opts);
 
   if (pagesFile) {
     const result = await runAnalyze(
@@ -69,6 +83,7 @@ analyzeCmd.action(async (page, opts) => {
       pagesFile,
       opts.cacheDir as string | undefined,
       auth,
+      config,
     );
     console.log(`\n${success(`Batch complete. ${result.events.length} events total.`)}`);
     return;
@@ -91,6 +106,7 @@ analyzeCmd.action(async (page, opts) => {
     undefined,
     opts.cacheDir as string | undefined,
     auth,
+    config,
   );
 
   console.log(heading("Analysis Results"));
@@ -139,7 +155,9 @@ const exportCmd = program
   .option("--bundle", "export as signed evidence bundle with SHA-256 hash")
   .option("--manifest", "export as replay manifest listing all hashes");
 withGlobal(exportCmd);
+withAnalyzerConfig(exportCmd);
 exportCmd.action(async (page, opts) => {
+  const config = buildConfig(opts);
   await runExport(
     page,
     opts.format as string,
@@ -147,6 +165,7 @@ exportCmd.action(async (page, opts) => {
     !!opts.bundle,
     extractAuth(opts),
     !!opts.manifest,
+    config,
   );
 });
 
@@ -215,8 +234,10 @@ const exploreCmd = program
   .option("-p, --port <n>", "server port (default: 8899)", parseInt)
   .option("--no-open", "don't open browser automatically");
 withGlobal(exploreCmd);
+withAnalyzerConfig(exploreCmd);
 exploreCmd.action(async (page, opts) => {
-  await runExplore(page, opts.port ?? 8899, !!opts.noOpen, opts.api as string | undefined, extractAuth(opts));
+  const config = buildConfig(opts);
+  await runExplore(page, opts.port ?? 8899, !!opts.noOpen, opts.api as string | undefined, extractAuth(opts), config);
 });
 
 // ── diff ──
