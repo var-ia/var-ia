@@ -1,7 +1,7 @@
 // Report — the assembled output of the provenance engine
 
-import type { EvidenceLayer } from "./evidence.js";
 import type { ClaimState } from "./claim.js";
+import type { EvidenceLayer } from "./evidence.js";
 
 export type ReportLayerLabel = EvidenceLayer;
 

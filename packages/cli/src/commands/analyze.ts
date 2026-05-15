@@ -17,8 +17,24 @@ import {
   stripWikitext,
   templateTracker,
 } from "@refract-org/analyzers";
-import type { AnalyzerConfig, ClaimLedger, ClaimLedgerEntry, ClaimState, DeterministicFact, EvidenceEvent, EvidenceLayer, ObservationReport, Revision, Section } from "@refract-org/evidence-graph";
-import { createClaimIdentity, createEventIdentity, createReplayManifest, DEFAULT_ANALYZER_CONFIG } from "@refract-org/evidence-graph";
+import type {
+  AnalyzerConfig,
+  ClaimLedger,
+  ClaimLedgerEntry,
+  ClaimState,
+  DeterministicFact,
+  EvidenceEvent,
+  EvidenceLayer,
+  ObservationReport,
+  Revision,
+  Section,
+} from "@refract-org/evidence-graph";
+import {
+  createClaimIdentity,
+  createEventIdentity,
+  createReplayManifest,
+  DEFAULT_ANALYZER_CONFIG,
+} from "@refract-org/evidence-graph";
 import type { AuthConfig, RevisionOptions } from "@refract-org/ingestion";
 import { MediaWikiClient } from "@refract-org/ingestion";
 
@@ -96,9 +112,7 @@ function deepMerge(target: Record<string, unknown>, source: Record<string, unkno
 
 function compilePatterns(config: AnalyzerConfig): void {
   if (config.revert?.patterns) {
-    config.revert.patterns = config.revert.patterns.map((p) =>
-      typeof p === "string" ? new RegExp(p) : p,
-    );
+    config.revert.patterns = config.revert.patterns.map((p) => (typeof p === "string" ? new RegExp(p) : p));
   }
   if (config.talkParser?.resolvedPatterns) {
     config.talkParser.resolvedPatterns = config.talkParser.resolvedPatterns.map((p) =>
@@ -805,9 +819,7 @@ export function buildObservationReport(
   let maxRev = -Infinity;
 
   for (const [claimId, groupEvents] of claimGroups) {
-    groupEvents.sort(
-      (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
-    );
+    groupEvents.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
     const text = groupEvents[0].after || groupEvents[0].before;
     const firstSeenAt = groupEvents[0].timestamp;
