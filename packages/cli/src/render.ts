@@ -46,6 +46,7 @@ export function eventLabel(eventType: string): string {
     section_reorganized: "section changed",
     sentence_first_seen: "sentence introduced",
     sentence_removed: "sentence removed",
+    sentence_modified: "sentence modified",
     sentence_reintroduced: "sentence reintroduced",
     wikilink_added: "wikilink added",
     wikilink_removed: "wikilink removed",

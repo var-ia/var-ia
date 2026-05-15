@@ -5,6 +5,7 @@ export type EvidenceLayer = "observed" | "policy_coded" | "model_interpretation"
 export type EventType =
   | "sentence_first_seen"
   | "sentence_removed"
+  | "sentence_modified"
   | "sentence_reintroduced"
   | "citation_added"
   | "citation_removed"

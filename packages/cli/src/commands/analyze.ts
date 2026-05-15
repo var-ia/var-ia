@@ -22,7 +22,7 @@ import type { AuthConfig, RevisionOptions } from "@refract-org/ingestion";
 import { MediaWikiClient } from "@refract-org/ingestion";
 
 import { loadCachedRevisions, loadLatestCachedTimestamp, saveRevisions } from "./cache.js";
-import { buildSectionCharMap, findSectionForText, fuzzyFindText } from "./claim.js";
+import { buildSectionCharMap, findSectionForText } from "./claim.js";
 
 interface ParsedContent {
   sections: Section[];
@@ -454,17 +454,61 @@ export async function runAnalyze(
     const beforeSentences = beforePlain.split(sentenceSplit).filter((s) => s.trim().length > 20);
     const afterSentences = afterPlain.split(sentenceSplit).filter((s) => s.trim().length > 20);
 
-    const beforeNorm = beforePlain.toLowerCase().replace(/\s+/g, " ");
-    const afterNorm = afterPlain.toLowerCase().replace(/\s+/g, " ");
-
     const beforeSecMap = getSectionCharMap(before);
     const afterSecMap = getSectionCharMap(after);
+
+    const similarityThreshold = 1.0; // TODO: make configurable via CLI flag (Task 4)
+
+    function wordOverlapRatio(a: string, b: string): number {
+      const wordsA = new Set(a.toLowerCase().split(/\s+/).filter(Boolean));
+      const wordsB = new Set(b.toLowerCase().split(/\s+/).filter(Boolean));
+      const intersection = new Set([...wordsA].filter((w) => wordsB.has(w)));
+      const union = new Set([...wordsA, ...wordsB]);
+      return intersection.size / union.size;
+    }
+
+    const matchedBeforeIndices = new Set<number>();
 
     for (const sentence of afterSentences) {
       const trimmed = sentence.trim();
       if (!trimmed) continue;
-      const foundInBefore = fuzzyFindText(trimmed, beforePlain, beforeNorm);
-      if (!foundInBefore) {
+
+      let bestMatchIdx = -1;
+      let bestRatio = 0;
+      let bestBeforeSentence = "";
+
+      for (let i = 0; i < beforeSentences.length; i++) {
+        if (matchedBeforeIndices.has(i)) continue;
+        const beforeTrimmed = beforeSentences[i].trim();
+        if (!beforeTrimmed) continue;
+        const ratio = wordOverlapRatio(beforeTrimmed, trimmed);
+        if (ratio > bestRatio) {
+          bestRatio = ratio;
+          bestMatchIdx = i;
+          bestBeforeSentence = beforeTrimmed;
+        }
+      }
+
+      if (bestMatchIdx >= 0 && bestRatio >= similarityThreshold) {
+        matchedBeforeIndices.add(bestMatchIdx);
+        if (bestBeforeSentence.toLowerCase().replace(/\s+/g, " ") !== trimmed.toLowerCase().replace(/\s+/g, " ")) {
+          const section = findSectionForText(after.content, trimmed, afterPlain, afterSecMap);
+          events.push({
+            eventType: "sentence_modified",
+            fromRevisionId: before.revId,
+            toRevisionId: after.revId,
+            section,
+            before: isBrief ? "" : bestBeforeSentence,
+            after: isBrief ? "" : trimmed,
+            deterministicFacts: [
+              { fact: "sentence_modified", detail: `sentence_length=${trimmed.length}` },
+              ...extraFacts,
+            ],
+            layer: "observed",
+            timestamp: after.timestamp,
+          });
+        }
+      } else {
         const normalized = trimmed.toLowerCase().replace(/\s+/g, " ");
         const wasSeenBefore = allSeenSentences.has(normalized);
         const section = findSectionForText(after.content, trimmed, afterPlain, afterSecMap);
@@ -482,31 +526,24 @@ export async function runAnalyze(
       }
     }
 
-    // Sentence removal detection
-    // In-place sentence changes are not tracked — Refract observes appearance,
-    // disappearance, and reappearance, not directional semantic evolution.
+    // Sentence removal detection — only unmatched before sentences remain
 
-    for (const sentence of beforeSentences) {
-      const trimmed = sentence.trim();
+    for (let i = 0; i < beforeSentences.length; i++) {
+      if (matchedBeforeIndices.has(i)) continue;
+      const trimmed = beforeSentences[i].trim();
       if (!trimmed) continue;
-      const foundInAfter = fuzzyFindText(trimmed, afterPlain, afterNorm);
-      if (!foundInAfter) {
-        const section = findSectionForText(before.content, trimmed, beforePlain, beforeSecMap);
-        events.push({
-          eventType: "sentence_removed",
-          fromRevisionId: before.revId,
-          toRevisionId: after.revId,
-          section,
-          before: isBrief ? "" : trimmed,
-          after: "",
-          deterministicFacts: [
-            { fact: "sentence_removed", detail: `sentence_length=${trimmed.length}` },
-            ...extraFacts,
-          ],
-          layer: "observed",
-          timestamp: after.timestamp,
-        });
-      }
+      const section = findSectionForText(before.content, trimmed, beforePlain, beforeSecMap);
+      events.push({
+        eventType: "sentence_removed",
+        fromRevisionId: before.revId,
+        toRevisionId: after.revId,
+        section,
+        before: isBrief ? "" : trimmed,
+        after: "",
+        deterministicFacts: [{ fact: "sentence_removed", detail: `sentence_length=${trimmed.length}` }, ...extraFacts],
+        layer: "observed",
+        timestamp: after.timestamp,
+      });
     }
 
     for (const s of afterSentences) {

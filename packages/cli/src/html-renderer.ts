@@ -4,6 +4,7 @@ const EVENT_COLORS: Record<string, string> = {
   sentence_first_seen: "#4caf50",
   sentence_reintroduced: "#8bc34a",
   sentence_removed: "#f44336",
+  sentence_modified: "#ff9800",
   citation_added: "#00bcd4",
   citation_removed: "#e91e63",
   citation_replaced: "#ff5722",
