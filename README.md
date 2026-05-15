@@ -123,10 +123,11 @@ import { sectionDiffer, citationTracker } from "@var-ia/analyzers";
 | `@var-ia/evidence-graph` | [![npm](https://img.shields.io/npm/v/@var-ia/evidence-graph)](https://www.npmjs.com/package/@var-ia/evidence-graph) | Core types and schemas — claim, evidence, source, report |
 | `@var-ia/ingestion` | [![npm](https://img.shields.io/npm/v/@var-ia/ingestion)](https://www.npmjs.com/package/@var-ia/ingestion) | Wikimedia API adapters — fetching, diffing, rate limits |
 | `@var-ia/analyzers` | [![npm](https://img.shields.io/npm/v/@var-ia/analyzers)](https://www.npmjs.com/package/@var-ia/analyzers) | Deterministic analyzers — sections, citations, reverts, templates |
+| `@var-ia/interpreter` | [![npm](https://img.shields.io/npm/v/@var-ia/interpreter)](https://www.npmjs.com/package/@var-ia/interpreter) | Pluggable model adapter (L2) — OpenAI, Anthropic, DeepSeek, local |
 | `@var-ia/cli` | [![npm](https://img.shields.io/npm/v/@var-ia/cli)](https://www.npmjs.com/package/@var-ia/cli) | CLI tool — `wikihistory` command |
-| `@var-ia/eval` | — | Evaluation harness with benchmark pages (public, not yet published) |
-| `@var-ia/persistence` | — | Local SQLite persistence layer (bun:sqlite) |
-| `@var-ia/observable` | — | Observable Framework data loader for Varia exports |
+| `@var-ia/persistence` | — | Local SQLite persistence (bun:sqlite, not published) |
+| `@var-ia/eval` | — | Evaluation harness (not published) |
+| `@var-ia/observable` | — | Observable Framework data loader (not published) |
 
 ## How It Compares
 
@@ -242,3 +243,14 @@ integration without AGPL obligations. See [nextconsensus.com](https://nextconsen
 - [Security](./.github/SECURITY.md)
 - [Changelog](./CHANGELOG.md)
 - [Cite this software](./CITATION.cff)
+
+## Ecosystem
+
+These repos extend the core engine:
+
+| Repo | Purpose |
+|------|---------|
+| [varia-docs](https://github.com/var-ia/varia-docs) | Public documentation site (quickstart, CLI ref, SDK ref, tutorials) |
+| [varia-labs](https://github.com/var-ia/varia-labs) | Experimental non-healthcare probes (AI provenance, fandom canon, brand monitoring, legal chronology, enterprise knowledge, standards intelligence) |
+| [varia-ui](https://github.com/var-ia/varia-ui) | Generic visualization interface — load JSONL, render timelines, diffs, citations, certainty scores |
+| [varia-demo-data](https://github.com/var-ia/varia-demo-data) | Safe, fictional demo datasets for the eval harness (no real PII or medical data) |

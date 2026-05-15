@@ -25,3 +25,5 @@ bun add @var-ia/evidence-graph
 import type { EvidenceEvent, Revision } from "@var-ia/evidence-graph";
 import { createClaimIdentity } from "@var-ia/evidence-graph";
 ```
+
+[Varia](https://github.com/var-ia/var-ia) · [Docs](https://github.com/var-ia/varia-docs) · [npm](https://www.npmjs.com/package/@var-ia/evidence-graph)

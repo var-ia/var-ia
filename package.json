@@ -2,10 +2,13 @@
   "name": "varia",
   "version": "0.2.1",
   "type": "module",
-  "private": false,
-  "description": "A deterministic observation engine for public revision histories. Evidence, not truth. Made by NextConsensus.",
-  "repository": "github:var-ia/var-ia",
-  "homepage": "https://nextconsensus.com",
+  "private": true,
+  "description": "A deterministic observation engine for public revision histories. Evidence, not truth.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/var-ia/var-ia.git"
+  },
+  "homepage": "https://github.com/var-ia/var-ia#readme",
   "bugs": "https://github.com/var-ia/var-ia/issues",
   "keywords": [
     "observation-engine",
@@ -21,9 +24,10 @@
   },
   "license": "AGPL-3.0",
   "workspaces": [
-    "packages/ingestion",
     "packages/evidence-graph",
+    "packages/ingestion",
     "packages/analyzers",
+    "packages/interpreter",
     "packages/cli",
     "packages/persistence",
     "packages/eval",

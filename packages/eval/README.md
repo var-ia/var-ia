@@ -34,3 +34,5 @@ Generic evaluation harness for L2 model quality — benchmarks, calibration, L3 
 ## License
 
 AGPL-3.0
+
+[Varia](https://github.com/var-ia/var-ia) · [Docs](https://github.com/var-ia/varia-docs)

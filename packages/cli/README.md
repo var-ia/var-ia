@@ -45,3 +45,5 @@ wikihistory export "Bitcoin" --manifest
 wikihistory diff --wiki-a https://starwars.fandom.com/api.php --wiki-b https://memory-alpha.fandom.com/api.php "energy weapons"
 wikihistory eval
 ```
+
+[Varia](https://github.com/var-ia/var-ia) · [Docs](https://github.com/var-ia/varia-docs) · [npm](https://www.npmjs.com/package/@var-ia/cli)

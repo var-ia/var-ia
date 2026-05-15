@@ -20,3 +20,5 @@ bun add @var-ia/persistence
 import { Persistence } from "@var-ia/persistence";
 import type { PersistenceAdapter, PersistenceConfig } from "@var-ia/persistence";
 ```
+
+[Varia](https://github.com/var-ia/var-ia) · [Docs](https://github.com/var-ia/varia-docs)

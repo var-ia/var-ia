@@ -23,3 +23,5 @@ bun add @var-ia/ingestion
 import { MediaWikiClient, RateLimiter } from "@var-ia/ingestion";
 import type { RevisionFetcher, RevisionOptions } from "@var-ia/ingestion";
 ```
+
+[Varia](https://github.com/var-ia/var-ia) · [Docs](https://github.com/var-ia/varia-docs) · [npm](https://www.npmjs.com/package/@var-ia/ingestion)

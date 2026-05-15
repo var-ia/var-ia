@@ -10,7 +10,7 @@
     "url": "git+https://github.com/var-ia/var-ia.git",
     "directory": "packages/observable"
   },
-  "homepage": "https://nextconsensus.com",
+  "homepage": "https://github.com/var-ia/var-ia#readme",
   "bugs": {
     "url": "https://github.com/var-ia/var-ia/issues"
   },
