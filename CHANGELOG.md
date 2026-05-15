@@ -1,5 +1,48 @@
 # Changelog
 
+## 0.3.0 (2026-05-15)
+
+### New L1 analyzers
+
+- **Edit cluster detection** — `detectEditClusters()` groups 3+ rapid edits within a configurable time window. Produces `edit_cluster_detected` events.
+- **Talk activity spike detection** — `detectTalkActivitySpikes()` flags anomalous talk page activity (3x moving average). Produces `talk_activity_spike` events.
+- **Wikidata entity mapping** — `fetchWikidataId()`, `mapPageToEntity()`, `mapPagesToEntities()` for page-to-Q-ID lookups, entity data, and claim extraction.
+
+### New CLI commands
+
+- **`wikihistory explore <page>`** — starts a local HTTP web server with an interactive timeline, evidence table, diff viewer, and summary view.
+
+### Model adapters hardened
+
+- All 5 adapters (OpenAI, Anthropic, DeepSeek, Ollama, BYOK) now support `timeoutMs` (default 120s) and `maxTokens` (default 4096) configuration.
+- Fetch calls use `AbortSignal.timeout()` for deterministic timeouts.
+- Interpreter barrel (`index.ts`) split: 381-line file → 6 dedicated adapter files in `adapters/`.
+- Removed dead exports (`CalibratedAdapter`, `CascadingRouter`).
+
+### Infrastructure
+
+- **CI pinned to bun 1.2.x** — reproducible builds.
+- **Architecture boundary check** — `scripts/check-boundaries.ts` prevents L1→interpreter and L2→ingestion imports, enforced in CI.
+- **`.env.example`** added with expected environment variables.
+- **Public `@var-ia/eval`** — package made public with full exports, README, and benchmark fixtures (25 seeded labels across 5 pages).
+
+### Documentation
+
+- `docs/events.md` — full event taxonomy with triggers and examples (all 29 event types).
+- `docs/naming.md` — explains Varia/var-ia/@var-ia/wikihistory split.
+- `docs/mcp.md` — MCP tool reference with connection configs.
+- `docs/security.md` — credential exposure, local cache, L2 data flow.
+- `docs/recipes.md` — example JSON output added to claim, cron, and diff recipes.
+- L2 invariant now reads "never receives full revision wikitext" (was "never sees raw Wikipedia text").
+
+### Bug fixes
+
+- `_toRevId` renamed to `toRevId` (underscore was misleading — parameter IS used).
+- `stripWikitext` moved from CLI `claim.ts` to `analyzers/wikitext-parser.ts` (removed duplicate).
+- `ReportLayerLabel` consolidated as alias of `EvidenceLayer`.
+- Dueling `ExpectedInterpretation` types in eval renamed to `L2ExpectedInterpretation`.
+- Stale dist test files cleaned (compiled `__tests__/` in dist were being run by vitest).
+
 ## 0.2.1 (2026-05-13)
 
 ### Examples (new)

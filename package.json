@@ -36,6 +36,7 @@
     "format": "biome format --write packages/",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "ci": "bun run build && biome ci packages/ && bun run typecheck && bun run check:boundaries && bun run test",
     "check:boundaries": "bun scripts/check-boundaries.ts",
     "clean": "rm -rf packages/*/dist"
   },
