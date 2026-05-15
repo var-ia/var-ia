@@ -1,3 +1,5 @@
+import type { AnalyzerConfig } from "@refract-org/evidence-graph";
+
 export type HeuristicKind =
   | "revert"
   | "vandalism"
@@ -8,15 +10,10 @@ export type HeuristicKind =
   | "minor"
   | "unknown";
 
-export interface HeuristicOptions {
-  majorAdditionThreshold?: number;
-  majorRemovalThreshold?: number;
-  cosmeticThreshold?: number;
-  minorThreshold?: number;
-}
+export type HeuristicOptions = AnalyzerConfig["heuristic"];
 
-const VANDALISM_PATTERNS = /\b(vandal|vandalism|spam|blanking|test edit)\b/i;
-const SOURCING_PATTERNS = /\b(cite|ref|source|reference|citation|add ref|rm ref)\b/i;
+const DEFAULT_VANDALISM_PATTERNS: RegExp[] = [/\b(vandal|vandalism|spam|blanking|test edit)\b/i];
+const DEFAULT_SOURCING_PATTERNS: RegExp[] = [/\b(cite|ref|source|reference|citation|add ref|rm ref)\b/i];
 const REVERT_PATTERNS = /\b(rv|revert|reverted|undo|undid|rollback|rvv)\b/i;
 
 const DEFAULT_MAJOR_ADDITION = 2000;
@@ -24,18 +21,24 @@ const DEFAULT_MAJOR_REMOVAL = -2000;
 const DEFAULT_COSMETIC = 20;
 const DEFAULT_MINOR = 100;
 
-export function classifyHeuristic(comment: string, sizeDelta: number, options?: HeuristicOptions): HeuristicKind {
+export function classifyHeuristic(
+  comment: string,
+  sizeDelta: number,
+  options?: AnalyzerConfig["heuristic"],
+): HeuristicKind {
   const norm = comment.toLowerCase().trim();
 
   if (REVERT_PATTERNS.test(norm)) {
     return "revert";
   }
 
-  if (VANDALISM_PATTERNS.test(norm)) {
+  const vandalismPatterns = options?.vandalismPatterns ?? DEFAULT_VANDALISM_PATTERNS;
+  if (vandalismPatterns.some((p) => p.test(norm))) {
     return "vandalism";
   }
 
-  if (SOURCING_PATTERNS.test(norm)) {
+  const sourcingPatterns = options?.sourcingPatterns ?? DEFAULT_SOURCING_PATTERNS;
+  if (sourcingPatterns.some((p) => p.test(norm))) {
     return "sourcing";
   }
 

@@ -1,17 +1,14 @@
-import type { EvidenceEvent, Revision } from "@refract-org/evidence-graph";
+import type { AnalyzerConfig, EvidenceEvent, Revision } from "@refract-org/evidence-graph";
 
 const DEFAULT_WINDOW_BEFORE_MS = 7 * 24 * 60 * 60 * 1000;
 const DEFAULT_WINDOW_AFTER_MS = 3 * 24 * 60 * 60 * 1000;
 
-export interface TalkCorrelationOptions {
-  windowBeforeMs?: number;
-  windowAfterMs?: number;
-}
+export type TalkCorrelationOptions = AnalyzerConfig["talkCorrelation"];
 
 export function correlateTalkRevisions(
   articleRevs: Revision[],
   talkRevs: Revision[],
-  options?: TalkCorrelationOptions,
+  options?: AnalyzerConfig["talkCorrelation"],
 ): EvidenceEvent[] {
   const windowBefore = options?.windowBeforeMs ?? DEFAULT_WINDOW_BEFORE_MS;
   const windowAfter = options?.windowAfterMs ?? DEFAULT_WINDOW_AFTER_MS;

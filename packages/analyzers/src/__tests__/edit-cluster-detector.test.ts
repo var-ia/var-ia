@@ -73,7 +73,7 @@ describe("detectEditClusters", () => {
       makeRev(4, "2024-01-01T00:03:00Z"),
       makeRev(5, "2024-01-01T00:04:00Z"),
     ];
-    const events = detectEditClusters(revs, { minClusterSize: 5, windowMs: 60 * 60 * 1000 });
+    const events = detectEditClusters(revs, { minSize: 5, windowMs: 60 * 60 * 1000 });
     expect(events).toHaveLength(1);
   });
 });

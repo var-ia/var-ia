@@ -76,7 +76,11 @@ export const sectionDiffer: SectionDiffer = {
     return sections;
   },
 
-  diffSections(before: Section[], after: Section[]): SectionChange[] {
+  diffSections(
+    before: Section[],
+    after: Section[],
+    _options?: { renameDetection?: "exact" | "similarity" | "none" },
+  ): SectionChange[] {
     const changes: SectionChange[] = [];
     const beforeByTitle = new Map<string, Section>();
     const afterByTitle = new Map<string, Section>();
@@ -152,6 +156,7 @@ export interface SectionLineage {
 
 export function buildSectionLineage(
   revisions: Array<{ revId: number; timestamp: string; content: string }>,
+  options?: { renameDetection?: "exact" | "similarity" | "none" },
 ): SectionLineage[] {
   if (revisions.length === 0) return [];
 
@@ -181,6 +186,8 @@ export function buildSectionLineage(
     });
   }
 
+  const renameDetection = options?.renameDetection ?? "exact";
+
   for (let i = 0; i < revisions.length - 1; i++) {
     const prevRev = revisions[i];
     const currRev = revisions[i + 1];
@@ -200,18 +207,21 @@ export function buildSectionLineage(
     const addedKeys = [...currKeys].filter((k) => !prevKeys.has(k));
 
     const renamedFromTo = new Map<string, string>();
-    const contentToAddKey = new Map<string, string>();
-    for (const addKey of addedKeys) {
-      const section = currByKey.get(addKey);
-      if (!section) continue;
-      contentToAddKey.set(section.content, addKey);
-    }
-    for (const remKey of removedKeys) {
-      const remSection = prevByKey.get(remKey);
-      if (!remSection) continue;
-      const addKey = contentToAddKey.get(remSection.content);
-      if (addKey) {
-        renamedFromTo.set(remKey, addKey);
+
+    if (renameDetection !== "none") {
+      const contentToAddKey = new Map<string, string>();
+      for (const addKey of addedKeys) {
+        const section = currByKey.get(addKey);
+        if (!section) continue;
+        contentToAddKey.set(section.content, addKey);
+      }
+      for (const remKey of removedKeys) {
+        const remSection = prevByKey.get(remKey);
+        if (!remSection) continue;
+        const addKey = contentToAddKey.get(remSection.content);
+        if (addKey) {
+          renamedFromTo.set(remKey, addKey);
+        }
       }
     }
 

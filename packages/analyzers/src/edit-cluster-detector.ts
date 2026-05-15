@@ -1,12 +1,9 @@
-import type { EvidenceEvent, Revision } from "@refract-org/evidence-graph";
+import type { AnalyzerConfig, EvidenceEvent, Revision } from "@refract-org/evidence-graph";
 
 const DEFAULT_WINDOW_MS = 60 * 60 * 1000; // 1 hour
 const DEFAULT_MIN_CLUSTER_SIZE = 3;
 
-export interface EditClusterOptions {
-  windowMs?: number;
-  minClusterSize?: number;
-}
+export type EditClusterOptions = AnalyzerConfig["editCluster"];
 
 export interface EditCluster {
   revisionIds: number[];
@@ -16,9 +13,9 @@ export interface EditCluster {
   eventCount: number;
 }
 
-export function detectEditClusters(revisions: Revision[], options?: EditClusterOptions): EvidenceEvent[] {
+export function detectEditClusters(revisions: Revision[], options?: AnalyzerConfig["editCluster"]): EvidenceEvent[] {
   const windowMs = options?.windowMs ?? DEFAULT_WINDOW_MS;
-  const minSize = options?.minClusterSize ?? DEFAULT_MIN_CLUSTER_SIZE;
+  const minSize = options?.minSize ?? DEFAULT_MIN_CLUSTER_SIZE;
   const events: EvidenceEvent[] = [];
 
   if (revisions.length < minSize) return events;

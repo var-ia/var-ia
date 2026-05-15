@@ -1,7 +1,7 @@
 import type { Revision } from "@refract-org/evidence-graph";
 import type { RevertChain, RevertDetector } from "./index.js";
 
-const REVERT_PATTERNS = [
+const DEFAULT_REVERT_PATTERNS = [
   /\brevert/i,
   /\bundid\s+revision/i,
   /\brvv\b/i,
@@ -11,18 +11,19 @@ const REVERT_PATTERNS = [
 ];
 
 export const revertDetector: RevertDetector = {
-  isRevert(comment: string): boolean {
-    return REVERT_PATTERNS.some((pattern) => pattern.test(comment));
+  isRevert(comment: string, options?: { patterns?: RegExp[] }): boolean {
+    const patterns = options?.patterns ?? DEFAULT_REVERT_PATTERNS;
+    return patterns.some((pattern) => pattern.test(comment));
   },
 
-  detectRevertChain(revisions: Revision[]): RevertChain[] {
+  detectRevertChain(revisions: Revision[], options?: { patterns?: RegExp[] }): RevertChain[] {
     const chains: RevertChain[] = [];
     const sorted = [...revisions].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
     let i = 0;
     while (i < sorted.length) {
       const rev = sorted[i];
-      if (!this.isRevert(rev.comment)) {
+      if (!this.isRevert(rev.comment, options)) {
         i++;
         continue;
       }

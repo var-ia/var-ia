@@ -2,7 +2,11 @@ import type { Revision, Section, SectionChange } from "@refract-org/evidence-gra
 
 export interface SectionDiffer {
   extractSections(wikitext: string): Section[];
-  diffSections(before: Section[], after: Section[]): SectionChange[];
+  diffSections(
+    before: Section[],
+    after: Section[],
+    options?: { renameDetection?: "exact" | "similarity" | "none" },
+  ): SectionChange[];
 }
 
 export interface CitationTracker {
@@ -24,8 +28,8 @@ export interface CitationChange {
 }
 
 export interface RevertDetector {
-  isRevert(comment: string): boolean;
-  detectRevertChain(revisions: Revision[]): RevertChain[];
+  isRevert(comment: string, options?: { patterns?: RegExp[] }): boolean;
+  detectRevertChain(revisions: Revision[], options?: { patterns?: RegExp[] }): RevertChain[];
 }
 
 export interface RevertChain {

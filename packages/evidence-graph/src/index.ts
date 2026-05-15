@@ -16,6 +16,8 @@ export type {
   ClaimState,
   PropositionType,
 } from "./schemas/claim.js";
+export type { AnalyzerConfig } from "./schemas/config.js";
+export { DEFAULT_ANALYZER_CONFIG } from "./schemas/config.js";
 export type {
   DeterministicFact,
   EventType,
@@ -37,5 +39,3 @@ export type {
 } from "./schemas/report.js";
 export type { DiffLine, DiffResult, Revision, Section, SectionChange } from "./schemas/revision.js";
 export type { SourceAuthority, SourceLineage, SourceRecord, SourceReplacement, SourceType } from "./schemas/source.js";
-export type { AnalyzerConfig } from "./schemas/config.js";
-export { DEFAULT_ANALYZER_CONFIG } from "./schemas/config.js";

@@ -47,7 +47,7 @@ export interface TalkParserConfig {
 
 export interface SectionConfig {
   similarityThreshold?: number;
-  renameDetection?: 'exact' | 'similarity' | 'none';
+  renameDetection?: "exact" | "similarity" | "none";
 }
 
 export const DEFAULT_ANALYZER_CONFIG: AnalyzerConfig = Object.freeze({
@@ -76,6 +76,6 @@ export const DEFAULT_ANALYZER_CONFIG: AnalyzerConfig = Object.freeze({
   },
   section: {
     similarityThreshold: 0.8,
-    renameDetection: 'exact' as const,
+    renameDetection: "exact" as const,
   },
 });

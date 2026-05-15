@@ -1,14 +1,11 @@
-import type { EvidenceEvent, Revision } from "@refract-org/evidence-graph";
+import type { AnalyzerConfig, EvidenceEvent, Revision } from "@refract-org/evidence-graph";
 
 const DEFAULT_SPIKE_WINDOW_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 const DEFAULT_SPIKE_FACTOR = 3.0;
 const DEFAULT_MA_PERIODS = 4;
+const DEFAULT_FLOOR_THRESHOLD = 3;
 
-export interface TalkActivityOptions {
-  lookbackWindowMs?: number;
-  spikeFactor?: number;
-  movingAveragePeriods?: number;
-}
+export type TalkActivityOptions = AnalyzerConfig["talkSpike"];
 
 export interface TalkActivityResult {
   spikes: EvidenceEvent[];
@@ -19,11 +16,12 @@ export interface TalkActivityResult {
 export function detectTalkActivitySpikes(
   talkRevisions: Revision[],
   articleRevisions: Revision[],
-  options?: TalkActivityOptions,
+  options?: AnalyzerConfig["talkSpike"],
 ): TalkActivityResult {
   const windowMs = options?.lookbackWindowMs ?? DEFAULT_SPIKE_WINDOW_MS;
   const spikeFactor = options?.spikeFactor ?? DEFAULT_SPIKE_FACTOR;
   const maPeriods = options?.movingAveragePeriods ?? DEFAULT_MA_PERIODS;
+  const floorThreshold = options?.floorThreshold ?? DEFAULT_FLOOR_THRESHOLD;
   const spikes: EvidenceEvent[] = [];
 
   if (talkRevisions.length === 0) {
@@ -51,7 +49,7 @@ export function detectTalkActivitySpikes(
   }
 
   const latestMA = movingAverages.length > 0 ? movingAverages[movingAverages.length - 1] : 0;
-  const threshold = Math.max(latestMA * spikeFactor, 3);
+  const threshold = Math.max(latestMA * spikeFactor, floorThreshold);
 
   for (const day of recentDays) {
     const count = dailyCounts[day];

@@ -20,20 +20,34 @@ export interface TalkThreadChange {
   thread: TalkThread;
 }
 
-const RESOLVED_PATTERN = /\{\{(resolved|done|closed|archived)\}\}/i;
+export interface TalkParserOptions {
+  resolvedPatterns?: RegExp[];
+  maxHeaderLevel?: number;
+  userPattern?: RegExp;
+  timestampPattern?: RegExp;
+}
 
-function extractSignatures(text: string): { author?: string; timestamp?: string } {
-  const userMatch = text.match(/\[\[[Uu]ser:([^\]|]+)/);
-  const tsMatch = text.match(/(\d{1,2}:\d{2},\s+\d{1,2}\s+\w+\s+\d{4})/);
+const DEFAULT_RESOLVED_PATTERN = /\{\{(resolved|done|closed|archived)\}\}/i;
+const DEFAULT_USER_PATTERN = /\[\[[Uu]ser:([^\]|]+)/;
+const DEFAULT_TIMESTAMP_PATTERN = /(\d{1,2}:\d{2},\s+\d{1,2}\s+\w+\s+\d{4})/;
+const DEFAULT_MAX_HEADER_LEVEL = 3;
+
+function extractSignatures(text: string, options?: TalkParserOptions): { author?: string; timestamp?: string } {
+  const userPattern = options?.userPattern ?? DEFAULT_USER_PATTERN;
+  const timestampPattern = options?.timestampPattern ?? DEFAULT_TIMESTAMP_PATTERN;
+  const userMatch = text.match(userPattern);
+  const tsMatch = text.match(timestampPattern);
   return {
     author: userMatch?.[1],
     timestamp: tsMatch?.[1],
   };
 }
 
-export function parseTalkThreads(wikitext: string): TalkThread[] {
+export function parseTalkThreads(wikitext: string, options?: TalkParserOptions): TalkThread[] {
+  const maxHeaderLevel = options?.maxHeaderLevel ?? DEFAULT_MAX_HEADER_LEVEL;
+  const resolvedPatterns = options?.resolvedPatterns ?? [DEFAULT_RESOLVED_PATTERN];
   const threads: TalkThread[] = [];
-  const headerRegex = /^(={1,3})\s*([^=]+?)\s*\1\s*$/m;
+  const headerRegex = new RegExp(`^(={1,${maxHeaderLevel}})\\s*([^=]+?)\\s*\\1\\s*$`, "m");
   const lines = wikitext.split("\n");
   let currentThread: TalkThread | null = null;
 
@@ -56,13 +70,13 @@ export function parseTalkThreads(wikitext: string): TalkThread[] {
     if (!currentThread) continue;
 
     if (line.trim()) {
-      if (RESOLVED_PATTERN.test(line)) {
+      if (resolvedPatterns.some((p) => p.test(line))) {
         currentThread.isResolved = true;
       }
 
       const indent = line.search(/\S/);
       const depth = indent > 0 ? Math.ceil(indent / 2) + 1 : 1;
-      const { author, timestamp } = extractSignatures(line);
+      const { author, timestamp } = extractSignatures(line, options);
       const text = line.replace(/^[:*#]+\s*/, "").trim();
 
       currentThread.replies.push({ depth, text, author, timestamp });
@@ -113,9 +127,10 @@ export function buildTalkThreadEvents(
   fromRevId: number,
   toRevId: number,
   timestamp: string,
+  options?: TalkParserOptions,
 ): EvidenceEvent[] {
-  const before = parseTalkThreads(beforeWikitext);
-  const after = parseTalkThreads(afterWikitext);
+  const before = parseTalkThreads(beforeWikitext, options);
+  const after = parseTalkThreads(afterWikitext, options);
   const changes = diffTalkThreads(before, after);
   const events: EvidenceEvent[] = [];
 
