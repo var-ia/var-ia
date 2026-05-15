@@ -32,12 +32,12 @@ const ingestionFiles = findFiles(ingestionDir, [".ts"]);
 for (const file of ingestionFiles) {
   const content = readFileSync(file, "utf-8");
   if (/from\s+["']@var-ia\/analyzers["']/.test(content)) {
-    errors.push(`Boundary violation: ${file} imports from @var-ia/analyzers`);
+    errors.push(`Boundary violation: ${file} imports from @refract-org/analyzers`);
   }
   if (/from\s+["']@var-ia\/evidence-graph["']/.test(content) && !/import type/.test(content)) {
     // evidence-graph types are fine, runtime imports are not
     if (/from\s+["']@var-ia\/evidence-graph["']\s*;/.test(content)) {
-      errors.push(`Boundary violation: ${file} runtime imports from @var-ia/evidence-graph`);
+      errors.push(`Boundary violation: ${file} runtime imports from @refract-org/evidence-graph`);
     }
   }
 }

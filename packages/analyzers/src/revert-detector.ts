@@ -1,4 +1,4 @@
-import type { Revision } from "@var-ia/evidence-graph";
+import type { Revision } from "@refract-org/evidence-graph";
 import type { RevertChain, RevertDetector } from "./index.js";
 
 const REVERT_PATTERNS = [

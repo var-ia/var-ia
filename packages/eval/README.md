@@ -1,9 +1,9 @@
-# @var-ia/eval
+# @refract-org/eval
 
 Evaluation harness for ground truth validation and benchmark pages.
 
 ```bash
-bun add @var-ia/eval
+bun add @refract-org/eval
 ```
 
 ## Exports
@@ -25,7 +25,7 @@ bun add @var-ia/eval
 - `L3ValidationResult` / `L3ValidationSummary` — validation result types
 
 ```ts
-import { createEvalHarness, validateAgainstGroundTruth } from "@var-ia/eval";
+import { createEvalHarness, validateAgainstGroundTruth } from "@refract-org/eval";
 ```
 
-[Refract](https://github.com/var-ia/sequent) · [Docs](https://github.com/var-ia/sequent-docs) · [npm](https://www.npmjs.com/package/@var-ia/eval)
+[Refract](https://github.com/refract-org/sequent) · [Docs](https://github.com/refract-org/sequent-docs) · [npm](https://www.npmjs.com/package/@refract-org/eval)

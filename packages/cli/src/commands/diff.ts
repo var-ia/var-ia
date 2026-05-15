@@ -1,5 +1,5 @@
-import { extractCategories, extractWikilinks } from "@var-ia/analyzers";
-import type { EvidenceEvent } from "@var-ia/evidence-graph";
+import { extractCategories, extractWikilinks } from "@refract-org/analyzers";
+import type { EvidenceEvent } from "@refract-org/evidence-graph";
 import { runAnalyze } from "./analyze.js";
 
 interface WikiSummary {

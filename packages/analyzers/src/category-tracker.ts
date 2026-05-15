@@ -1,4 +1,4 @@
-import type { DeterministicFact, EvidenceEvent } from "@var-ia/evidence-graph";
+import type { DeterministicFact, EvidenceEvent } from "@refract-org/evidence-graph";
 
 const CATEGORY_REGEX = /\[\[Category:([^\]|]+)(?:\|[^\]]*)?\]\]/gi;
 

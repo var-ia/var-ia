@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import type { CitationRef, Template, TemplateType } from "@var-ia/analyzers";
+import type { CitationRef, Template, TemplateType } from "@refract-org/analyzers";
 import {
   buildPageMoveEvents,
   buildParamChangeEvents,
@@ -16,10 +16,10 @@ import {
   sectionDiffer,
   stripWikitext,
   templateTracker,
-} from "@var-ia/analyzers";
-import type { DeterministicFact, EvidenceEvent, EvidenceLayer, Revision, Section } from "@var-ia/evidence-graph";
-import type { AuthConfig, RevisionOptions } from "@var-ia/ingestion";
-import { MediaWikiClient } from "@var-ia/ingestion";
+} from "@refract-org/analyzers";
+import type { DeterministicFact, EvidenceEvent, EvidenceLayer, Revision, Section } from "@refract-org/evidence-graph";
+import type { AuthConfig, RevisionOptions } from "@refract-org/ingestion";
+import { MediaWikiClient } from "@refract-org/ingestion";
 
 import { loadCachedRevisions, loadLatestCachedTimestamp, saveRevisions } from "./cache.js";
 import { buildSectionCharMap, findSectionForText, fuzzyFindText } from "./claim.js";

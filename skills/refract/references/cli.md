@@ -79,8 +79,8 @@ The `--cache` flag stores fetched revisions in `~/.wikihistory/varia.db` (SQLite
 The CLI imports can also be used directly:
 
 ```ts
-import { runAnalyze } from "@var-ia/cli";
-import { runClaim } from "@var-ia/cli";
-import { runExport } from "@var-ia/cli";
-import { runWatch } from "@var-ia/cli";
+import { runAnalyze } from "@refract-org/cli";
+import { runClaim } from "@refract-org/cli";
+import { runExport } from "@refract-org/cli";
+import { runWatch } from "@refract-org/cli";
 ```

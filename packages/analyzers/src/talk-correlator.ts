@@ -1,4 +1,4 @@
-import type { EvidenceEvent, Revision } from "@var-ia/evidence-graph";
+import type { EvidenceEvent, Revision } from "@refract-org/evidence-graph";
 
 const DEFAULT_WINDOW_BEFORE_MS = 7 * 24 * 60 * 60 * 1000;
 const DEFAULT_WINDOW_AFTER_MS = 3 * 24 * 60 * 60 * 1000;

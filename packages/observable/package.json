@@ -1,5 +1,5 @@
 {
-  "name": "@var-ia/observable",
+  "name": "@refract-org/observable",
   "version": "0.1.0",
   "type": "module",
   "private": true,
@@ -7,18 +7,18 @@
   "license": "AGPL-3.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/var-ia/var-ia.git",
+    "url": "git+https://github.com/refract-org/refract.git",
     "directory": "packages/observable"
   },
-  "homepage": "https://github.com/var-ia/var-ia#readme",
+  "homepage": "https://github.com/refract-org/refract#readme",
   "bugs": {
-    "url": "https://github.com/var-ia/var-ia/issues"
+    "url": "https://github.com/refract-org/refract/issues"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@var-ia/evidence-graph": "^0.2.1"
+    "@refract-org/evidence-graph": "^0.2.1"
   },
   "devDependencies": {}
 }

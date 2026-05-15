@@ -1,5 +1,5 @@
-import type { EvidenceEvent, Revision } from "@var-ia/evidence-graph";
-import type { AuthConfig } from "@var-ia/ingestion";
+import type { EvidenceEvent, Revision } from "@refract-org/evidence-graph";
+import type { AuthConfig } from "@refract-org/ingestion";
 import { runAnalyze } from "./analyze.js";
 
 const CLAIM_EVENT_TYPES = new Set(["sentence_first_seen", "sentence_removed", "sentence_reintroduced"]);

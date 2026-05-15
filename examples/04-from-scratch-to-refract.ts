@@ -16,16 +16,16 @@
  * Usage: bun run examples/04-from-scratch-to-varia.ts
  */
 
-import { MediaWikiClient } from "@var-ia/ingestion";
+import { MediaWikiClient } from "@refract-org/ingestion";
 import {
   sectionDiffer,
   citationTracker,
   revertDetector,
   templateTracker,
   classifyHeuristic,
-} from "@var-ia/analyzers";
-import { createEventIdentity, createReplayManifest } from "@var-ia/evidence-graph";
-import type { EvidenceEvent } from "@var-ia/evidence-graph";
+} from "@refract-org/analyzers";
+import { createEventIdentity, createReplayManifest } from "@refract-org/evidence-graph";
+import type { EvidenceEvent } from "@refract-org/evidence-graph";
 
 const PAGE = "CRISPR";
 const DEPTH = 10;

@@ -1,4 +1,4 @@
-import type { EvidenceEvent } from "@var-ia/evidence-graph";
+import type { EvidenceEvent } from "@refract-org/evidence-graph";
 
 const WIKIPEDIA_API = "https://en.wikipedia.org/w/api.php";
 const WIKIDATA_ENTITY_API = "https://www.wikidata.org/wiki/Special:EntityData";

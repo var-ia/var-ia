@@ -1,7 +1,7 @@
-import { citationTracker, revertDetector, sectionDiffer, templateTracker } from "@var-ia/analyzers";
-import type { EvidenceEvent, EvidenceLayer } from "@var-ia/evidence-graph";
-import type { AuthConfig } from "@var-ia/ingestion";
-import { MediaWikiClient } from "@var-ia/ingestion";
+import { citationTracker, revertDetector, sectionDiffer, templateTracker } from "@refract-org/analyzers";
+import type { EvidenceEvent, EvidenceLayer } from "@refract-org/evidence-graph";
+import type { AuthConfig } from "@refract-org/ingestion";
+import { MediaWikiClient } from "@refract-org/ingestion";
 
 const DEFAULT_POLL_INTERVAL_MS = 60_000;
 

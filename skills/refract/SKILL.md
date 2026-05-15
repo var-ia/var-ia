@@ -1,6 +1,6 @@
 ---
 name: varia
-description: Use when integrating MediaWiki edit history analysis, building claim-provenance tools, or working with @var-ia/* packages — deterministic observation engine for public revision histories
+description: Use when integrating MediaWiki edit history analysis, building claim-provenance tools, or working with @refract-org/* packages — deterministic observation engine for public revision histories
 license: AGPL-3.0
 ---
 
@@ -12,7 +12,7 @@ Deterministic claim-provenance engine for MediaWiki knowledge systems. Evidence,
 
 - Integrating MediaWiki edit history analysis into a tool
 - Building claim-provenance tracking across revisions
-- Using `@var-ia/*` packages (evidence-graph, analyzers, ingestion)
+- Using `@refract-org/*` packages (evidence-graph, analyzers, ingestion)
 - Running the `wikihistory` CLI for page analysis
 - Extending the engine with new analyzers or model adapters
 - Setting up L2 model-assisted interpretation on top of L1 deterministic evidence
@@ -21,7 +21,7 @@ Deterministic claim-provenance engine for MediaWiki knowledge systems. Evidence,
 
 ```bash
 # CLI via npx (coming) or clone the repo
-git clone https://github.com/var-ia/var-ia
+git clone https://github.com/refract-org/var-ia
 cd varia && bun install && bun run build
 
 # Analyze a Wikipedia page
@@ -37,10 +37,10 @@ bun packages/cli/src/index.ts watch "Climate_change" --section "Scientific conse
 ### Using Packages
 
 ```ts
-import type { EvidenceEvent, ClaimIdentity } from "@var-ia/evidence-graph";
-import { createClaimIdentity } from "@var-ia/evidence-graph";
-import { MediaWikiClient } from "@var-ia/ingestion";
-import { sectionDiffer, citationTracker } from "@var-ia/analyzers";
+import type { EvidenceEvent, ClaimIdentity } from "@refract-org/evidence-graph";
+import { createClaimIdentity } from "@refract-org/evidence-graph";
+import { MediaWikiClient } from "@refract-org/ingestion";
+import { sectionDiffer, citationTracker } from "@refract-org/analyzers";
 
 // L1: Fetch revisions (deterministic, no model)
 const client = new MediaWikiClient();
@@ -69,10 +69,10 @@ Every integration MUST respect these invariants:
 
 | Package | npm | Purpose |
 |---------|-----|---------|
-| `evidence-graph` | `@var-ia/evidence-graph` | Core types/schemas (no deps) |
-| `ingestion` | `@var-ia/ingestion` | Wikipedia API adapters, rate limiting |
-| `analyzers` | `@var-ia/analyzers` | Section diffing, citation tracking, revert detection, template tracking |
-| `cli` | `@var-ia/cli` | `wikihistory` CLI tool |
+| `evidence-graph` | `@refract-org/evidence-graph` | Core types/schemas (no deps) |
+| `ingestion` | `@refract-org/ingestion` | Wikipedia API adapters, rate limiting |
+| `analyzers` | `@refract-org/analyzers` | Section diffing, citation tracking, revert detection, template tracking |
+| `cli` | `@refract-org/cli` | `wikihistory` CLI tool |
 | `persistence` | (internal) | SQLite caching (bun:sqlite) |
 | `eval` | (internal) | Evaluation harness with benchmark pages |
 
@@ -80,11 +80,11 @@ Every integration MUST respect these invariants:
 
 ```ts
 // Cross-package types
-import type { EvidenceEvent, ClaimIdentity } from "@var-ia/evidence-graph";
+import type { EvidenceEvent, ClaimIdentity } from "@refract-org/evidence-graph";
 
 // Cross-package runtime
-import { MediaWikiClient } from "@var-ia/ingestion";
-import { sectionDiffer } from "@var-ia/analyzers";
+import { MediaWikiClient } from "@refract-org/ingestion";
+import { sectionDiffer } from "@refract-org/analyzers";
 
 // Intra-package (relative with .js extension)
 import { createAdapter } from "./adapter.js";

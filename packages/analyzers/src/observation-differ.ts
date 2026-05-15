@@ -1,4 +1,4 @@
-import type { EvidenceEvent } from "@var-ia/evidence-graph";
+import type { EvidenceEvent } from "@refract-org/evidence-graph";
 
 export interface ObservationDiff {
   new: EvidenceEvent[];

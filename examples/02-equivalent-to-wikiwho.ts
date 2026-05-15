@@ -13,16 +13,16 @@
  * Usage: bun run examples/02-equivalent-to-wikiwho.ts
  */
 
-import { MediaWikiClient } from "@var-ia/ingestion";
+import { MediaWikiClient } from "@refract-org/ingestion";
 import {
   sectionDiffer,
   citationTracker,
   templateTracker,
   revertDetector,
   classifyHeuristic,
-} from "@var-ia/analyzers";
-import type { EvidenceEvent, Revision } from "@var-ia/evidence-graph";
-import { createEventIdentity } from "@var-ia/evidence-graph";
+} from "@refract-org/analyzers";
+import type { EvidenceEvent, Revision } from "@refract-org/evidence-graph";
+import { createEventIdentity } from "@refract-org/evidence-graph";
 
 const PAGE = "Albert_Einstein";
 const DEPTH = 15;

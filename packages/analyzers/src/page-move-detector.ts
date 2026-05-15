@@ -1,4 +1,4 @@
-import type { EvidenceEvent, EvidenceLayer } from "@var-ia/evidence-graph";
+import type { EvidenceEvent, EvidenceLayer } from "@refract-org/evidence-graph";
 
 interface PageMoveRecord {
   oldTitle: string;

@@ -81,7 +81,7 @@ vi.mock("bun:sqlite", () => {
 import { existsSync, unlinkSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { ClaimObject, ClaimState, PropositionType, Revision } from "@var-ia/evidence-graph";
+import type { ClaimObject, ClaimState, PropositionType, Revision } from "@refract-org/evidence-graph";
 import { Persistence } from "../index.js";
 
 const dbPath = join(tmpdir(), `varia-test-${Date.now()}.db`);

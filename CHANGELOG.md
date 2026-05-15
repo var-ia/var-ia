@@ -3,20 +3,20 @@
 ## 0.3.1 (2026-05-15)
 
 ### Removed
-- **@var-ia/interpreter** package deleted — L2 model interpretation moved to NextConsensus
+- **@refract-org/interpreter** package deleted — L2 model interpretation moved to NextConsensus
 - CLI `--model`, `--model-api-key`, `--model-name`, `--model-endpoint`, `--temperature`, `--prompt`, `--router` flags removed
 - Old claim direction event types (`claim_softened`, `claim_strengthened`, `claim_reworded`, `claim_moved`) replaced with mechanical sentence events
 - Architecture boundary check scripts cleaned up (no longer checks deleted interpreter package)
 
 ### Added
-- **@var-ia/evidence-graph**: `buildInterpretationPrompt()`, `parseInterpretationResponse()`, `ModelInterpretationSchema` — format pipeline for bring-your-own-inference
+- **@refract-org/evidence-graph**: `buildInterpretationPrompt()`, `parseInterpretationResponse()`, `ModelInterpretationSchema` — format pipeline for bring-your-own-inference
 - **MCP server**: `interpret` tool with host-sampling support — requests host LLM via `sampling/createMessage`, no API key management
 - **`--format html`** on `wikihistory export` — self-contained interactive report
-- **Docker**: GHCR publish workflow (`ghcr.io/var-ia/cli`)
+- **Docker**: GHCR publish workflow (`ghcr.io/refract-org/cli`)
 
 ### Fixed
-- `@var-ia/persistence` removed from hard CLI deps — `npx @var-ia/cli` no longer fails to install
-- `@var-ia/persistence` lazy-imported at runtime; `--cache` requires explicit install
+- `@refract-org/persistence` removed from hard CLI deps — `npx @refract-org/cli` no longer fails to install
+- `@refract-org/persistence` lazy-imported at runtime; `--cache` requires explicit install
 - `wikihistory explore` `--no-open` now actually suppresses browser open (not just the log message)
 - `docs/recipes.md` claim tracking example now shows `wikihistory claim` not `wikihistory cron`
 - `.env.example` no longer references removed model provider API keys
@@ -45,12 +45,12 @@
 - **CI pinned to bun 1.2.x** — reproducible builds.
 - **Architecture boundary check** — `scripts/check-boundaries.ts` prevents L1→interpreter and L2→ingestion imports, enforced in CI.
 - **`.env.example`** added with expected environment variables.
-- **Public `@var-ia/eval`** — package made public with full exports, README, and benchmark fixtures (25 seeded labels across 5 pages).
+- **Public `@refract-org/eval`** — package made public with full exports, README, and benchmark fixtures (25 seeded labels across 5 pages).
 
 ### Documentation
 
 - `docs/events.md` — full event taxonomy with triggers and examples (all 29 event types).
-- `docs/naming.md` — explains Refract/var-ia/@var-ia/wikihistory split.
+- `docs/naming.md` — explains Refract/var-ia/@refract-org/wikihistory split.
 - `docs/mcp.md` — MCP tool reference with connection configs.
 - `docs/security.md` — credential exposure, local cache, L2 data flow.
 - `docs/recipes.md` — example JSON output added to claim, cron, and diff recipes.
@@ -141,10 +141,10 @@ Initial release.
 
 ### Packages
 
-- `@var-ia/evidence-graph` 0.2.0 — core types and schemas
-- `@var-ia/ingestion` 0.2.0 — Wikimedia API adapters
-- `@var-ia/analyzers` 0.2.0 — deterministic analyzers
-- `@var-ia/interpreter` 0.1.0 — model adapter interface
-- `@var-ia/cli` 0.3.0 — CLI tool
-- `@var-ia/persistence` 0.1.0 — SQLite persistence
-- `@var-ia/eval` 0.1.0 — evaluation harness
+- `@refract-org/evidence-graph` 0.2.0 — core types and schemas
+- `@refract-org/ingestion` 0.2.0 — Wikimedia API adapters
+- `@refract-org/analyzers` 0.2.0 — deterministic analyzers
+- `@refract-org/interpreter` 0.1.0 — model adapter interface
+- `@refract-org/cli` 0.3.0 — CLI tool
+- `@refract-org/persistence` 0.1.0 — SQLite persistence
+- `@refract-org/eval` 0.1.0 — evaluation harness

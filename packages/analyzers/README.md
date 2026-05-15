@@ -1,9 +1,9 @@
-# @var-ia/analyzers
+# @refract-org/analyzers
 
 Deterministic analyzers. Byte-for-byte reproducible, no model involved.
 
 ```bash
-bun add @var-ia/analyzers
+bun add @refract-org/analyzers
 ```
 
 ## Exports
@@ -32,7 +32,7 @@ bun add @var-ia/analyzers
 - `HeuristicKind`, `SectionEvent`, `SectionLineage`, `HeadingPosition` — supporting types
 
 ```ts
-import { sectionDiffer, citationTracker, revertDetector } from "@var-ia/analyzers";
+import { sectionDiffer, citationTracker, revertDetector } from "@refract-org/analyzers";
 ```
 
-[Refract](https://github.com/var-ia/sequent) · [Docs](https://github.com/var-ia/sequent-docs) · [npm](https://www.npmjs.com/package/@var-ia/analyzers)
+[Refract](https://github.com/refract-org/sequent) · [Docs](https://github.com/refract-org/sequent-docs) · [npm](https://www.npmjs.com/package/@refract-org/analyzers)

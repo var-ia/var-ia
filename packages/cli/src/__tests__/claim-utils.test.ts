@@ -17,7 +17,7 @@ vi.mock("bun:sqlite", () => {
   return { Database: MockDB };
 });
 
-import { stripWikitext } from "@var-ia/analyzers";
+import { stripWikitext } from "@refract-org/analyzers";
 import { findSectionForText, fuzzyFindText } from "../commands/claim.js";
 
 describe("stripWikitext", () => {

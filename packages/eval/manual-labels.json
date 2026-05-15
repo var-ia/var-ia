@@ -1,6 +1,6 @@
 {
   "$schema": "eval-manual-labels-v1",
-  "description": "Manual revision-level labels for 5 benchmark pages. Labels are revision IDs with expected heuristic classification. Used to measure classification accuracy vs @var-ia/analyzers heuristic-classifier.",
+  "description": "Manual revision-level labels for 5 benchmark pages. Labels are revision IDs with expected heuristic classification. Used to measure classification accuracy vs @refract-org/analyzers heuristic-classifier.",
   "phase": "Phase 0 · unverified · baseline labels seeded from heuristic-classifier · manual review pending · orphaned — no eval pipeline consumes this format yet",
   "created": "2026-05-13",
   "updated": "2026-05-15",

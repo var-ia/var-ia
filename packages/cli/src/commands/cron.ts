@@ -1,9 +1,9 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { diffObservations } from "@var-ia/analyzers";
-import type { EvidenceEvent } from "@var-ia/evidence-graph";
-import type { AuthConfig } from "@var-ia/ingestion";
+import { diffObservations } from "@refract-org/analyzers";
+import type { EvidenceEvent } from "@refract-org/evidence-graph";
+import type { AuthConfig } from "@refract-org/ingestion";
 import type { NotifyConfig } from "../notify.js";
 import { sendNotifications } from "../notify.js";
 import { runAnalyze } from "./analyze.js";

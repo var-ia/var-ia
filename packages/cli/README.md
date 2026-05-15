@@ -1,9 +1,9 @@
-# @var-ia/cli
+# @refract-org/cli
 
 CLI tool — provides the `wikihistory` command.
 
 ```bash
-bun add @var-ia/cli
+bun add @refract-org/cli
 ```
 
 ## Commands
@@ -44,4 +44,4 @@ wikihistory diff --wiki-a https://starwars.fandom.com/api.php --wiki-b https://m
 wikihistory eval
 ```
 
-[Refract](https://github.com/var-ia/sequent) · [Docs](https://github.com/var-ia/sequent-docs) · [npm](https://www.npmjs.com/package/@var-ia/cli)
+[Refract](https://github.com/refract-org/sequent) · [Docs](https://github.com/refract-org/sequent-docs) · [npm](https://www.npmjs.com/package/@refract-org/cli)

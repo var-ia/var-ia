@@ -1,4 +1,4 @@
-import type { EvidenceEvent, Revision } from "@var-ia/evidence-graph";
+import type { EvidenceEvent, Revision } from "@refract-org/evidence-graph";
 
 const DEFAULT_WINDOW_MS = 60 * 60 * 1000; // 1 hour
 const DEFAULT_MIN_CLUSTER_SIZE = 3;

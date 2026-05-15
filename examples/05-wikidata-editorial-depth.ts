@@ -14,14 +14,14 @@
  * Usage: bun run examples/05-wikidata-editorial-depth.ts
  */
 
-import { MediaWikiClient } from "@var-ia/ingestion";
+import { MediaWikiClient } from "@refract-org/ingestion";
 import {
   sectionDiffer,
   citationTracker,
   buildSourceLineage,
   templateTracker,
-} from "@var-ia/analyzers";
-import { createClaimIdentity } from "@var-ia/evidence-graph";
+} from "@refract-org/analyzers";
+import { createClaimIdentity } from "@refract-org/evidence-graph";
 
 const PAGE = "Albert_Einstein";
 const DEPTH = 20;

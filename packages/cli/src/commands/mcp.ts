@@ -1,6 +1,6 @@
-import type { EvidenceEvent } from "@var-ia/evidence-graph";
-import { buildInterpretationPrompt, parseInterpretationResponse } from "@var-ia/evidence-graph";
-import type { AuthConfig } from "@var-ia/ingestion";
+import type { EvidenceEvent } from "@refract-org/evidence-graph";
+import { buildInterpretationPrompt, parseInterpretationResponse } from "@refract-org/evidence-graph";
+import type { AuthConfig } from "@refract-org/ingestion";
 import { runAnalyze } from "./analyze.js";
 import { runClaim } from "./claim.js";
 

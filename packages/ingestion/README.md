@@ -1,9 +1,9 @@
-# @var-ia/ingestion
+# @refract-org/ingestion
 
 Wikimedia API adapters — revision fetching, diffing, rate limiting.
 
 ```bash
-bun add @var-ia/ingestion
+bun add @refract-org/ingestion
 ```
 
 ## Exports
@@ -20,8 +20,8 @@ bun add @var-ia/ingestion
 - `RateLimiter` — configurable request throttling
 
 ```ts
-import { MediaWikiClient, RateLimiter } from "@var-ia/ingestion";
-import type { RevisionFetcher, RevisionOptions } from "@var-ia/ingestion";
+import { MediaWikiClient, RateLimiter } from "@refract-org/ingestion";
+import type { RevisionFetcher, RevisionOptions } from "@refract-org/ingestion";
 ```
 
-[Refract](https://github.com/var-ia/sequent) · [Docs](https://github.com/var-ia/sequent-docs) · [npm](https://www.npmjs.com/package/@var-ia/ingestion)
+[Refract](https://github.com/refract-org/sequent) · [Docs](https://github.com/refract-org/sequent-docs) · [npm](https://www.npmjs.com/package/@refract-org/ingestion)

@@ -1,4 +1,4 @@
-import type { EvidenceEvent } from "@var-ia/evidence-graph";
+import type { EvidenceEvent } from "@refract-org/evidence-graph";
 import { describe, expect, it } from "vitest";
 import type { OutcomeLabel } from "../index.js";
 import { GROUND_TRUTH_LABELS, getGroundTruthForPage, validateAgainstGroundTruth } from "../index.js";

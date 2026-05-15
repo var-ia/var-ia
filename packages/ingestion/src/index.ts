@@ -1,4 +1,4 @@
-import type { DiffResult, Revision } from "@var-ia/evidence-graph";
+import type { DiffResult, Revision } from "@refract-org/evidence-graph";
 
 export interface AuthConfig {
   apiKey?: string;

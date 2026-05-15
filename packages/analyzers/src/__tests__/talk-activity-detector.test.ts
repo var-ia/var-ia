@@ -1,4 +1,4 @@
-import type { Revision } from "@var-ia/evidence-graph";
+import type { Revision } from "@refract-org/evidence-graph";
 import { describe, expect, it } from "vitest";
 import { detectTalkActivitySpikes } from "../talk-activity-detector.js";
 

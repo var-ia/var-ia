@@ -1,4 +1,4 @@
-import type { EvidenceEvent, Revision } from "@var-ia/evidence-graph";
+import type { EvidenceEvent, Revision } from "@refract-org/evidence-graph";
 
 const DEFAULT_SPIKE_WINDOW_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 const DEFAULT_SPIKE_FACTOR = 3.0;

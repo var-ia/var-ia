@@ -1,4 +1,4 @@
-import type { AuthConfig } from "@var-ia/ingestion";
+import type { AuthConfig } from "@refract-org/ingestion";
 import { Command } from "commander";
 import { runAnalyze } from "./commands/analyze.js";
 import { runClaim } from "./commands/claim.js";

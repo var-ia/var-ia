@@ -1,4 +1,4 @@
-import type { Revision, Section, SectionChange } from "@var-ia/evidence-graph";
+import type { Revision, Section, SectionChange } from "@refract-org/evidence-graph";
 
 export interface SectionDiffer {
   extractSections(wikitext: string): Section[];

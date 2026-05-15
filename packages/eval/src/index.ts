@@ -1,4 +1,4 @@
-import type { EvidenceEvent } from "@var-ia/evidence-graph";
+import type { EvidenceEvent } from "@refract-org/evidence-graph";
 
 // ── L3 Ground Truth Types ──────────────────────────────────────────
 

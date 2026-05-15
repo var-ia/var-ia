@@ -1,4 +1,4 @@
-import type { EvidenceEvent } from "@var-ia/evidence-graph";
+import type { EvidenceEvent } from "@refract-org/evidence-graph";
 
 const isTTY = process.stdout.isTTY;
 const noColor = process.env.NO_COLOR !== undefined;

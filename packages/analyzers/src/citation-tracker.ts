@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import type { SourceAuthority, SourceLineage, SourceRecord, SourceType } from "@var-ia/evidence-graph";
+import type { SourceAuthority, SourceLineage, SourceRecord, SourceType } from "@refract-org/evidence-graph";
 import type { CitationChange, CitationRef, CitationTracker } from "./index.js";
 
 export const citationTracker: CitationTracker = {

@@ -1,4 +1,4 @@
-import type { EvidenceEvent, Revision } from "@var-ia/evidence-graph";
+import type { EvidenceEvent, Revision } from "@refract-org/evidence-graph";
 
 const EVENT_COLORS: Record<string, string> = {
   sentence_first_seen: "#4caf50",

@@ -1,9 +1,9 @@
-# @var-ia/persistence
+# @refract-org/persistence
 
 SQLite persistence layer. Uses `bun:sqlite` — Bun only.
 
 ```bash
-bun add @var-ia/persistence
+bun add @refract-org/persistence
 ```
 
 ## Exports
@@ -17,8 +17,8 @@ bun add @var-ia/persistence
 - `PersistenceAdapter` — `insertRevision`, `insertRevisions`, `getRevisions`, `hasRevision`, `insertClaim`, `getClaims`, `close`
 
 ```ts
-import { Persistence } from "@var-ia/persistence";
-import type { PersistenceAdapter, PersistenceConfig } from "@var-ia/persistence";
+import { Persistence } from "@refract-org/persistence";
+import type { PersistenceAdapter, PersistenceConfig } from "@refract-org/persistence";
 ```
 
-[Refract](https://github.com/var-ia/sequent) · [Docs](https://github.com/var-ia/sequent-docs)
+[Refract](https://github.com/refract-org/sequent) · [Docs](https://github.com/refract-org/sequent-docs)

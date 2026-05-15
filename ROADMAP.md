@@ -63,7 +63,7 @@ anything.
 - Edit cluster detector and talk activity spike detector (analyzers)
 - Wikidata entity mapping — page-to-entity Q-ID lookup (ingestion)
 - `explore` CLI command — local web server with timeline, evidence table, diff viewer
-- `@var-ia/eval` made public with full exports
+- `@refract-org/eval` made public with full exports
 - `Revision` type now includes optional `user` field
 - Ingestion `fetch()` calls now have 30s timeouts
 - CI pinned to bun 1.2.x, all 602 tests pass

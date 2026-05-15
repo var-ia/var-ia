@@ -1,4 +1,4 @@
-import type { EvidenceEvent } from "@var-ia/evidence-graph";
+import type { EvidenceEvent } from "@refract-org/evidence-graph";
 import type { Template, TemplateChange, TemplateTracker, TemplateType } from "./index.js";
 
 const TEMPLATE_TYPE_MAP: Record<string, TemplateType> = {

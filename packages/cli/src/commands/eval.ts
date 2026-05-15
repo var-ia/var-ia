@@ -1,5 +1,5 @@
-import { createEvalHarness, GROUND_TRUTH_LABELS, validateAgainstGroundTruth } from "@var-ia/eval";
-import type { EvidenceEvent } from "@var-ia/evidence-graph";
+import { createEvalHarness, GROUND_TRUTH_LABELS, validateAgainstGroundTruth } from "@refract-org/eval";
+import type { EvidenceEvent } from "@refract-org/evidence-graph";
 import { runAnalyze } from "./analyze.js";
 
 export async function runEval(pageTitleOverride?: string, groundTruthPath?: string): Promise<void> {

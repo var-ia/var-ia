@@ -1,9 +1,9 @@
-# @var-ia/evidence-graph
+# @refract-org/evidence-graph
 
 Core types and schemas. Zero runtime dependencies.
 
 ```bash
-bun add @var-ia/evidence-graph
+bun add @refract-org/evidence-graph
 ```
 
 ## Exports
@@ -22,8 +22,8 @@ bun add @var-ia/evidence-graph
 - `createEventIdentity(pageTitle, eventType, revisionRange)` — deterministic event fingerprint
 
 ```ts
-import type { EvidenceEvent, Revision } from "@var-ia/evidence-graph";
-import { createClaimIdentity } from "@var-ia/evidence-graph";
+import type { EvidenceEvent, Revision } from "@refract-org/evidence-graph";
+import { createClaimIdentity } from "@refract-org/evidence-graph";
 ```
 
-[Refract](https://github.com/var-ia/sequent) · [Docs](https://github.com/var-ia/sequent-docs) · [npm](https://www.npmjs.com/package/@var-ia/evidence-graph)
+[Refract](https://github.com/refract-org/sequent) · [Docs](https://github.com/refract-org/sequent-docs) · [npm](https://www.npmjs.com/package/@refract-org/evidence-graph)

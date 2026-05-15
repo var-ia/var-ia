@@ -10,7 +10,7 @@ Refract separates computation into two layers. No layer's output contaminates an
 
 **Output**: Evidence objects with `deterministicFacts` arrays.
 
-**Packages**: `@var-ia/ingestion` (fetch), `@var-ia/analyzers` (extract)
+**Packages**: `@refract-org/ingestion` (fetch), `@refract-org/analyzers` (extract)
 
 ## Layer 2: Ground Truth
 
@@ -20,7 +20,7 @@ Refract separates computation into two layers. No layer's output contaminates an
 
 **Output**: Outcome labels with public observability timestamps and source references.
 
-**Package**: `@var-ia/eval` (eval harness)
+**Package**: `@refract-org/eval` (eval harness)
 
 ## Data Flow
 

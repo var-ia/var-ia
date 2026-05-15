@@ -54,8 +54,8 @@ Each package has `src/index.ts` as its public barrel. `dist/` is build output.
 ## Code Conventions
 
 ### Imports
-- **Cross-package types**: `import type { Foo } from "@var-ia/evidence-graph"`
-- **Cross-package runtime**: `import { Bar } from "@var-ia/analyzers"`
+- **Cross-package types**: `import type { Foo } from "@refract-org/evidence-graph"`
+- **Cross-package runtime**: `import { Bar } from "@refract-org/analyzers"`
 - **Intra-package**: Use relative paths with `.js` extension: `import { baz } from "./baz.js"`
 - **Node built-ins**: `import { createHash } from "node:crypto"`
 - **Bun built-ins**: `import { Database } from "bun:sqlite"`

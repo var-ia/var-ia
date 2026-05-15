@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import type { Revision } from "@var-ia/evidence-graph";
+import type { Revision } from "@refract-org/evidence-graph";
 import type { RevisionOptions, RevisionSource } from "./index.js";
 
 function decodeXmlEntities(text: string): string {

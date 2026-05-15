@@ -8,14 +8,14 @@
  * Usage: bun run examples/01-claim-provenance.ts
  */
 
-import { MediaWikiClient } from "@var-ia/ingestion";
+import { MediaWikiClient } from "@refract-org/ingestion";
 import {
   sectionDiffer,
   citationTracker,
   sanitizeWikitext,
-} from "@var-ia/analyzers";
-import { createClaimIdentity } from "@var-ia/evidence-graph";
-import type { EvidenceEvent, Revision } from "@var-ia/evidence-graph";
+} from "@refract-org/analyzers";
+import { createClaimIdentity } from "@refract-org/evidence-graph";
+import type { EvidenceEvent, Revision } from "@refract-org/evidence-graph";
 
 const PAGE = "Earth";
 const CLAIM_TEXT = "third planet from the Sun";

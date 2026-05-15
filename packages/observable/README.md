@@ -1,4 +1,4 @@
-# @var-ia/observable
+# @refract-org/observable
 
 Observable Framework data loader for Refract evidence exports. Loads JSON or SQLite
 evidence cache and exposes the full event stream in Observable notebooks.
@@ -13,7 +13,7 @@ evidence cache and exposes the full event stream in Observable notebooks.
   and provides a structured `EvidenceEvent` stream for Observable Framework.
 
 ```ts
-import { RefractLoader } from "@var-ia/observable";
+import { RefractLoader } from "@refract-org/observable";
 
 const loader = new RefractLoader({ path: "./bitcoin-analysis.json" });
 // loader.load() → { events: EvidenceEvent[], metadata: { page, revisionCount, ... } }
@@ -21,5 +21,5 @@ const loader = new RefractLoader({ path: "./bitcoin-analysis.json" });
 
 ---
 
-Part of the [Refract](https://github.com/var-ia/sequent) project — a deterministic
+Part of the [Refract](https://github.com/refract-org/sequent) project — a deterministic
 observation engine for public revision histories.

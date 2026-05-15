@@ -17,13 +17,13 @@
  * Usage: bun run examples/03-equivalent-to-ores.ts
  */
 
-import { MediaWikiClient } from "@var-ia/ingestion";
+import { MediaWikiClient } from "@refract-org/ingestion";
 import {
   classifyHeuristic,
   revertDetector,
   templateTracker,
   sectionDiffer,
-} from "@var-ia/analyzers";
+} from "@refract-org/analyzers";
 
 const PAGE = "Donald_Trump";
 const DEPTH = 20;

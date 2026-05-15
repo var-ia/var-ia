@@ -1,5 +1,5 @@
 import { Database, type QueryBuilder, type Statement } from "bun:sqlite";
-import type { ClaimObject, Revision } from "@var-ia/evidence-graph";
+import type { ClaimObject, Revision } from "@refract-org/evidence-graph";
 
 export interface PersistenceConfig {
   dbPath: string;

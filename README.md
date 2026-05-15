@@ -1,9 +1,9 @@
 # Refract
 
-[![CI](https://github.com/var-ia/var-ia/actions/workflows/ci.yml/badge.svg)](https://github.com/var-ia/var-ia/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/github/v/release/var-ia/var-ia)](https://github.com/var-ia/var-ia/releases)
+[![CI](https://github.com/refract-org/refract/actions/workflows/ci.yml/badge.svg)](https://github.com/refract-org/refract/actions/workflows/ci.yml)
+[![Version](https://img.shields.io/github/v/release/refract-org/refract)](https://github.com/refract-org/refract/releases)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-0f172a.svg)](./LICENSE)
-[![npm scope](https://img.shields.io/badge/npm-%40var--ia-2563eb.svg)](https://www.npmjs.com/org/var-ia)
+[![npm scope](https://img.shields.io/badge/npm-%40refract-org-2563eb.svg)](https://www.npmjs.com/org/var-ia)
 
 **The git log for public knowledge.**
 
@@ -70,7 +70,7 @@ Given a MediaWiki page, the engine produces a structured event stream:
 
 ```bash
 # One command, zero install
-npx @var-ia/cli analyze "Bitcoin" --depth brief
+npx @refract-org/cli analyze "Bitcoin" --depth brief
 ```
 
 > **What you're seeing**: These are observed changes — deterministic facts extracted from revision history. Refract reports what changed, not whether a claim is true or false.
@@ -99,33 +99,33 @@ Full output (330 events): [`docs/example-output.md`](./docs/example-output.md).
 
 | Method | Command |
 |--------|---------|
-| **Bun** (if installed) | `bunx @var-ia/cli analyze "Bitcoin"` |
-| **Docker** (prebuilt) | `docker run ghcr.io/var-ia/cli analyze "Bitcoin"` |
-| **Local install** | `bun add @var-ia/cli && wikihistory analyze "Bitcoin"` |
-| **Build from source** | `git clone https://github.com/var-ia/var-ia && cd varia && bun install && bun run build` |
+| **Bun** (if installed) | `bunx @refract-org/cli analyze "Bitcoin"` |
+| **Docker** (prebuilt) | `docker run ghcr.io/refract-org/cli analyze "Bitcoin"` |
+| **Local install** | `bun add @refract-org/cli && wikihistory analyze "Bitcoin"` |
+| **Build from source** | `git clone https://github.com/refract-org/refract && cd varia && bun install && bun run build` |
 
 ### Use individual packages
 
 ```bash
-bun add @var-ia/evidence-graph @var-ia/analyzers
+bun add @refract-org/evidence-graph @refract-org/analyzers
 ```
 
 ```ts
-import type { EvidenceEvent, Revision } from "@var-ia/evidence-graph";
-import { sectionDiffer, citationTracker } from "@var-ia/analyzers";
+import type { EvidenceEvent, Revision } from "@refract-org/evidence-graph";
+import { sectionDiffer, citationTracker } from "@refract-org/analyzers";
 ```
 
 ## Packages
 
 | Package | npm | Description |
 |---------|-----|-------------|
-| `@var-ia/evidence-graph` | [![npm](https://img.shields.io/npm/v/@var-ia/evidence-graph)](https://www.npmjs.com/package/@var-ia/evidence-graph) | Core types and schemas — claim, evidence, source, report |
-| `@var-ia/ingestion` | [![npm](https://img.shields.io/npm/v/@var-ia/ingestion)](https://www.npmjs.com/package/@var-ia/ingestion) | Wikimedia API adapters — fetching, diffing, rate limits |
-| `@var-ia/analyzers` | [![npm](https://img.shields.io/npm/v/@var-ia/analyzers)](https://www.npmjs.com/package/@var-ia/analyzers) | Deterministic analyzers — sections, citations, reverts, templates |
-| `@var-ia/cli` | [![npm](https://img.shields.io/npm/v/@var-ia/cli)](https://www.npmjs.com/package/@var-ia/cli) | CLI tool — `wikihistory` command |
-| `@var-ia/persistence` | — | Local SQLite persistence (bun:sqlite, not published) |
-| `@var-ia/eval` | — | Evaluation harness (not published) |
-| `@var-ia/observable` | — | Observable Framework data loader (not published) |
+| `@refract-org/evidence-graph` | [![npm](https://img.shields.io/npm/v/@refract-org/evidence-graph)](https://www.npmjs.com/package/@refract-org/evidence-graph) | Core types and schemas — claim, evidence, source, report |
+| `@refract-org/ingestion` | [![npm](https://img.shields.io/npm/v/@refract-org/ingestion)](https://www.npmjs.com/package/@refract-org/ingestion) | Wikimedia API adapters — fetching, diffing, rate limits |
+| `@refract-org/analyzers` | [![npm](https://img.shields.io/npm/v/@refract-org/analyzers)](https://www.npmjs.com/package/@refract-org/analyzers) | Deterministic analyzers — sections, citations, reverts, templates |
+| `@refract-org/cli` | [![npm](https://img.shields.io/npm/v/@refract-org/cli)](https://www.npmjs.com/package/@refract-org/cli) | CLI tool — `wikihistory` command |
+| `@refract-org/persistence` | — | Local SQLite persistence (bun:sqlite, not published) |
+| `@refract-org/eval` | — | Evaluation harness (not published) |
+| `@refract-org/observable` | — | Observable Framework data loader (not published) |
 
 ## How It Compares
 
@@ -236,7 +236,7 @@ integration without AGPL obligations. See [nextconsensus.com](https://nextconsen
 
 - [Contributing](./CONTRIBUTING.md) — how to get started
 - [Good first tasks](./ROADMAP.md) — ready-to-pick-up work items
-- [Discussions](https://github.com/var-ia/var-ia/discussions) — questions, ideas
+- [Discussions](https://github.com/refract-org/refract/discussions) — questions, ideas
 - [Code of Conduct](./.github/CODE_OF_CONDUCT.md)
 - [Security](./.github/SECURITY.md)
 - [Changelog](./CHANGELOG.md)
@@ -248,7 +248,7 @@ These repos extend the core engine:
 
 | Repo | Purpose |
 |------|---------|
-| [sequent-docs](https://github.com/var-ia/sequent-docs) | Public documentation site (quickstart, CLI, SDK, tutorials) |
-| [sequent-labs](https://github.com/var-ia/sequent-labs) | Experimental probes applying the engine to adjacent verticals |
-| [sequent-ui](https://github.com/var-ia/sequent-ui) | Standalone visualization — load JSONL, render timelines, diffs, citations |
-| [sequent-demo-data](https://github.com/var-ia/sequent-demo-data) | Safe, fictional datasets for the eval harness (no real PII or medical data) |
+| [sequent-docs](https://github.com/refract-org/sequent-docs) | Public documentation site (quickstart, CLI, SDK, tutorials) |
+| [sequent-labs](https://github.com/refract-org/sequent-labs) | Experimental probes applying the engine to adjacent verticals |
+| [sequent-ui](https://github.com/refract-org/sequent-ui) | Standalone visualization — load JSONL, render timelines, diffs, citations |
+| [sequent-demo-data](https://github.com/refract-org/sequent-demo-data) | Safe, fictional datasets for the eval harness (no real PII or medical data) |

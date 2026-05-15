@@ -1,5 +1,5 @@
 {
-  "name": "@var-ia/evidence-graph",
+  "name": "@refract-org/evidence-graph",
   "version": "0.2.1",
   "type": "module",
   "private": false,
@@ -9,12 +9,12 @@
   "types": "./dist/src/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/var-ia/var-ia.git",
+    "url": "git+https://github.com/refract-org/refract.git",
     "directory": "packages/evidence-graph"
   },
-  "homepage": "https://github.com/var-ia/var-ia#readme",
+  "homepage": "https://github.com/refract-org/refract#readme",
   "bugs": {
-    "url": "https://github.com/var-ia/var-ia/issues"
+    "url": "https://github.com/refract-org/refract/issues"
   },
   "files": ["dist", "src"],
   "scripts": {

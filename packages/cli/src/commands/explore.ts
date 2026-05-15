@@ -1,5 +1,5 @@
 import { createServer } from "node:http";
-import type { AuthConfig } from "@var-ia/ingestion";
+import type { AuthConfig } from "@refract-org/ingestion";
 import { renderHtmlReport } from "../html-renderer.js";
 import { runAnalyze } from "./analyze.js";
 

@@ -4,7 +4,7 @@ vi.mock("../commands/analyze.js", () => ({
   runAnalyze: vi.fn(),
 }));
 
-import type { EvidenceEvent, Revision } from "@var-ia/evidence-graph";
+import type { EvidenceEvent, Revision } from "@refract-org/evidence-graph";
 import { runAnalyze } from "../commands/analyze.js";
 import { runVisualize } from "../commands/visualize.js";
 

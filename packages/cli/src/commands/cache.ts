@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import type { Revision } from "@var-ia/evidence-graph";
+import type { Revision } from "@refract-org/evidence-graph";
 
 const DEFAULT_CACHE_DIR = join(homedir(), ".wikihistory");
 
@@ -32,12 +32,12 @@ async function getPersistence(): Promise<{
       mkdirSync(dir, { recursive: true });
     }
     try {
-      const { Persistence } = await import("@var-ia/persistence");
+      const { Persistence } = await import("@refract-org/persistence");
       _instance = new Persistence({ dbPath: join(dir, "refract.db") }) as unknown as typeof _instance;
     } catch (_err) {
       throw new Error(
-        "Caching requires the optional @var-ia/persistence package.\n" +
-          "Install it: bun add @var-ia/persistence\n" +
+        "Caching requires the optional @refract-org/persistence package.\n" +
+          "Install it: bun add @refract-org/persistence\n" +
           "Or run without --cache to skip caching.",
       );
     }

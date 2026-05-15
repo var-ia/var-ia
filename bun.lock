@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "varia",
+      "name": "refract",
       "devDependencies": {
         "@biomejs/biome": "^2.4.15",
         "@types/node": "^22.19.19",
@@ -12,59 +12,56 @@
       },
     },
     "packages/analyzers": {
-      "name": "@var-ia/analyzers",
+      "name": "@refract-org/analyzers",
       "version": "0.2.1",
       "dependencies": {
-        "@var-ia/evidence-graph": "^0.2.1",
+        "@refract-org/evidence-graph": "^0.2.1",
       },
     },
     "packages/cli": {
-      "name": "@var-ia/cli",
+      "name": "@refract-org/cli",
       "version": "0.3.1",
       "bin": {
         "wikihistory": "dist/src/cli.js",
       },
       "dependencies": {
-        "@var-ia/analyzers": "^0.2.1",
-        "@var-ia/eval": "^0.1.1",
-        "@var-ia/evidence-graph": "^0.2.1",
-        "@var-ia/ingestion": "^0.2.1",
-        "@var-ia/interpreter": "^0.1.1",
-        "@var-ia/persistence": "^0.1.1",
+        "@refract-org/analyzers": "^0.2.1",
+        "@refract-org/eval": "^0.1.1",
+        "@refract-org/evidence-graph": "^0.2.1",
+        "@refract-org/ingestion": "^0.2.1",
         "commander": "^12.0.0",
       },
     },
     "packages/eval": {
-      "name": "@var-ia/eval",
+      "name": "@refract-org/eval",
       "version": "0.1.1",
       "dependencies": {
-        "@var-ia/evidence-graph": "^0.2.1",
-        "@var-ia/interpreter": "^0.1.1",
+        "@refract-org/evidence-graph": "^0.2.1",
       },
     },
     "packages/evidence-graph": {
-      "name": "@var-ia/evidence-graph",
+      "name": "@refract-org/evidence-graph",
       "version": "0.2.1",
     },
     "packages/ingestion": {
-      "name": "@var-ia/ingestion",
+      "name": "@refract-org/ingestion",
       "version": "0.2.1",
       "dependencies": {
-        "@var-ia/evidence-graph": "^0.2.1",
+        "@refract-org/evidence-graph": "^0.2.1",
       },
     },
     "packages/observable": {
-      "name": "@var-ia/observable",
+      "name": "@refract-org/observable",
       "version": "0.1.0",
       "dependencies": {
-        "@var-ia/evidence-graph": "^0.2.1",
+        "@refract-org/evidence-graph": "^0.2.1",
       },
     },
     "packages/persistence": {
-      "name": "@var-ia/persistence",
+      "name": "@refract-org/persistence",
       "version": "0.1.1",
       "dependencies": {
-        "@var-ia/evidence-graph": "^0.2.1",
+        "@refract-org/evidence-graph": "^0.2.1",
       },
     },
   },
@@ -98,6 +95,20 @@
     "@napi-rs/wasm-runtime": ["@napi-rs/wasm-runtime@1.1.4", "", { "dependencies": { "@tybys/wasm-util": "^0.10.1" }, "peerDependencies": { "@emnapi/core": "^1.7.1", "@emnapi/runtime": "^1.7.1" } }, "sha512-3NQNNgA1YSlJb/kMH1ildASP9HW7/7kYnRI2szWJaofaS1hWmbGI4H+d3+22aGzXXN9IJ+n+GiFVcGipJP18ow=="],
 
     "@oxc-project/types": ["@oxc-project/types@0.130.0", "", {}, "sha512-ibD2usx9JRu7f5pu2tMKMI4cpA4NgXJQoYRP4pQ7Pxmn1l6k/53qWtQWZayhYy3X4QZkt90Ot+mJEaeXouio6Q=="],
+
+    "@refract-org/analyzers": ["@refract-org/analyzers@workspace:packages/analyzers"],
+
+    "@refract-org/cli": ["@refract-org/cli@workspace:packages/cli"],
+
+    "@refract-org/eval": ["@refract-org/eval@workspace:packages/eval"],
+
+    "@refract-org/evidence-graph": ["@refract-org/evidence-graph@workspace:packages/evidence-graph"],
+
+    "@refract-org/ingestion": ["@refract-org/ingestion@workspace:packages/ingestion"],
+
+    "@refract-org/observable": ["@refract-org/observable@workspace:packages/observable"],
+
+    "@refract-org/persistence": ["@refract-org/persistence@workspace:packages/persistence"],
 
     "@rolldown/binding-android-arm64": ["@rolldown/binding-android-arm64@1.0.1", "", { "os": "android", "cpu": "arm64" }, "sha512-fJI3I0r3C3Oj/zdBCpaCmBRZYf07xpaq4yCfDDoSFm+beWNzbIl26puW8RraUdugoJw/95zerNOn6jasAhzSmg=="],
 
@@ -142,22 +153,6 @@
     "@types/estree": ["@types/estree@1.0.9", "", {}, "sha512-GhdPgy1el4/ImP05X05Uw4cw2/M93BCUmnEvWZNStlCzEKME4Fkk+YpoA5OiHNQmoS7Cafb8Xa3Pya8m1Qrzeg=="],
 
     "@types/node": ["@types/node@22.19.19", "", { "dependencies": { "undici-types": "~6.21.0" } }, "sha512-dyh/xO2Fh5bYrfWaaqGrRQQGkNdmYw6AmaAUvYeUMNTWQtvb796ikLdmTchRmOlOiIJ1TDXfWgVx1QkUlQ6Hew=="],
-
-    "@var-ia/analyzers": ["@var-ia/analyzers@workspace:packages/analyzers"],
-
-    "@var-ia/cli": ["@var-ia/cli@workspace:packages/cli"],
-
-    "@var-ia/eval": ["@var-ia/eval@workspace:packages/eval"],
-
-    "@var-ia/evidence-graph": ["@var-ia/evidence-graph@workspace:packages/evidence-graph"],
-
-    "@var-ia/ingestion": ["@var-ia/ingestion@workspace:packages/ingestion"],
-
-    "@var-ia/interpreter": ["@var-ia/interpreter@0.1.1", "", { "dependencies": { "@var-ia/evidence-graph": "^0.2.1" } }, "sha512-L3sZ2JAxeHT2O+r92Q9Nixy+ESu9roW7cCc8NQU3eXfVJddZpbTYwVPRiwxtrVjt+UHwp27/jVOWIz4TYgSr4g=="],
-
-    "@var-ia/observable": ["@var-ia/observable@workspace:packages/observable"],
-
-    "@var-ia/persistence": ["@var-ia/persistence@workspace:packages/persistence"],
 
     "@vitest/expect": ["@vitest/expect@4.1.6", "", { "dependencies": { "@standard-schema/spec": "^1.1.0", "@types/chai": "^5.2.2", "@vitest/spy": "4.1.6", "@vitest/utils": "4.1.6", "chai": "^6.2.2", "tinyrainbow": "^3.1.0" } }, "sha512-7EHDquPthALSV0jhhjgEW8FXaviMx7rSqu8W6oqCoAuOhKov814P99QDV1pxMA3QPv21YudvJngIhjrNI4opLg=="],
 
