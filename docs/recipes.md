@@ -10,66 +10,15 @@ Varia calls it.
 **I want to know when a sentence first appeared, was reworded, or removed.**
 
 ```bash
-wikihistory claim "Bitcoin" --text "peer-to-peer electronic cash"
-```
-
-Output: timeline with `first_seen`, `reworded`, `strengthened`, `softened`, `removed`.
-
-**I want the claim provenance as structured data:**
-
-```bash
-wikihistory export "Bitcoin" --format ndjson | jq 'select(.eventType | startswith("claim"))'
-```
-
----
-
-## Find Source Changes
-
-**I want to know which citations were added or removed and when.**
-
-```bash
-wikihistory analyze "Bitcoin" --depth brief | grep citation
-```
-
-**I want the full source lineage (which source replaced which):**
-
-```bash
-wikihistory export "Bitcoin" --format json | jq '.events[] | select(.eventType | startswith("citation"))'
-```
-
----
-
-## Detect Policy Signal Changes
-
-**I want to see when NPOV, BLP, or verifiability templates appeared on a page.**
-
-```bash
-wikihistory analyze "Bitcoin" --depth detailed | grep template
-```
-
----
-
-## Audit Reverts and Edit Warring
-
-**I want to find all reverts in a page history.**
-
-```bash
-wikihistory analyze "Bitcoin" --depth forensic | grep revert
-```
-
----
-
-## Monitor Pages for Changes (CI/Cron)
-
-**I want to check pages daily and alert if anything changed.**
-
-```bash
-echo "Bitcoin" > pages.txt
-echo "Climate change" >> pages.txt
 wikihistory cron pages.txt --interval 24
 ```
 
-Returns exit code 1 if new events detected.
+Returns exit code 1 if new events detected. Example output:
+
+```
+[Bitcoin] 2 events detected (2026-05-14–2026-05-15): 1 claim added, 1 citation removed
+[Climate change] no new events since last observation
+```
 
 ## Cross-Wiki Comparison
 
@@ -79,6 +28,20 @@ Returns exit code 1 if new events detected.
 wikihistory diff "Star Wars" \
   --wiki-a https://en.wikipedia.org/w/api.php \
   --wiki-b https://starwars.fandom.com/api.php
+```
+
+Example output:
+
+```
+Cross-Wiki Diff: "Star Wars"
+  Wiki A: https://en.wikipedia.org/w/api.php
+  Wiki B: https://starwars.fandom.com/api.php
+
+── Overview ──
+  Total events      340    217
+  Sections           12      8
+  Citations          87     34
+  Reverts            23     5
 ```
 
 ---

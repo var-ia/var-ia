@@ -15,7 +15,7 @@ NextConsensus judges healthcare decision relevance.
 
 ## Architecture Invariants
 - L1 never calls a model
-- L2 never sees raw Wikipedia text — only pre-extracted deterministic facts
+- L2 never receives full revision wikitext — only L1-curated evidence snippets pre-extracted by deterministic analyzers
 - L3 is never redefined by L1 or L2 output
 - No single accuracy score conflates layers
 - Every interpretation carries a confidence score

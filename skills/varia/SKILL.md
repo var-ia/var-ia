@@ -71,7 +71,7 @@ Every integration MUST respect these invariants:
 
 **Invariants (do not violate):**
 1. L1 never calls a model
-2. L2 never sees raw Wikipedia text — only pre-extracted deterministic facts
+2. L2 never receives full revision wikitext — only L1-curated evidence snippets pre-extracted by deterministic analyzers
 3. L3 is never redefined by L1 or L2 output
 4. No single accuracy score conflates layers
 5. Every interpretation carries a confidence score (0.0–1.0)

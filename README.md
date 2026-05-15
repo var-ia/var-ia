@@ -90,6 +90,8 @@ bun add @var-ia/cli
 wikihistory analyze "Bitcoin" --depth brief
 ```
 
+> **What you're seeing**: These are observed changes — deterministic facts extracted from revision history. Varia reports what changed, not whether a claim is true or false.
+
 What you'll see:
 
 ```
@@ -140,7 +142,7 @@ import { sectionDiffer, citationTracker } from "@var-ia/analyzers";
 | `@var-ia/analyzers` | [![npm](https://img.shields.io/npm/v/@var-ia/analyzers)](https://www.npmjs.com/package/@var-ia/analyzers) | Deterministic analyzers — sections, citations, reverts, templates |
 | `@var-ia/interpreter` | [![npm](https://img.shields.io/npm/v/@var-ia/interpreter)](https://www.npmjs.com/package/@var-ia/interpreter) | Pluggable model adapter for semantic interpretation |
 | `@var-ia/cli` | [![npm](https://img.shields.io/npm/v/@var-ia/cli)](https://www.npmjs.com/package/@var-ia/cli) | CLI tool — `wikihistory` command |
-| `@var-ia/eval` | [![npm](https://img.shields.io/npm/v/@var-ia/eval)](https://www.npmjs.com/package/@var-ia/eval) | Evaluation harness with benchmark pages |
+| `@var-ia/eval` | — | Evaluation harness with benchmark pages (public, not yet published) |
 | `@var-ia/persistence` | — | Local SQLite persistence layer (bun:sqlite) |
 | `@var-ia/observable` | — | Observable Framework data loader for Varia exports |
 
@@ -168,7 +170,7 @@ The engine follows a three-knowledge-split:
 3. **Outcome labels** (L3): Independently sourced ground truth (talk page
    consensus, page protection events) — never redefined by the pipeline.
 
-**Invariants:** L1 never calls a model | L2 never sees raw text | L3 never
+**Invariants:** L1 never calls a model | L2 never receives raw wikitext (only L1-curated snippets) | L3 never
 redefined by L1/L2 | Every interpretation carries a confidence score |
 Deterministic facts before interpretations.
 

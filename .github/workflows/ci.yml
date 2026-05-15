@@ -19,4 +19,5 @@ jobs:
       - run: bun run build
       - run: bun x biome ci packages/
       - run: bun run typecheck
+      - run: bun run check:boundaries
       - run: bun run test

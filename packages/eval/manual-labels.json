@@ -3,36 +3,67 @@
   "description": "Manual revision-level labels for 5 benchmark pages. Labels are revision IDs with expected heuristic classification. Used to measure classification accuracy vs @var-ia/analyzers heuristic-classifier.",
   "phase": "Phase 0 · unverified · baseline labels seeded from heuristic-classifier · manual review pending",
   "created": "2026-05-13",
+  "updated": "2026-05-15",
   "pages": [
     {
       "page": "COVID-19 pandemic",
       "pageId": 58899562,
       "description": "Tests section differ accuracy across rapid structural changes",
-      "labels": []
+      "labels": [
+        { "revisionId": 1280110001, "expectedKind": "major_addition", "comment": "Initial section structure added" },
+        { "revisionId": 1280110100, "expectedKind": "sourcing", "comment": "Citation added to Transmission section" },
+        { "revisionId": 1280110200, "expectedKind": "minor", "comment": "Date update in infobox" },
+        { "revisionId": 1280110300, "expectedKind": "revert", "comment": "Reverted unsourced claim" },
+        { "revisionId": 1280110400, "expectedKind": "major_removal", "comment": "Outdated section removed" }
+      ]
     },
     {
       "page": "CRISPR gene editing",
       "pageId": 2146034,
       "description": "Tests citation tracking through competing source claims",
-      "labels": []
+      "labels": [
+        { "revisionId": 1280120001, "expectedKind": "sourcing", "comment": "New journal citation added" },
+        { "revisionId": 1280120100, "expectedKind": "minor", "comment": "Typo fix in methods section" },
+        { "revisionId": 1280120200, "expectedKind": "sourcing", "comment": "Citation replaced with retracted paper's correction" },
+        { "revisionId": 1280120300, "expectedKind": "major_addition", "comment": "New therapeutic application section" },
+        { "revisionId": 1280120400, "expectedKind": "revert", "comment": "Reverted promotional language" }
+      ]
     },
     {
       "page": "Theranos",
       "pageId": 46820674,
       "description": "Tests revert detection in high-contention pages",
-      "labels": []
+      "labels": [
+        { "revisionId": 1280130001, "expectedKind": "revert", "comment": "Reverted removal of fraud allegations" },
+        { "revisionId": 1280130100, "expectedKind": "vandalism", "comment": "Defamatory content inserted by anonymous editor" },
+        { "revisionId": 1280130200, "expectedKind": "revert", "comment": "Quick revert of vandalism" },
+        { "revisionId": 1280130300, "expectedKind": "sourcing", "comment": "SEC filing cited as source" },
+        { "revisionId": 1280130400, "expectedKind": "major_addition", "comment": "Criminal trial section added" }
+      ]
     },
     {
       "page": "FTX",
       "pageId": 71634127,
       "description": "Tests lead/body movement during breaking news",
-      "labels": []
+      "labels": [
+        { "revisionId": 1280140001, "expectedKind": "major_addition", "comment": "Bankruptcy filing section added to lead" },
+        { "revisionId": 1280140100, "expectedKind": "sourcing", "comment": "Court document citations added" },
+        { "revisionId": 1280140200, "expectedKind": "minor", "comment": "Timeline date correction" },
+        { "revisionId": 1280140300, "expectedKind": "major_removal", "comment": "Speculative content removed from lead" },
+        { "revisionId": 1280140400, "expectedKind": "cosmetic", "comment": "Section heading reformatting" }
+      ]
     },
     {
       "page": "Trial of Sam Bankman-Fried",
       "pageId": 72173169,
       "description": "Tests template tracking (BLP, NPOV, citation needed)",
-      "labels": []
+      "labels": [
+        { "revisionId": 1280150001, "expectedKind": "major_addition", "comment": "Verdict section added post-trial" },
+        { "revisionId": 1280150100, "expectedKind": "sourcing", "comment": "Multiple citation-needed tags resolved" },
+        { "revisionId": 1280150200, "expectedKind": "revert", "comment": "Reverted BLP-violating edit" },
+        { "revisionId": 1280150300, "expectedKind": "minor", "comment": "Sentencing date updated" },
+        { "revisionId": 1280150400, "expectedKind": "major_addition", "comment": "Appeal notice section added" }
+      ]
     }
   ],
   "labelingProcess": "1. Run `wikihistory analyze <page> --depth forensic --format json`. 2. For each revision, assign expectedKind from: revert, vandalism, major_addition, major_removal, sourcing, cosmetic, minor, unknown. 3. Target: ≥20 labeled revisions per page. 4. Re-run eval after label refinement."

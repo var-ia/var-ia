@@ -54,7 +54,7 @@ Each package has `src/index.ts` as its public barrel. `dist/` is build output.
 
 Invariants (from ARCHITECTURE.md):
 1. L1 never calls a model
-2. L2 never sees raw Wikipedia text
+2. L2 never receives full revision wikitext (only L1-curated evidence snippets)
 3. L3 is never redefined by L1 or L2
 4. No single accuracy score conflates layers
 5. Every interpretation carries a confidence score
