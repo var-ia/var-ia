@@ -1,4 +1,9 @@
 export { createClaimIdentity, createEventIdentity } from "./hash-identity.js";
+export {
+  buildInterpretationPrompt,
+  ModelInterpretationSchema,
+  parseInterpretationResponse,
+} from "./interpretation-prompt.js";
 export type { MerkleProof, ReplayManifest } from "./replay-manifest.js";
 export {
   buildMerkleTree,
