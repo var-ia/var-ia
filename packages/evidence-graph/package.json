@@ -1,6 +1,6 @@
 {
   "name": "@refract-org/evidence-graph",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "type": "module",
   "private": false,
   "description": "Core types and schemas for evidence events, claims, revisions, sources, and reports — the canonical event schema for Varia",
@@ -16,7 +16,10 @@
   "bugs": {
     "url": "https://github.com/refract-org/refract/issues"
   },
-  "files": ["dist", "src"],
+  "files": [
+    "dist",
+    "src"
+  ],
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit"

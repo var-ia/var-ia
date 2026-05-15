@@ -1,6 +1,6 @@
 {
   "name": "@refract-org/cli",
-  "version": "0.3.1",
+  "version": "0.3.3",
   "type": "module",
   "private": false,
   "description": "CLI tool for analyzing Wikipedia page histories — observe, timeline, export, diff, visualize, and cache management",
@@ -30,7 +30,7 @@
   "dependencies": {
     "@refract-org/ingestion": "^0.2.1",
     "@refract-org/analyzers": "^0.2.1",
-    "@refract-org/evidence-graph": "^0.2.1",
+    "@refract-org/evidence-graph": "^0.2.2",
     "commander": "^12.0.0"
   },
   "optionalDependencies": {
