@@ -2,8 +2,8 @@
   "name": "@var-ia/eval",
   "version": "0.1.1",
   "type": "module",
-  "private": true,
-  "description": "Generic evaluation harness for L2 model quality — benchmarks, calibration, L3 ground truth validation",
+  "private": false,
+  "description": "Evaluation harness for ground truth validation and benchmark pages",
   "license": "AGPL-3.0",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
@@ -22,8 +22,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@var-ia/evidence-graph": "^0.2.1",
-    "@var-ia/interpreter": "^0.1.1"
+    "@var-ia/evidence-graph": "^0.2.1"
   },
   "devDependencies": {}
 }
