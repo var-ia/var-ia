@@ -1,6 +1,8 @@
 # Architecture: Two-Knowledge-Split Design
 
-## Repo Architecture
+Varia is the git log for public knowledge — a deterministic observation substrate
+that ingests revision histories and emits structured, provenance-tagged event
+streams. No model. No interpretation. Byte-for-byte reproducible.
 
 This architecture lives in the **varia** repository (open-source, generic
 public-knowledge observability). Healthcare-specific logic lives in private

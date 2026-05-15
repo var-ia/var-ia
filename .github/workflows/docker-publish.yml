@@ -1,0 +1,22 @@
+name: Docker
+
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -t ghcr.io/var-ia/var-ia/cli:${{ github.ref_name }} .
+      - name: Tag latest
+        run: docker tag ghcr.io/var-ia/var-ia/cli:${{ github.ref_name }} ghcr.io/var-ia/var-ia/cli:latest
+      - name: Login to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - name: Push
+        run: docker push --all-tags ghcr.io/var-ia/var-ia/cli

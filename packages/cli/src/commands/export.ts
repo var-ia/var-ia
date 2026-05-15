@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import type { EvidenceEvent, PolicySignal, Report, Revision } from "@var-ia/evidence-graph";
 import { createEventIdentity, createReplayManifest } from "@var-ia/evidence-graph";
 import type { AuthConfig } from "@var-ia/ingestion";
+import { renderHtmlReport } from "../html-renderer.js";
 import { runAnalyze } from "./analyze.js";
 
 interface EvidenceBundle {
@@ -63,7 +64,7 @@ export async function runExport(
     return;
   }
 
-  const { events } = await runAnalyze(
+  const { events, revisions } = await runAnalyze(
     pageTitle,
     "detailed",
     undefined,
@@ -75,6 +76,11 @@ export async function runExport(
     undefined,
     auth,
   );
+
+  if (format === "html") {
+    process.stdout.write(renderHtmlReport(pageTitle, events, revisions));
+    return;
+  }
 
   if (events.length === 0) {
     console.log("No events to export.");

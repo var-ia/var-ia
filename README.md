@@ -5,48 +5,52 @@
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-0f172a.svg)](./LICENSE)
 [![npm scope](https://img.shields.io/badge/npm-%40var--ia-2563eb.svg)](https://www.npmjs.com/org/var-ia)
 
-**Open-source deterministic observation engine for public revision histories.**
+**The git log for public knowledge.**
 
 > Evidence, not truth.
 >
 > **Varia answers:** "What changed?"
 > **NextConsensus answers:** "Does this change matter for this healthcare decision?"
 
-Var-ia turns revision histories from MediaWiki-based knowledge systems into
-structured timelines of how sentences, sources, sections, and disputes change
-over time. It works across Wikipedia, Fandom, and any other MediaWiki instance.
-
-Every event is deterministic and provenance-tagged: what changed, at which
-revision, in which section, byte-for-byte reproducible.
+Varia is a deterministic observation engine — it ingests revision histories from
+Wikipedia, Fandom, and any MediaWiki instance, extracts a structured event stream
+of every claim, source, section, and dispute, and makes that stream queryable and
+reproducible. No model. No interpretation. Byte-for-byte identical on every run.
 
 Built and maintained by [NextConsensus](https://nextconsensus.com). Varia is
-domain-neutral infrastructure for structuring public knowledge change.
-[Repository map and boundary](./docs/repository-boundary.md).
+domain-neutral infrastructure for observing how public knowledge changes.
+[Repository boundary](./docs/repository-boundary.md).
 
 ![Concept Overview](./docs/diagrams/concept-overview.svg)
 
 ## Why It Exists
 
-Wikipedia is 15+ years of contested claims being rewritten, sourced, challenged,
-and stabilized. Consider the Bitcoin page: in 2009 it called Bitcoin "a
-peer-to-peer network." By 2017 it called it "a cryptocurrency." The page moved
-twice, accumulated 100+ citations, added sections, and survived template disputes.
+Knowledge changes. A sentence that has survived 15,000 revisions, 500 reverts, and
+three talk-page disputes carries a different signal than one written yesterday by
+a prompt.
 
-Varia surfaces that evolution as a structured event stream — not a diff soup to
-reverse-engineer, but a queryable record of every claim, source, section, and
-policy signal across every revision.
+Most tools retrieve knowledge. Varia retrieves how knowledge *arrived*. Every claim
+gets provenance: when it first appeared, what sources backed it, whether it was
+challenged, who reverted it, which policy templates flagged it, and how long it
+survived.
+
+That provenance is a reusable primitive — `claim + source + wording + placement
++ stability + time` — that enables temporal leakage detection, source cascade
+analysis, editorial consensus mapping, and a hundred other things that need
+versioned knowledge, not snapshots.
 
 ## What It Does
 
-Given a Wikipedia page URL, the engine produces:
+Given a MediaWiki page, the engine produces a structured event stream:
 
-- **Sentence lineage** — when a sentence first appeared, was reworded, or removed
-- **Source lineage** — citations added, replaced, or removed
-- **Timeline** — every revision, what changed, in which section
-- **Policy signals** — verifiability, neutrality, BLP templates and edit patterns
-- **Section history** — sections added, removed, reorganized
-- **Edit classification** — revert, vandalism, sourcing, major addition/removal
-- **Category and wikilink evolution** — categories/wikilinks added and removed
+| Dimension | What Varia tracks |
+|-----------|-------------------|
+| **Claim** | When a sentence first appeared, was removed, or was reintroduced — across every revision |
+| **Source** | Which citations were added, replaced, or removed — and in what sequence |
+| **Wording** | Text-level changes: sentence additions, removals, section reorganization, lead promotions |
+| **Placement** | Where a claim lives: lead, body, infobox, footnote — and when it moved between them |
+| **Stability** | Revert cycles, template disputes, talk-page correlations, edit clusters, protection changes |
+| **Time** | Every event timestamped, every revision provenance-tagged — byte-for-byte reproducible |
 
 ## Who This Is For
 
@@ -65,12 +69,8 @@ Given a Wikipedia page URL, the engine produces:
 ## Quick Start
 
 ```bash
-# One Docker command, no install needed:
-docker run --rm $(docker build -q .) analyze "Bitcoin" --depth brief
-
-# Or with bun:
-bun add @var-ia/cli
-wikihistory analyze "Bitcoin" --depth brief
+# One command, zero install
+npx @var-ia/cli analyze "Bitcoin" --depth brief
 ```
 
 > **What you're seeing**: These are observed changes — deterministic facts extracted from revision history. Varia reports what changed, not whether a claim is true or false.
@@ -80,30 +80,29 @@ What you'll see:
 ```
 Analysis of "Bitcoin" at depth brief found 330 events across 20 revisions.
 
-[2009-03-08T16:41:44Z] wikilink_added (rev 275832581→275832690)
+[2009-03-08] wikilink_added (rev 275832581→275832690)
   Section: body
-  • target: cryptography
+  target: cryptography
 
-[2009-08-05T23:50:52Z] wikilink_added (rev 275850009→306304462)
-  Section: body
-  • target: proof-of-work
-  • target: hashcash
-
-[2009-08-05T23:50:52Z] section_reorganized (rev 275850009→306304462)
-  Section: Proof-of-work
-  • change: added
-
-[2009-12-10T14:15:09Z] citation_added (rev 308164432→308164529)
+[2009-12-10] citation_added (rev 308164432→308164529)
   Section: (lead)
-  • ref: sourceforge.net/projects/bitcoin/
+  ref: sourceforge.net/projects/bitcoin/
 
-[2009-12-12T00:18:49Z] template_added (rev 308164529→308180771)
+[2009-12-12] template_added (rev 308164529→308180771)
   Section: body
-  • template: primarysources
+  template: primarysources
 ```
 
-The full output (330 events) is in
-[docs/example-output.md](./docs/example-output.md).
+Full output (330 events): [`docs/example-output.md`](./docs/example-output.md).
+
+### Other install options
+
+| Method | Command |
+|--------|---------|
+| **Bun** (if installed) | `bunx @var-ia/cli analyze "Bitcoin"` |
+| **Docker** (prebuilt) | `docker run ghcr.io/var-ia/cli analyze "Bitcoin"` |
+| **Local install** | `bun add @var-ia/cli && wikihistory analyze "Bitcoin"` |
+| **Build from source** | `git clone https://github.com/var-ia/var-ia && cd varia && bun install && bun run build` |
 
 ### Use individual packages
 
@@ -123,7 +122,6 @@ import { sectionDiffer, citationTracker } from "@var-ia/analyzers";
 | `@var-ia/evidence-graph` | [![npm](https://img.shields.io/npm/v/@var-ia/evidence-graph)](https://www.npmjs.com/package/@var-ia/evidence-graph) | Core types and schemas — claim, evidence, source, report |
 | `@var-ia/ingestion` | [![npm](https://img.shields.io/npm/v/@var-ia/ingestion)](https://www.npmjs.com/package/@var-ia/ingestion) | Wikimedia API adapters — fetching, diffing, rate limits |
 | `@var-ia/analyzers` | [![npm](https://img.shields.io/npm/v/@var-ia/analyzers)](https://www.npmjs.com/package/@var-ia/analyzers) | Deterministic analyzers — sections, citations, reverts, templates |
-| `@var-ia/interpreter` | [![npm](https://img.shields.io/npm/v/@var-ia/interpreter)](https://www.npmjs.com/package/@var-ia/interpreter) | Pluggable model adapter (L2) — OpenAI, Anthropic, DeepSeek, local |
 | `@var-ia/cli` | [![npm](https://img.shields.io/npm/v/@var-ia/cli)](https://www.npmjs.com/package/@var-ia/cli) | CLI tool — `wikihistory` command |
 | `@var-ia/persistence` | — | Local SQLite persistence (bun:sqlite, not published) |
 | `@var-ia/eval` | — | Evaluation harness (not published) |
@@ -215,14 +213,14 @@ If the engine handles fandom, it handles anything.
 
 ## What It Is Not
 
-| Category | Reason |
-|----------|--------|
-| Truth detector | Does not judge accuracy of content |
-| Editor quality judge | Does not score or rank editors |
-| Prediction engine | Does not forecast outcomes |
-| Sentiment analyzer | Does not score tone or toxicity |
-| Live monitor | Does not track changes in real-time |
-| Healthcare scorer | Domain-agnostic by design |
+| Category | Why |
+|----------|-----|
+| Truth detector | Reports what changed, not whether the change is accurate |
+| Model interpreter | No LLM in the pipeline — interpretation lives downstream in consumers |
+| Editor quality judge | No scoring, ranking, or profiling of individual editors |
+| Prediction engine | No forecasting, no sentiment analysis, no trend extrapolation |
+| Live monitor | Polling-based, not real-time — use `cron` mode for scheduled observation |
+| Healthcare scorer | Domain-agnostic by design — no clinical, regulatory, or payer logic |
 
 ## License
 
@@ -250,7 +248,7 @@ These repos extend the core engine:
 
 | Repo | Purpose |
 |------|---------|
-| [varia-docs](https://github.com/var-ia/varia-docs) | Public documentation site (quickstart, CLI ref, SDK ref, tutorials) |
-| [varia-labs](https://github.com/var-ia/varia-labs) | Experimental non-healthcare probes (AI provenance, fandom canon, brand monitoring, legal chronology, enterprise knowledge, standards intelligence) |
-| [varia-ui](https://github.com/var-ia/varia-ui) | Generic visualization interface — load JSONL, render timelines, diffs, citations, certainty scores |
-| [varia-demo-data](https://github.com/var-ia/varia-demo-data) | Safe, fictional demo datasets for the eval harness (no real PII or medical data) |
+| [varia-docs](https://github.com/var-ia/varia-docs) | Public documentation site (quickstart, CLI, SDK, tutorials) |
+| [varia-labs](https://github.com/var-ia/varia-labs) | Experimental probes applying the engine to adjacent verticals |
+| [varia-ui](https://github.com/var-ia/varia-ui) | Standalone visualization — load JSONL, render timelines, diffs, citations |
+| [varia-demo-data](https://github.com/var-ia/varia-demo-data) | Safe, fictional datasets for the eval harness (no real PII or medical data) |

@@ -27,7 +27,6 @@
     "packages/evidence-graph",
     "packages/ingestion",
     "packages/analyzers",
-    "packages/interpreter",
     "packages/cli",
     "packages/persistence",
     "packages/eval",

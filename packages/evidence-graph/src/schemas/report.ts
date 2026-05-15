@@ -4,7 +4,7 @@ import type { EvidenceLayer } from "./evidence.js";
 
 export type ReportLayerLabel = EvidenceLayer;
 
-export type ExportFormat = "json" | "pdf" | "csv";
+export type ExportFormat = "json" | "pdf" | "csv" | "html";
 
 export type Depth = "brief" | "detailed" | "forensic";
 
