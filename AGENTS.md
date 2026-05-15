@@ -40,7 +40,8 @@ packages/
 ├── interpreter/      # Model adapter interface (L2) — Published
 ├── cli/              # CLI tool (wikihistory) — Published
 ├── persistence/      # SQLite persistence (bun:sqlite) — Not published
-└── eval/             # Evaluation harness (L3) — Not published
+├── eval/             # Evaluation harness (L3) — Not published
+└── observable/       # Observable Framework data loader — Not published
 ```
 
 Each package has `src/index.ts` as its public barrel. `dist/` is build output.

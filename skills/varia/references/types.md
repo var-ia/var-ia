@@ -8,15 +8,27 @@ The central output unit — describes what changed at a revision boundary.
 type EvidenceLayer = "observed" | "policy_coded" | "model_interpretation" | "speculative" | "unknown";
 
 type EventType =
+  // Claim lifecycle
   | "claim_first_seen" | "claim_removed" | "claim_softened" | "claim_strengthened"
-  | "claim_reworded" | "claim_moved"
+  | "claim_reworded" | "claim_moved" | "claim_reintroduced"
+  // Citation changes
   | "citation_added" | "citation_removed" | "citation_replaced"
-  | "template_added" | "template_removed"
-  | "revert_detected"
-  | "section_reorganized" | "lead_promotion" | "lead_demotion"
-  | "page_moved" | "protection_changed" | "talk_page_correlated";
+  // Template changes
+  | "template_added" | "template_removed" | "template_parameter_changed"
+  // Section & page structure
+  | "section_reorganized" | "lead_promotion" | "lead_demotion" | "page_moved"
+  // Links & categories
+  | "wikilink_added" | "wikilink_removed" | "category_added" | "category_removed"
+  // Access control
+  | "protection_changed"
+  // Content conflict
+  | "revert_detected" | "edit_cluster_detected"
+  // Talk page correlations
+  | "talk_page_correlated" | "talk_thread_opened" | "talk_thread_archived"
+  | "talk_reply_added" | "talk_activity_spike";
 
 interface EvidenceEvent {
+  eventId?: string;
   eventType: EventType;
   claimId?: string;
   fromRevisionId: number;
@@ -33,13 +45,26 @@ interface EvidenceEvent {
 interface DeterministicFact {
   fact: string;     // e.g., "text_changed", "attribution_added", "same_section"
   detail?: string;
+  provenance?: FactProvenance;
+}
+
+interface FactProvenance {
+  analyzer: string;
+  version: string;
+  inputHashes: string[];
 }
 
 interface ModelInterpretation {
   semanticChange: string;    // e.g., "direct accusation changed to attributed institutional finding"
   confidence: number;        // 0.0–1.0
-  policyDimension?: string;  // e.g., "verifiability", "npov", "blp", "due_weight"
+  policyDimension?: PolicyDimension;
+  discussionType?: "notability_challenge" | "sourcing_dispute" | "neutrality_concern"
+    | "content_deletion" | "content_addition" | "naming_dispute" | "procedural" | "other";
 }
+
+type PolicyDimension =
+  | "verifiability" | "npov" | "blp" | "due_weight"
+  | "protection" | "edit_warring" | "notability" | "copyright" | "civility";
 ```
 
 ## ClaimObject
@@ -159,7 +184,7 @@ interface TemplateTracker {
 
 ```ts
 interface ModelAdapter {
-  interpret(events: EvidenceEvent[]): Promise<InterpretedEvent[]>;
+  interpret(events: EvidenceEvent[], lineage?: LineageContext): Promise<InterpretedEvent[]>;
 }
 
 interface InterpretedEvent extends EvidenceEvent {
@@ -171,6 +196,10 @@ interface ModelConfig {
   apiKey?: string;
   model?: string;
   endpoint?: string;
+  temperature?: number;
+  maxTokens?: number;
+  timeoutMs?: number;
+  systemPrompt?: string;
 }
 ```
 
@@ -186,6 +215,7 @@ interface Revision {
   pageId: number;
   pageTitle: string;
   timestamp: string;
+  user?: string;   // Editor username (optional, may be hidden)
   comment: string;
   content: string;
   size: number;

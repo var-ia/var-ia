@@ -72,7 +72,7 @@ All 20 workqueue items are shipped. See the task descriptions below for details 
 Add `fetchTalkRevisions()` to `MediaWikiClient`. Talk pages use the `Talk:` namespace prefix and expose the same `action=query&prop=revisions` API as article pages. This is the prerequisite for L3 ground truth — talk pages contain editorial reasoning, consensus discussions, and dispute resolutions.
 
 ### L1-02: Talk Page Correlation
-Match talk page revisions to article revisions by timestamp proximity windows. Produces `talk_page_correlated` events (event type already reserved in `packages/evidence-graph/src/schemas/evidence.ts:24`). Matched strictly on timestamp — no NLP, fully L1.
+Match talk page revisions to article revisions by timestamp proximity windows. Produces `talk_page_correlated` events (event type already reserved in `packages/evidence-graph/src/schemas/evidence.ts:27`). Matched strictly on timestamp — no NLP, fully L1.
 
 ### L1-03: Wikilink Extractor
 Extract `[[internal links]]` from wikitext, diff across revisions. Produces `wikilink_added` and `wikilink_removed` events (new event types). Reveals how an article's link neighborhood evolves over time — deterministic alternative to sentiment analysis for detecting editorial shifts.

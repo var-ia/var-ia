@@ -141,6 +141,8 @@ import { sectionDiffer, citationTracker } from "@var-ia/analyzers";
 | `@var-ia/interpreter` | [![npm](https://img.shields.io/npm/v/@var-ia/interpreter)](https://www.npmjs.com/package/@var-ia/interpreter) | Pluggable model adapter for semantic interpretation |
 | `@var-ia/cli` | [![npm](https://img.shields.io/npm/v/@var-ia/cli)](https://www.npmjs.com/package/@var-ia/cli) | CLI tool — `wikihistory` command |
 | `@var-ia/eval` | [![npm](https://img.shields.io/npm/v/@var-ia/eval)](https://www.npmjs.com/package/@var-ia/eval) | Evaluation harness with benchmark pages |
+| `@var-ia/persistence` | — | Local SQLite persistence layer (bun:sqlite) |
+| `@var-ia/observable` | — | Observable Framework data loader for Varia exports |
 
 ## How It Compares
 

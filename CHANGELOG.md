@@ -69,7 +69,7 @@ Extended existing tests:
 - hash-identity: added createEventIdentity (was createClaimIdentity-only)
 - replay-manifest: created (was 0 tests)
 
-Total: 30 test files, 251 tests passing.
+Total: 41 test files, 602 tests passing.
 
 ## 0.1.0 (2025-01-01)
 

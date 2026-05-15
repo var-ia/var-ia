@@ -59,7 +59,12 @@ export function eventLabel(eventType: string): string {
     protection_changed: "protection changed",
     lead_promotion: "lead promoted",
     lead_demotion: "lead demoted",
-    talk_discussion: "talk discussion",
+    talk_page_correlated: "talk page correlated",
+    talk_thread_opened: "talk thread opened",
+    talk_thread_archived: "talk thread archived",
+    talk_reply_added: "talk reply added",
+    talk_activity_spike: "talk activity spike",
+    edit_cluster_detected: "edit cluster detected",
   };
   return labels[eventType] ?? eventType.replace(/_/g, " ");
 }
