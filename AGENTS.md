@@ -23,7 +23,7 @@ bun run test        # vitest run (runs *.test.ts across all packages)
 bun run clean       # rm -rf packages/*/dist
 ```
 
-**Gate**: `bun run build && bun run lint && bun run typecheck && bun run test` must pass before merge.
+**Gate**: `bun run build && bun x biome ci packages/ && bun run typecheck && bun run check:boundaries && bun run test` must pass before merge.
 
 ## Package Manager & Runtime
 

@@ -83,8 +83,8 @@ interface EvidenceEvent {
   section: string;            // section name
   before: string;             // text/state before
   after: string;              // text/state after
-  deterministicFacts: Fact[]; // why this event was produced
-  layer: EvidenceLayer;       // observed, policy_coded, model_interpreted
+  deterministicFacts: DeterministicFact[]; // why this event was produced
+  layer: EvidenceLayer;       // observed, policy_coded, model_interpretation, speculative, unknown
   timestamp: string;          // ISO 8601
 }
 ```

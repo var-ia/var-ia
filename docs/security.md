@@ -42,4 +42,4 @@ All requests use HTTPS. Authentication tokens are sent as `Authorization` header
 
 ## Reporting vulnerabilities
 
-See [.github/SECURITY.md](../blob/main/.github/SECURITY.md) for the vulnerability reporting process.
+See [.github/SECURITY.md](../.github/SECURITY.md) for the vulnerability reporting process.
