@@ -1,4 +1,4 @@
-# Architecture: Three-Knowledge-Split Design
+# Architecture: Two-Knowledge-Split Design
 
 ## Repo Architecture
 
@@ -6,45 +6,28 @@ This architecture lives in the **varia** repository (open-source, generic
 public-knowledge observability). Healthcare-specific logic lives in private
 repos, which consume this engine's output without modifying it.
 
-Varia separates computation into three architecturally isolated layers. No
+Varia separates computation into two architecturally isolated layers. No
 layer's output feeds into another layer's input in a way that would contaminate
 evidence with interpretation.
 
-## Layer 1 (L1): Deterministic
+## Layer 1: Deterministic
 
 **What it answers**: What changed, when, where, how — byte-for-byte reproducible.
 
-**Implementation**: Wikipedia API fetch, diff computation, section extraction, citation counting, revert detection, template tracking, pagination. No model involved. Every run on the same revision range produces identical output.
+**Implementation**: Wikipedia API fetch, diff computation, section extraction,
+citation counting, revert detection, template tracking, pagination. No model
+involved. Every run on the same revision range produces identical output.
 
-**Output**: Evidence objects with `deterministic_facts` arrays.
+**Output**: Evidence objects with `deterministicFacts` arrays.
 
 **Why it matters on fandom wikis**: A Star Wars Legends page that had
 `[[Category:Canon characters]]` removed and `[[Category:Legends characters]]`
-added after the 2014 Disney acquisition. A claim that "Palpatine was killed in
-Episode VI" softened to "Palpatine was seemingly killed" after Episode IX.
-These are deterministic signals — no interpretation needed, the edit itself is
-the event. L1 captures these as `category_removed`/`category_added` and
-`claim_softened` events, byte-for-byte reproducible from the API response.
+added after the 2014 Disney acquisition. These are deterministic signals — no
+interpretation needed, the edit itself is the event. L1 captures these as
+`category_removed`/`category_added` events, byte-for-byte reproducible from
+the API response.
 
-## Layer 2 (L2): Model-Assisted Interpretation
-
-**What it answers**: What kind of change is this semantically? What policy dimension does it touch? With what confidence?
-
-**Implementation**: Pluggable model adapter (default: hosted LLM, supports BYOK and local). Receives only deterministic evidence from L1. Never receives raw text — always pre-extracted facts with section, citation, and revert context.
-
-**Output**: Evidence objects with `model_interpretation` fields, each carrying a `confidence` score (0.0–1.0).
-
-**Why it matters on fandom wikis**: A revert chain on a "Luke Skywalker" page
-could be simple vandalism reversion — or it could be a canon-era dispute where
-one editor applies Disney-canon sources and another applies Legends-canon sources.
-Both sides cite valid material from the same franchise. L1 reports the revert
-pattern; L2 classifies it as a "sourcing dispute" vs. "vandalism reversion" —
-with confidence — without ever seeing raw text. On a wiki with weaker sourcing
-norms, L2 also classifies whether a revert signals "headcanon removal"
-(unverifiable personal interpretation material) vs. "canon-correction"
-(new official material overwriting outdated text).
-
-## Layer 3 (L3): Independent Ground Truth
+## Layer 2: Independent Ground Truth
 
 **What it answers**: Did real-world editorial processes validate the signal?
 
@@ -72,26 +55,26 @@ Wikipedia API
      │
      ▼
 ┌─────────────┐
-│  L1: Fetch   │ ← Deterministic: revisions, diffs, sections, citations
+│  Fetch       │ ← Deterministic: revisions, diffs, sections, citations
 │  + Extract   │
 └──────┬──────┘
        │ evidence objects
        ▼
 ┌─────────────┐
-│  L2: Model   │ ← Model-assisted: semantic change, policy labels, confidence
-│  Interpret   │
+│  Analyze     │ ← Deterministic: section diffs, citation tracking, reverts,
+│              │    templates, categories, wikilinks
 └──────┬──────┘
-       │ enriched evidence objects
+       │ enriched evidence
        ▼
 ┌─────────────┐
-│  Report      │ ← Assembles L1 facts + L2 interpretations into layered output
+│  Report      │ ← Assembles evidence into layered output
 │  Assembly    │
 └──────┬──────┘
        │ report
        ▼
 ┌─────────────┐
-│  L3: Validate│ ← Independent: compares report against ground truth labels
-│  + Measure   │
+│  Validate    │ ← Independent: compares report against ground truth labels
+│  + Measure   │    (eval package)
 └─────────────┘
 ```
 
@@ -101,29 +84,19 @@ Every user-facing output carries layer provenance:
 
 | Label | Source | Reproducible? |
 |-------|--------|---------------|
-| **Observed** | L1 deterministic | Yes, byte-for-byte |
-| **Policy-coded** | L1 + Wikipedia policy ontology | Yes, rules-based |
-| **Model interpretation** | L2 LLM | No, bounded by confidence |
-| **Speculative** | L2 low-confidence (<0.5) | No, flagged as uncertain |
-| **Unknown** | Insufficient evidence | N/A |
-
-## Model Adapter Contract
-
-The L2 adapter must implement:
-
-```typescript
-interface ModelAdapter {
-  interpret(events: EvidenceEvent[], lineage?: LineageContext): Promise<InterpretedEvent[]>;
-}
-```
-
-Default adapter uses a hosted LLM. BYOK and local model endpoints are supported via the same interface.
+| **Observed** | Deterministic | Yes, byte-for-byte |
+| **Policy-coded** | Deterministic + Wikipedia policy ontology | Yes, rules-based |
 
 ## Invariants
 
-1. L1 never calls a model
-2. L2 never receives full revision wikitext — only L1-curated evidence snippets pre-extracted by deterministic analyzers
-3. L3 is never redefined by L1 or L2 output
-4. No single accuracy score conflates layers
-5. Every interpretation carries a confidence score
-6. Deterministic facts are always presented before interpretations
+1. Deterministic pipeline never calls a model
+2. Every event is provenance-tagged (revision, section, timestamp)
+3. Output is byte-for-byte reproducible on the same revision range
+
+## Consuming L1 Output
+
+Varia's deterministic event stream is consumed by domain-specific interpretation
+layers in downstream systems (e.g., NextConsensus). Those systems must:
+- Never modify Varia's event types or schemas (consume, don't fork)
+- Attribute provenance: "deterministic observation from Varia" vs. their own
+  model-assisted interpretation

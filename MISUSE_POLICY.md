@@ -8,7 +8,7 @@ This tool is designed to help researchers, journalists, and analysts understand 
 
 2. **Truth adjudication** — Do not present this tool's output as a determination that a Wikipedia claim is "true" or "false." The tool shows what changed, what held, and what sources supported each state. It does not evaluate factual accuracy.
 
-3. **Prediction** — Do not use this tool to predict future edits, editor behavior, institutional outcomes, or events. All model-assisted interpretations are bounded estimates of what the evidence shows, not forecasts.
+3. **Prediction** — Do not use this tool to predict future edits, editor behavior, institutional outcomes, or events. All observations are historical records, not forecasts.
 
 4. **Automated editing** — Do not use this tool to automate Wikipedia edits, reverts, or templating. It is a read-only analysis instrument.
 

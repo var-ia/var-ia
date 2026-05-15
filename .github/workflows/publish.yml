@@ -8,6 +8,9 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
@@ -23,7 +26,7 @@ jobs:
           for pkg in packages/evidence-graph packages/ingestion packages/analyzers packages/cli; do
             echo "Publishing $pkg..."
             cd $pkg
-            bun publish --access public --no-git-checks
+            bun publish --access public --provenance --no-git-checks
             cd $OLDPWD
           done
         env:

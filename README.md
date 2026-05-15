@@ -13,13 +13,11 @@
 > **NextConsensus answers:** "Does this change matter for this healthcare decision?"
 
 Var-ia turns revision histories from MediaWiki-based knowledge systems into
-structured timelines of how claims, sources, wording, and disputes change over
-time. It works across Wikipedia, Fandom, and any other MediaWiki instance.
+structured timelines of how sentences, sources, sections, and disputes change
+over time. It works across Wikipedia, Fandom, and any other MediaWiki instance.
 
-Every event is provenance-tagged and every interpretation carries a confidence
-score: L1 facts (what changed) are deterministic and reproducible. L2
-interpretations (what the change means) are model-assisted and
-confidence-bounded.
+Every event is deterministic and provenance-tagged: what changed, at which
+revision, in which section, byte-for-byte reproducible.
 
 Built and maintained by [NextConsensus](https://nextconsensus.com). Varia is
 domain-neutral infrastructure for structuring public knowledge change.
@@ -42,28 +40,13 @@ policy signal across every revision.
 
 Given a Wikipedia page URL, the engine produces:
 
-- **Claim lineage** — when a sentence first appeared, was reworded, strengthened,
-  softened, or removed
+- **Sentence lineage** — when a sentence first appeared, was reworded, or removed
 - **Source lineage** — citations added, replaced, or removed
 - **Timeline** — every revision, what changed, in which section
 - **Policy signals** — verifiability, neutrality, BLP templates and edit patterns
 - **Section history** — sections added, removed, reorganized
 - **Edit classification** — revert, vandalism, sourcing, major addition/removal
 - **Category and wikilink evolution** — categories/wikilinks added and removed
-- **Model interpretation** — bounded, confidence-labeled: direct accusation →
-  attributed finding, lead prominence → body placement
-
-Every interpretation carries a layer tag:
-
-![Evidence Label Taxonomy](./docs/diagrams/evidence-labels.svg)
-
-| Label | Meaning |
-|-------|---------|
-| **Observed** | Deterministic, byte-for-byte reproducible |
-| **Policy-coded** | Matches known Wikipedia policy signals |
-| **Model interpretation** | LLM-assisted, with confidence score |
-| **Speculative** | Below confidence threshold |
-| **Unknown** | Insufficient evidence |
 
 ## Who This Is For
 
@@ -152,26 +135,20 @@ to specific revisions, sources, and policy signals. It complements existing tool
 
 | Tool | What it does | What var-ia adds |
 |------|-------------|-----------------|
-| **WikiWho** | Sentence-level authorship (who wrote which token) | Claim lifecycle: when a sentence first appeared, was reworded, strengthened, softened, or removed |
-| **ORES** | ML edit quality scores (likely damaging, good-faith) | Deterministic edit classification + policy-coded signals with confidence-labeled L2 interpretation |
+| **WikiWho** | Sentence-level authorship (who wrote which token) | Sentence lifecycle: when a sentence first appeared, was reworded, or removed |
+| **ORES** | ML edit quality scores (likely damaging, good-faith) | Deterministic edit classification + policy-coded signals |
 | **XTools** | Edit stats, page history summaries, top editors | Structured event stream: section changes, citation turnover, template diffs, page moves, category shifts |
 | **PetScan** | Category intersection queries across pages | Category evolution per-page over time |
 
 ## Architecture
 
-The engine follows a three-knowledge-split:
+The engine follows a two-knowledge-split:
 
-1. **Deterministic** (L1): Wikipedia API ingestion, diff computation, section
+1. **Deterministic**: Wikipedia API ingestion, diff computation, section
    extraction, citation tracking, template classification, revert detection —
    byte-reproducible, no model involved.
-2. **Model-assisted** (L2): Semantic change classification, policy-dimension
-   tagging, claim state inference — bounded with confidence scores.
-3. **Outcome labels** (L3): Independently sourced ground truth (talk page
+2. **Outcome labels**: Independently sourced ground truth (talk page
    consensus, page protection events) — never redefined by the pipeline.
-
-**Invariants:** L1 never calls a model | L2 never receives raw wikitext (only L1-curated snippets) | L3 never
-redefined by L1/L2 | Every interpretation carries a confidence score |
-Deterministic facts before interpretations.
 
 [Full architecture](./ARCHITECTURE.md)
 

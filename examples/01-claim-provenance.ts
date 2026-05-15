@@ -1,12 +1,9 @@
 #!/usr/bin/env bun
 /**
- * 01 — Claim Provenance
+ * 01 — Sentence Provenance
  *
- * Track a specific claim across Wikipedia's revision history:
- * when it first appeared, how it was reworded, what sources
- * supported it, and when (if) it was removed.
- *
- * This is the core use case Varia was built for.
+ * Track a specific sentence across Wikipedia's revision history:
+ * when it first appeared, how it changed, and when it was removed.
  *
  * Usage: bun run examples/01-claim-provenance.ts
  */
@@ -15,11 +12,9 @@ import { MediaWikiClient } from "@var-ia/ingestion";
 import {
   sectionDiffer,
   citationTracker,
-  classifyClaimChange,
-  buildSourceLineage,
   sanitizeWikitext,
 } from "@var-ia/analyzers";
-import { createClaimIdentity, createEventIdentity } from "@var-ia/evidence-graph";
+import { createClaimIdentity } from "@var-ia/evidence-graph";
 import type { EvidenceEvent, Revision } from "@var-ia/evidence-graph";
 
 const PAGE = "Earth";
@@ -45,7 +40,7 @@ const claimIdentity = createClaimIdentity({
   pageId: revisions[0].pageId,
 });
 
-console.log(`Claim identity: ${claimIdentity.claimId}`);
+console.log(`Sentence identity: ${claimIdentity.claimId}`);
 console.log(`Tracking "${CLAIM_TEXT}" across ${revisions.length} revisions of "${PAGE}"`);
 console.log();
 
@@ -63,60 +58,38 @@ for (let i = 1; i < revisions.length; i++) {
   const beforeText = sanitizeWikitext(beforeSection?.content ?? "");
   const afterText = sanitizeWikitext(afterSection?.content ?? "");
 
-  const claimMoved = beforeSection?.title !== afterSection?.title;
-
   if (beforeText.includes(CLAIM_TEXT) && !afterText.includes(CLAIM_TEXT)) {
     events.push({
-      eventType: "claim_removed",
+      eventType: "sentence_removed",
       fromRevisionId: before.revId,
       toRevisionId: after.revId,
       section: "(lead)",
       before: beforeText,
       after: afterText,
-      deterministicFacts: [{ fact: `claim "${CLAIM_TEXT}" removed from lead` }],
+      deterministicFacts: [{ fact: `sentence "${CLAIM_TEXT}" removed from lead` }],
       layer: "observed",
       timestamp: after.timestamp,
     });
   } else if (!beforeText.includes(CLAIM_TEXT) && afterText.includes(CLAIM_TEXT)) {
     events.push({
-      eventType: "claim_reintroduced",
+      eventType: "sentence_first_seen",
       fromRevisionId: before.revId,
       toRevisionId: after.revId,
       section: "(lead)",
       before: beforeText,
       after: afterText,
-      deterministicFacts: [{ fact: `claim "${CLAIM_TEXT}" (re)appeared in lead` }],
+      deterministicFacts: [{ fact: `sentence "${CLAIM_TEXT}" (re)appeared in lead` }],
       layer: "observed",
       timestamp: after.timestamp,
     });
-  } else if (beforeText.includes(CLAIM_TEXT) && afterText.includes(CLAIM_TEXT)) {
-    const changeKind = classifyClaimChange(
-      beforeText, afterText,
-      beforeSection?.title, afterSection?.title,
-    );
-    if (changeKind !== "reworded") {
-      events.push({
-        eventType: `claim_${changeKind}` as EvidenceEvent["eventType"],
-        fromRevisionId: before.revId,
-        toRevisionId: after.revId,
-        section: "(lead)",
-        before: beforeText.slice(0, 500),
-        after: afterText.slice(0, 500),
-        deterministicFacts: [
-          { fact: `claim ${changeKind}`, detail: `revision ${before.revId} → ${after.revId}` },
-        ],
-        layer: "observed",
-        timestamp: after.timestamp,
-      });
-    }
   }
 }
 
 if (events.length === 0) {
-  console.log(`No claim changes detected for "${CLAIM_TEXT}" in the last ${DEPTH} revisions.`);
-  console.log(`(The claim may be stable — typical for well-established articles.)`);
+  console.log(`No sentence changes detected for "${CLAIM_TEXT}" in the last ${DEPTH} revisions.`);
+  console.log(`(The sentence may be stable — typical for well-established articles.)`);
 } else {
-  console.log(`Detected ${events.length} claim events:`);
+  console.log(`Detected ${events.length} sentence events:`);
   for (const e of events) {
     console.log(`  [${e.timestamp}] ${e.eventType} (rev ${e.fromRevisionId} → ${e.toRevisionId})`);
     for (const f of e.deterministicFacts) {

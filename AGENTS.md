@@ -45,19 +45,11 @@ packages/
 
 Each package has `src/index.ts` as its public barrel. `dist/` is build output.
 
-## Architecture (Three-Knowledge-Split)
+## Architecture (Two-Knowledge-Split)
 
-- **L1** (Deterministic): Wikipedia fetch, diffs, sections, citations, reverts. No model. Byte-for-byte reproducible.
-- **L2** (Model-Assisted): Model interpretation of L1 evidence. Every interpretation carries a confidence score.
-- **L3** (Independent Ground Truth): Talk page consensus, RFC closures, ArbCom decisions. Never redefined by L1/L2.
-
-Invariants (from ARCHITECTURE.md):
-1. L1 never calls a model
-2. L2 never receives full revision wikitext (only L1-curated evidence snippets)
-3. L3 is never redefined by L1 or L2
-4. No single accuracy score conflates layers
-5. Every interpretation carries a confidence score
-6. Deterministic facts are always presented before interpretations
+- **Layer 1** (Deterministic): Wikipedia fetch, diffs, sections, citations, reverts. No model. Byte-for-byte reproducible.
+- **Layer 2** (Independent Ground Truth): Talk page consensus, RFC closures, ArbCom decisions. Never redefined by pipeline output.
+- **Downstream interpretation**: Model-assisted L2 lives in NextConsensus, which consumes Varia's deterministic event stream without modifying it.
 
 ## Code Conventions
 
@@ -114,5 +106,6 @@ Features that: target individual editors, do sentiment/toxicity scoring, predict
 
 Do not add payer, guideline, clinical, regulatory, customer-workflow,
 healthcare decision-judgment, domain-specific source-weighting, decision
-threshold, production-backtest, outcome-data, or NextConsensus-private logic to
-this repo. Keep Varia agents focused on observability, not judgment.
+threshold, production-backtest, outcome-data, model interpretation,
+model adapters, model routing, model consensus, or NextConsensus-private
+logic to this repo. Keep Varia agents focused on determinism, not judgment.
