@@ -33,6 +33,7 @@ export interface FactProvenance {
   analyzer: string;
   version: string;
   inputHashes: string[];
+  parameters?: Record<string, string | number | boolean>;
 }
 
 export type PolicyDimension =

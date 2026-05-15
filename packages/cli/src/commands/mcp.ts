@@ -1,5 +1,4 @@
 import type { EvidenceEvent } from "@refract-org/evidence-graph";
-import { buildInterpretationPrompt, parseInterpretationResponse } from "@refract-org/evidence-graph";
 import type { AuthConfig } from "@refract-org/ingestion";
 import { runAnalyze } from "./analyze.js";
 import { runClaim } from "./claim.js";
@@ -106,29 +105,7 @@ const TOOLS: McpTool[] = [
       required: ["pagesFile"],
     },
   },
-  {
-    name: "interpret",
-    description:
-      "Analyze a page and return semantic interpretations of every event. For each event, provides what changed and why (confidence 0–1), the relevant Wikipedia policy dimension, and the type of talk page discussion it correlates with.",
-    inputSchema: {
-      type: "object",
-      properties: {
-        page: { type: "string", description: "Page title" },
-        depth: { type: "string", enum: ["brief", "detailed", "forensic"], description: "Analysis depth" },
-        api: { type: "string", description: "MediaWiki API base URL" },
-        from: { type: "string", description: "Start revision ID" },
-        to: { type: "string", description: "End revision ID" },
-        since: { type: "string", description: "Re-observe from ISO timestamp" },
-        mode: {
-          type: "string",
-          enum: ["auto", "prompt", "interpret"],
-          description:
-            "auto: try host LLM, fallback to prompt; prompt: return prompt only; interpret: require host LLM",
-        },
-      },
-      required: ["page"],
-    },
-  },
+
 ];
 
 function send(response: JsonRpcResponse): void {
@@ -361,82 +338,8 @@ async function handleToolCall(
     }
 
     case "interpret": {
-      const page = params.page as string;
-      const depth = (params.depth as string) ?? "detailed";
-      const from = params.from ? parseInt(params.from as string, 10) : undefined;
-      const to = params.to ? parseInt(params.to as string, 10) : undefined;
-      const since = params.since as string | undefined;
-      const mode = (params.mode as string) ?? "auto";
-
-      const { events } = await runAnalyze(page, depth, from, to, since, false, apiUrl, undefined, undefined, auth);
-      const prompt = buildInterpretationPrompt(events, page);
-
-      const supportsSampling = clientCapabilities && typeof clientCapabilities.sampling === "object";
-      const useSampling = mode === "interpret" || (mode === "auto" && !!supportsSampling);
-
-      if (useSampling && supportsSampling) {
-        try {
-          const response = await requestSampling(
-            [{ role: "user", content: { type: "text", text: prompt } }],
-            "You are an expert Wikipedia editor classifying editorial activity. Return valid JSON only.",
-          );
-          const interpretations = parseInterpretationResponse(response);
-          const merged = events.map((e, i) => ({
-            ...e,
-            modelInterpretation: interpretations[i] ?? null,
-            modelInterpretation_requested: true,
-          }));
-          return {
-            content: [
-              {
-                type: "text",
-                text: JSON.stringify(
-                  {
-                    pageTitle: page,
-                    eventCount: events.length,
-                    interpretedCount: interpretations.length,
-                    confidenceAvailable: interpretations.length > 0,
-                    mode: "sampling",
-                    events: merged,
-                  },
-                  null,
-                  2,
-                ),
-              },
-            ],
-          };
-        } catch {
-          if (mode === "interpret") {
-            return {
-              content: [
-                {
-                  type: "text",
-                  text: "Host LLM unavailable. mode=interpret requires sampling support from the MCP host.",
-                },
-              ],
-            };
-          }
-          // Fall through to prompt mode
-        }
-      }
-
       return {
-        content: [
-          {
-            type: "text",
-            text: JSON.stringify(
-              {
-                pageTitle: page,
-                eventCount: events.length,
-                mode: "prompt",
-                prompt,
-                events,
-              },
-              null,
-              2,
-            ),
-          },
-        ],
+        content: [{ type: "text", text: "Interpret tool removed: consumers should define their own prompt format." }],
       };
     }
 
