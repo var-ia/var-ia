@@ -36,7 +36,7 @@ const CLIENT_NAME = "refract-mcp";
 const CLIENT_VERSION = "0.2.0";
 const PROTOCOL_VERSION = "2025-06-18";
 
-let clientCapabilities: Record<string, unknown> | null = null;
+let _clientCapabilities: Record<string, unknown> | null = null;
 const pendingSampling = new Map<string, { resolve: (value: JsonRpcResponse) => void; reject: (err: Error) => void }>();
 
 const TOOLS: McpTool[] = [
@@ -105,7 +105,6 @@ const TOOLS: McpTool[] = [
       required: ["pagesFile"],
     },
   },
-
 ];
 
 function send(response: JsonRpcResponse): void {
@@ -145,7 +144,7 @@ function formatEventLine(e: EvidenceEvent): string {
   return `[${e.timestamp}] ${e.eventType} (rev ${e.fromRevisionId}→${e.toRevisionId})${section}${detail}`;
 }
 
-async function requestSampling(messages: SamplingMessage[], systemPrompt: string, maxTokens = 2000): Promise<string> {
+async function _requestSampling(messages: SamplingMessage[], systemPrompt: string, maxTokens = 2000): Promise<string> {
   const id = `sampling-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 
   return new Promise<string>((resolve, reject) => {
@@ -336,13 +335,6 @@ async function handleToolCall(
       }
       return { content: [{ type: "text", text: lines.join("\n") }] };
     }
-
-    case "interpret": {
-      return {
-        content: [{ type: "text", text: "Interpret tool removed: consumers should define their own prompt format." }],
-      };
-    }
-
     default:
       return { content: [{ type: "text", text: `Unknown tool: ${name}` }] };
   }
@@ -351,7 +343,7 @@ async function handleToolCall(
 async function handleRequest(request: JsonRpcRequest): Promise<void> {
   switch (request.method) {
     case "initialize": {
-      clientCapabilities = (request.params?.capabilities as Record<string, unknown>) ?? null;
+      _clientCapabilities = (request.params?.capabilities as Record<string, unknown>) ?? null;
       process.stderr.write("Refract MCP server initialized.\n");
       send({
         jsonrpc: "2.0",
