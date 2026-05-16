@@ -106,6 +106,15 @@ export async function runExport(
         }),
       );
     }
+  } else if (format === "parquet") {
+    const { tableFromJSON, tableToIPC } = await import("apache-arrow");
+    const { writeParquet, Table } = await import("parquet-wasm");
+    const rows = events.map(toFlatRow);
+    const arrowTable = tableFromJSON(rows);
+    const ipcStream = tableToIPC(arrowTable, "stream");
+    const wasmTable = Table.fromIPCStream(ipcStream);
+    const parquetBytes = writeParquet(wasmTable);
+    process.stdout.write(Buffer.from(parquetBytes));
   } else {
     console.log(JSON.stringify(events, null, 2));
   }
@@ -263,6 +272,26 @@ function toCSV(events: EvidenceEvent[]): string {
   return [header, ...rows].join("\n");
 }
 
+function toFlatRow(e: EvidenceEvent): Record<string, unknown> {
+  const fact = e.deterministicFacts[0];
+  return {
+    timestamp: e.timestamp,
+    event_type: e.eventType,
+    from_revision_id: e.fromRevisionId,
+    to_revision_id: e.toRevisionId,
+    section: e.section,
+    event_id: e.eventId ?? createEventIdentity(e),
+    schema_version: e.schemaVersion ?? EVENT_SCHEMA_VERSION,
+    layer: e.layer,
+    fact: fact?.fact ?? "",
+    fact_detail: fact?.detail ?? "",
+    analyzer_name: fact?.provenance?.analyzer ?? "",
+    analyzer_version: fact?.provenance?.version ?? "",
+    input_hashes: fact?.provenance?.inputHashes ?? [],
+    parameters_json: fact?.provenance?.parameters ?? {},
+  };
+}
+
 function toFlatCSV(events: EvidenceEvent[]): string {
   const header = [
     "timestamp",
@@ -282,22 +311,22 @@ function toFlatCSV(events: EvidenceEvent[]): string {
   ].join(",");
 
   const rows = events.map((e) => {
-    const fact = e.deterministicFacts[0];
+    const r = toFlatRow(e);
     return [
-      e.timestamp,
-      e.eventType,
-      e.fromRevisionId,
-      e.toRevisionId,
-      csvEscape(e.section),
-      e.eventId ?? createEventIdentity(e),
-      e.schemaVersion ?? EVENT_SCHEMA_VERSION,
-      e.layer,
-      csvEscape(fact?.fact ?? ""),
-      csvEscape(fact?.detail ?? ""),
-      fact?.provenance?.analyzer ?? "",
-      fact?.provenance?.version ?? "",
-      fact?.provenance?.inputHashes ? JSON.stringify(fact.provenance.inputHashes) : "",
-      fact?.provenance?.parameters ? JSON.stringify(fact.provenance.parameters) : "",
+      r.timestamp,
+      r.event_type,
+      r.from_revision_id,
+      r.to_revision_id,
+      csvEscape(String(r.section)),
+      r.event_id,
+      r.schema_version,
+      r.layer,
+      csvEscape(String(r.fact)),
+      csvEscape(String(r.fact_detail)),
+      r.analyzer_name,
+      r.analyzer_version,
+      JSON.stringify(r.input_hashes),
+      JSON.stringify(r.parameters_json),
     ].join(",");
   });
 

@@ -178,7 +178,7 @@ claimCmd.action(async (page, opts) => {
 const exportCmd = program
   .command("export <page>")
   .description("export analysis as structured data")
-  .option("-f, --format <format>", "output format: json, csv, ndjson", "json")
+  .option("-f, --format <format>", "output format: json, csv, ndjson, parquet", "json")
   .option("--bundle", "export as signed evidence bundle with SHA-256 hash")
   .option("--manifest", "export as replay manifest listing all hashes")
   .option("--flatten", "flatten nested fields into flat columns (for csv format)");
