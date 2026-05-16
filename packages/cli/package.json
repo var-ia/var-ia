@@ -1,6 +1,6 @@
 {
   "name": "@refract-org/cli",
-  "version": "0.5.4",
+  "version": "0.5.5",
   "type": "module",
   "private": false,
   "description": "CLI for observing claim and evidence changes across public page histories: ingest, diff, timeline, export, visualize, and cache",
@@ -36,8 +36,7 @@
   },
   "optionalDependencies": {
     "@refract-org/eval": "^0.2.0",
-    "apache-arrow": "19",
-    "parquet-wasm": "0.7.1"
+    "parquetjs-lite": "^0.8.7"
   },
   "devDependencies": {}
 }

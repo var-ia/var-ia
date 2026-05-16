@@ -32,7 +32,7 @@ export function classifyHeuristic(
   comment: string,
   sizeDelta: number,
   options?: AnalyzerConfig["heuristic"],
-  userMetadata?: UserMetadata,
+  _userMetadata?: UserMetadata,
 ): HeuristicKind {
   const norm = comment.toLowerCase().trim();
 

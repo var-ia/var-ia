@@ -107,14 +107,32 @@ export async function runExport(
       );
     }
   } else if (format === "parquet") {
-    const { tableFromJSON, tableToIPC } = await import("apache-arrow");
-    const { writeParquet, Table } = await import("parquet-wasm");
+    // biome-ignore lint/suspicious/noExplicitAny: CJS interop — parquetjs-lite has no types
+    const pkg: any = await import("parquetjs-lite");
+    const mod = pkg.default ?? pkg;
+    const { ParquetWriter, ParquetSchema } = mod;
+
     const rows = events.map(toFlatRow);
-    const arrowTable = tableFromJSON(rows);
-    const ipcStream = tableToIPC(arrowTable, "stream");
-    const wasmTable = Table.fromIPCStream(ipcStream);
-    const parquetBytes = writeParquet(wasmTable);
-    process.stdout.write(Buffer.from(parquetBytes));
+    const fields = Object.keys(rows[0] ?? {});
+    const schemaFields: Record<string, { type: string }> = {};
+    for (const field of fields) {
+      const val = rows[0]?.[field];
+      if (typeof val === "number") {
+        schemaFields[field] = { type: "INT64" };
+      } else if (typeof val === "boolean") {
+        schemaFields[field] = { type: "BOOLEAN" };
+      } else {
+        schemaFields[field] = { type: "UTF8" };
+      }
+    }
+
+    const schema = new ParquetSchema(schemaFields);
+    const writer = await ParquetWriter.openStream(schema, process.stdout);
+    for (const row of rows) {
+      await writer.appendRow(row);
+    }
+    await writer.close();
+    return;
   } else {
     console.log(JSON.stringify(events, null, 2));
   }
@@ -272,7 +290,7 @@ function toCSV(events: EvidenceEvent[]): string {
   return [header, ...rows].join("\n");
 }
 
-function toFlatRow(e: EvidenceEvent): Record<string, unknown> {
+function toFlatRow(e: EvidenceEvent): Record<string, string | number> {
   const fact = e.deterministicFacts[0];
   return {
     timestamp: e.timestamp,
@@ -287,8 +305,8 @@ function toFlatRow(e: EvidenceEvent): Record<string, unknown> {
     fact_detail: fact?.detail ?? "",
     analyzer_name: fact?.provenance?.analyzer ?? "",
     analyzer_version: fact?.provenance?.version ?? "",
-    input_hashes: fact?.provenance?.inputHashes ?? [],
-    parameters_json: fact?.provenance?.parameters ?? {},
+    input_hashes: JSON.stringify(fact?.provenance?.inputHashes ?? []),
+    parameters_json: JSON.stringify(fact?.provenance?.parameters ?? {}),
   };
 }
 
@@ -325,8 +343,8 @@ function toFlatCSV(events: EvidenceEvent[]): string {
       csvEscape(String(r.fact_detail)),
       r.analyzer_name,
       r.analyzer_version,
-      JSON.stringify(r.input_hashes),
-      JSON.stringify(r.parameters_json),
+      r.input_hashes,
+      r.parameters_json,
     ].join(",");
   });
 

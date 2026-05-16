@@ -133,7 +133,7 @@ function compilePatterns(config: AnalyzerConfig): void {
 }
 
 /** Current Refract CLI version — single source of truth for output metadata. */
-const REFRACT_VERSION = "0.5.4";
+const REFRACT_VERSION = "0.5.5";
 
 export function buildConfig(options: Record<string, unknown>): AnalyzerConfig {
   const config: AnalyzerConfig = structuredClone(DEFAULT_ANALYZER_CONFIG);
@@ -212,14 +212,14 @@ export async function runAnalyze(
     return runBatch(pagesFile, depth, fromRevId, toRevId, fromTimestamp, useCache, apiUrl, cacheDir, auth, config);
   }
   const client = new MediaWikiClient(apiUrl ? { apiUrl, auth } : auth ? { auth } : undefined);
-  console.log(`Analyzing "${pageTitle}" at depth: ${depth}...`);
+  console.error(`Analyzing "${pageTitle}" at depth: ${depth}...`);
 
   let revisions: Revision[] = [];
 
   if (useCache) {
     const cached = await loadCachedRevisions(pageTitle, 500, cacheDir);
     if (cached.length > 0) {
-      console.log(`Loaded ${cached.length} revisions from cache.`);
+      console.error(`Loaded ${cached.length} revisions from cache.`);
       revisions = cached;
 
       const latestTs = await loadLatestCachedTimestamp(pageTitle, cacheDir);
@@ -229,22 +229,22 @@ export async function runAnalyze(
         const newRevisions = await client.fetchRevisions(pageTitle, deltaOpts);
         const uniqueNew = newRevisions.filter((r) => !revisions.some((cr) => cr.revId === r.revId));
         if (uniqueNew.length > 0) {
-          console.log(`Fetched ${uniqueNew.length} new revisions since ${latestTs}.`);
+          console.error(`Fetched ${uniqueNew.length} new revisions since ${latestTs}.`);
           revisions = [...revisions, ...uniqueNew];
           await saveRevisions(uniqueNew, cacheDir);
         } else {
-          console.log("Cache is up to date.");
+          console.error("Cache is up to date.");
         }
       }
     }
   }
 
   if (revisions.length === 0) {
-    console.log(`Fetching revisions from Wikipedia...`);
+    console.error(`Fetching revisions from Wikipedia...`);
     const options: RevisionOptions = { direction: "newer" };
     if (fromTimestamp) {
       options.start = new Date(fromTimestamp);
-      console.log(`Fetching revisions since ${fromTimestamp}...`);
+      console.error(`Fetching revisions since ${fromTimestamp}...`);
     } else if (fromRevId) {
       options.startRevId = fromRevId;
     }
@@ -255,16 +255,16 @@ export async function runAnalyze(
       options.limit = 20;
     }
     revisions = await client.fetchRevisions(pageTitle, options);
-    console.log(`Fetched ${revisions.length} revisions.`);
+    console.error(`Fetched ${revisions.length} revisions.`);
 
     if (useCache && revisions.length > 0) {
       await saveRevisions(revisions, cacheDir);
-      console.log(`Cached ${revisions.length} revisions.`);
+      console.error(`Cached ${revisions.length} revisions.`);
     }
   }
 
   if (revisions.length < 2) {
-    console.log("Need at least 2 revisions to analyze.");
+    console.error("Need at least 2 revisions to analyze.");
     return { events: [], revisions: [] };
   }
 
@@ -688,7 +688,7 @@ export async function runAnalyze(
     const talkEvents = correlateTalkRevisions(sortedRevs, talkRevs);
     events.push(...talkEvents);
     if (talkEvents.length > 0) {
-      console.log(`Correlated ${talkEvents.length} talk page discussions.`);
+      console.error(`Correlated ${talkEvents.length} talk page discussions.`);
     }
   }
 
@@ -707,12 +707,12 @@ export async function runAnalyze(
 
     const obsDiff = diffObservations(priorEvents, events);
     if (priorEvents.length > 0) {
-      console.log(`\n── Re-observation delta ──`);
-      console.log(`  New events:      ${obsDiff.new.length}`);
-      console.log(`  Resolved events: ${obsDiff.resolved.length}`);
-      console.log(`  Unchanged:       ${obsDiff.unchanged.length}`);
+      console.error(`\n── Re-observation delta ──`);
+      console.error(`  New events:      ${obsDiff.new.length}`);
+      console.error(`  Resolved events: ${obsDiff.resolved.length}`);
+      console.error(`  Unchanged:       ${obsDiff.unchanged.length}`);
     } else {
-      console.log(`First observation — no delta available.`);
+      console.error(`First observation — no delta available.`);
     }
 
     writeFileSync(obsFile, JSON.stringify(events, null, 2), "utf-8");
@@ -744,7 +744,7 @@ async function runBatch(
     .map((l) => l.trim())
     .filter((l) => l.length > 0 && !l.startsWith("#"));
 
-  console.log(`Batch mode: ${titles.length} pages from ${pagesFile}\n`);
+  console.error(`Batch mode: ${titles.length} pages from ${pagesFile}\n`);
 
   const BATCH_CONCURRENCY = 4;
   const pageResults: BatchPageResult[] = [];
@@ -755,7 +755,7 @@ async function runBatch(
     const chunkResults = await Promise.all(
       chunk.map(async (title, j) => {
         const idx = i + j + 1;
-        console.log(`--- Page ${idx}/${titles.length}: ${title} ---`);
+        console.error(`--- Page ${idx}/${titles.length}: ${title} ---`);
         const { events } = await runAnalyze(
           title,
           depth,
@@ -786,11 +786,11 @@ async function runBatch(
     generatedAt: new Date().toISOString(),
   };
 
-  console.log(`\n=== Batch Results ===`);
-  console.log(`Pages processed: ${result.batchSize}`);
-  console.log(`Total events: ${result.totalEvents}\n`);
+  console.error(`\n=== Batch Results ===`);
+  console.error(`Pages processed: ${result.batchSize}`);
+  console.error(`Total events: ${result.totalEvents}\n`);
   for (const p of result.pages) {
-    console.log(`  ${p.pageTitle}: ${p.eventCount} events`);
+    console.error(`  ${p.pageTitle}: ${p.eventCount} events`);
   }
 
   return { events: allEvents, revisions: [] };
