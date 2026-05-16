@@ -71,6 +71,25 @@ deterministic event types:
 - **Knowledge graph engineers** — extract entity and relationship changes across revision history for evolving ontologies
 - **Publishers & platform trust teams** — monitor how claims spread, get cited, and stabilize across the public record
 
+## What Downstream Systems Build
+
+Each consumer brings their own interpretation layer on top of Refract's deterministic event stream:
+
+| Consumer | They build | How they use Refract |
+|----------|-----------|---------------------|
+| **Healthcare intelligence** | Sourced briefs answering "does this claim still hold up?" | Feed structured events into a 4-lane measurement pipeline (clinical truth, ratification, economic stake, feasibility). Each event carries `FactProvenance` with the exact thresholds used. |
+| **AI training data curation** | Training datasets filtered by claim stability | Score each claim by revert count, citation churn, talk page correlation, and template dispute history from the event stream. Include only claims above a stability threshold. |
+| **Provenance-aware RAG** | Retrieval that weights results by claim stability | Enrich each retrieved chunk with its claim history — stable, recently changed, source-fragile, contested. The RAG system uses the signal to filter or demote low-confidence results. |
+| **Regulatory monitoring** | Early-warning dashboards for policy changes | Run `refract cron` on drug pages, guideline entries, and regulatory topics. When new events fire (citation removal, template dispute, section reorganization), alert the monitoring team with the structured diff. |
+| **Competitive intelligence** | Cross-jurisdiction claim divergence maps | Use `refract diff` to compare the same topic across wikis (English vs German Wikipedia, Fandom vs independent wiki). Track how framing differs and when it diverged. |
+| **Fact-checking** | Claim provenance timelines | Given a claim text, query its lifecycle across the event stream — first appearance, source additions, revert history, talk page correlation, stabilization time. Return a verifiable timeline. |
+| **Academic research** | Large-scale knowledge dynamics studies | Export `ObservationReport` with Merkle-verifiable claim histories. Run cohort analyses on claim stability across topics, time periods, and editorial environments. |
+| **Journalism forensics** | Edit pattern analysis for public figures | Track how a specific claim about a person or topic evolved. Look for coordinated editing, source softening, or removal without replacement. |
+| **Fan wiki canon tracking** | Canon divergence detection across competing wikis | Compare the same fictional universe's page across Fandom and independent wikis. Detect when one wiki retcons content while the other doesn't — and by how much. |
+| **Knowledge graph engineering** | Evolving ontologies from category and link changes | Use `refract analyze --depth forensic` to capture category_added/removed and wikilink_added/removed events. Build an entity graph that evolves with the public record. |
+
+The common architecture: **Refract extracts the mechanical facts. The downstream system interprets what those facts mean for its domain.** No interpretation enters Refract's pipeline; no consumer re-extracts from raw revision history.
+
 ## Quick Start
 
 ```bash
