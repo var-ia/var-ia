@@ -123,7 +123,7 @@ import { sectionDiffer, citationTracker } from "@refract-org/analyzers";
 | `@refract-org/analyzers` | [![npm](https://img.shields.io/npm/v/@refract-org/analyzers)](https://www.npmjs.com/package/@refract-org/analyzers) | Deterministic analyzers — sections, citations, reverts, templates |
 | `@refract-org/cli` | [![npm](https://img.shields.io/npm/v/@refract-org/cli)](https://www.npmjs.com/package/@refract-org/cli) | CLI tool — `refract` / `wikihistory` commands |
 | `@refract-org/persistence` | — | Local SQLite persistence (bun:sqlite, not published) |
-| `@refract-org/eval` | — | Evaluation harness (not published) |
+| `@refract-org/eval` | [![npm](https://img.shields.io/npm/v/@refract-org/eval)](https://www.npmjs.com/package/@refract-org/eval) | Evaluation harness — ground truth validation and benchmarks |
 | `@refract-org/observable` | — | Observable Framework data loader (not published) |
 
 ## How It Compares

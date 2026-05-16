@@ -37,7 +37,7 @@ packages/
 ├── evidence-graph/   # Core types/schemas (no deps) — Published
 ├── ingestion/        # Wikimedia API adapters — Published
 ├── analyzers/        # Deterministic analyzers (section, citation, revert, template) — Published
-├── cli/              # CLI tool (wikihistory) — Published
+├── cli/              # CLI tool (refract / wikihistory) — Published
 ├── persistence/      # SQLite persistence (bun:sqlite) — Not published
 ├── eval/             # Evaluation harness (L3) — Not published
 └── observable/       # Observable Framework data loader — Not published
