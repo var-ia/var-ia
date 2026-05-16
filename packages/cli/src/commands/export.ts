@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import type { AnalyzerConfig, EvidenceEvent, PolicySignal, Report, Revision } from "@refract-org/evidence-graph";
-import { EVENT_SCHEMA_VERSION, createEventIdentity, createReplayManifest } from "@refract-org/evidence-graph";
+import { createEventIdentity, createReplayManifest, EVENT_SCHEMA_VERSION } from "@refract-org/evidence-graph";
 import type { AuthConfig } from "@refract-org/ingestion";
 import { renderHtmlReport } from "../html-renderer.js";
 import { runAnalyze } from "./analyze.js";

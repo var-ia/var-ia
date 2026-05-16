@@ -1,5 +1,5 @@
 import { createServer } from "node:http";
-import type { AnalyzerConfig, EvidenceEvent, Revision } from "@refract-org/evidence-graph";
+import type { AnalyzerConfig } from "@refract-org/evidence-graph";
 import type { AuthConfig } from "@refract-org/ingestion";
 import { renderHtmlReport } from "../html-renderer.js";
 import { runAnalyze } from "./analyze.js";
