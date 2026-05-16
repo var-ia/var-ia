@@ -187,7 +187,7 @@ export function buildConfig(options: Record<string, unknown>): AnalyzerConfig {
   }
 
   // Pin config version from the package version for traceability
-  config.$version = "0.5.0";
+  config.$version = "0.5.1";
 
   return config;
 }
@@ -883,7 +883,7 @@ export function buildObservationReport(
 
   const manifest = createReplayManifest({
     pageTitle,
-    analyzerVersions: { refract: "0.5.0" },
+    analyzerVersions: { refract: "0.5.1" },
     revisions,
     events: claimEvents,
   });
