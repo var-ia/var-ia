@@ -66,6 +66,10 @@ deterministic event types:
   reproducible on request
 - **Fan wiki communities** — canon disputes, headcanon drift, content-fork
   detection across MediaWiki instances
+- **AI/ML teams** — training data curation (include stable, well-sourced claims; exclude contested or source-fragile ones), provenance-aware RAG, temporal leakage detection in training corpora
+- **Regulatory & compliance monitors** — track changes to drug safety pages, guideline entries, and policy language for early signals of institutional shifts
+- **Knowledge graph engineers** — extract entity and relationship changes across revision history for evolving ontologies
+- **Publishers & platform trust teams** — monitor how claims spread, get cited, and stabilize across the public record
 
 ## Quick Start
 
