@@ -1,11 +1,11 @@
 cff-version: 1.2.0
 message: "If you use Refract in research, please cite it."
 title: "Refract: A deterministic claim-provenance engine for Wikipedia page histories"
-version: 0.2.1
+version: 0.5.1
 date-released: 2026-05-13
 authors:
   - name: NextConsensus
     website: https://nextconsensus.com
-repository-code: https://github.com/var-ia/var-ia
+repository-code: https://github.com/refract-org/refract
 license: AGPL-3.0
 type: software

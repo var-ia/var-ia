@@ -1,6 +1,6 @@
 {
   "name": "@refract-org/ingestion",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "type": "module",
   "private": false,
   "description": "MediaWiki ingestion client for fetching revisions, diffs, page metadata, and source histories from Wikipedia, Fandom, and generic MediaWiki instances",
@@ -22,7 +22,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@refract-org/evidence-graph": "^0.2.2"
+    "@refract-org/evidence-graph": "^0.4.0"
   },
   "devDependencies": {}
 }

@@ -9,9 +9,9 @@
 
 ## Questions
 
-- Open a [GitHub Discussion](https://github.com/nextconsensus/var-ia/discussions)
+- Open a [GitHub Discussion](https://github.com/refract-org/refract/discussions)
   for how-to questions, ideas, or general discussion.
-- Open a [GitHub Issue](https://github.com/nextconsensus/var-ia/issues) for
+- Open a [GitHub Issue](https://github.com/refract-org/refract/issues) for
   bug reports or feature requests.
 
 ## Commercial

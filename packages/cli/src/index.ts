@@ -50,7 +50,7 @@ const program = new Command();
 program
   .name("wikihistory")
   .description("Wikipedia edit history analysis — deterministic L1 observation engine")
-  .version("0.3.1")
+  .version("0.5.1")
   .addHelpCommand("help [command]", "show help for a specific command");
 
 // ── analyze ──
