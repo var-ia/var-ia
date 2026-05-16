@@ -32,7 +32,7 @@
     "@refract-org/ingestion": "^0.3.0",
     "@refract-org/analyzers": "^0.3.0",
     "@refract-org/evidence-graph": "^0.4.0",
-    "commander": "^12.0.0"
+    "commander": "^14.0.3"
   },
   "optionalDependencies": {
     "@refract-org/eval": "^0.2.0",
