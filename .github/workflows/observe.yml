@@ -1,0 +1,41 @@
+name: Scheduled observation
+
+on:
+  schedule:
+    # Daily at 6 AM UTC — adjust the cron to your monitoring cadence
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+    inputs:
+      pages:
+        description: "Space-separated page titles"
+        required: true
+        default: "Bitcoin COVID-19"
+
+jobs:
+  observe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Run refract analysis
+        run: |
+          PAGES="${{ github.event.inputs.pages || 'Bitcoin' }}"
+          for PAGE in $PAGES; do
+            echo "=== Observing: $PAGE ==="
+            npx @refract-org/cli analyze "$PAGE" --depth detailed --json \
+              > "observations/${PAGE//\//_}.json" 2>&1
+          done
+
+      - name: Commit observations
+        run: |
+          git config user.name "refract-bot"
+          git config user.email "bot@refract-org.github.io"
+          git add observations/
+          git diff --quiet && echo "No changes" || {
+            git commit -m "chore: daily observation $(date -u +%Y-%m-%d)"
+            git push
+          }

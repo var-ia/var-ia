@@ -41,28 +41,55 @@ export async function sendNotifications(config: NotifyConfig, deltas: DeltaNotif
 }
 
 function formatSlackMessage(deltas: DeltaNotification[]): string {
-  const lines = deltas.map((d) => {
+  const blocks: Record<string, unknown>[] = [
+    {
+      type: "header",
+      text: { type: "plain_text", text: "🔭 Refract Observation Report" },
+    },
+    {
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text: `${deltas.length} page(s) changed since last observation.`,
+      },
+    },
+    { type: "divider" },
+  ];
+
+  for (const d of deltas) {
     const summary =
       d.eventsNew > 0 ? `${d.eventsNew} new event(s), ${d.eventsResolved} resolved` : `${d.eventsResolved} resolved`;
-    return `• *${d.pageTitle}*: ${summary}`;
-  });
+    blocks.push({
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text: `*${d.pageTitle}*\n${summary}\n${d.eventsNew > 0 ? "⚠️ Changes detected" : "✅ Resolved"}`,
+      },
+    });
+  }
 
-  return [
-    `*Refract Observation Report*`,
-    `${deltas.length} page(s) changed`,
-    "",
-    ...lines,
-    "",
-    `_Generated at ${new Date().toISOString()}_`,
-  ].join("\n");
+  blocks.push(
+    { type: "divider" },
+    {
+      type: "context",
+      elements: [
+        {
+          type: "mrkdwn",
+          text: `Generated at ${new Date().toISOString()} · <https://github.com/refract-org/refract|Refract>`,
+        },
+      ],
+    },
+  );
+
+  return JSON.stringify({ blocks });
 }
 
 async function sendSlackNotification(webhookUrl: string, deltas: DeltaNotification[]): Promise<void> {
-  const text = formatSlackMessage(deltas);
+  const body = formatSlackMessage(deltas);
   const response = await fetch(webhookUrl, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ text }),
+    body,
   });
 
   if (!response.ok) {

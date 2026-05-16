@@ -38,8 +38,9 @@ describe("notify", () => {
     const callUrl = mockFetch.mock.calls[0][0];
     const callBody = JSON.parse(mockFetch.mock.calls[0][1].body);
     expect(callUrl).toBe("https://hooks.slack.com/test");
-    expect(callBody.text).toContain("Earth");
-    expect(callBody.text).toContain("3 new");
+    expect(callBody.blocks).toBeDefined();
+    expect(JSON.stringify(callBody.blocks)).toContain("Earth");
+    expect(JSON.stringify(callBody.blocks)).toContain("3 new");
   });
 
   it("sends webhook notification with JSON payload", async () => {
