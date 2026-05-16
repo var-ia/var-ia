@@ -63,7 +63,8 @@ const analyzeCmd = program
   .option("--since <timestamp>", "re-observe from ISO timestamp")
   .option("-c, --cache", "cache revisions in SQLite (~/.wikihistory/refract.db)")
   .option("--pages-file <path>", "batch file of page titles (one per line)")
-  .option("-r, --report", "output ObservationReport JSON instead of raw events");
+  .option("-r, --report", "output ObservationReport JSON instead of raw events")
+  .option("-j, --json", "force JSON output to stdout (disable interactive web UI)");
 withGlobal(analyzeCmd);
 withAnalyzerConfig(analyzeCmd);
 analyzeCmd.action(async (page, opts) => {
@@ -114,6 +115,24 @@ analyzeCmd.action(async (page, opts) => {
     const pageId = revisions[0]?.pageId ?? 0;
     const report = buildObservationReport(page, pageId, events, revisions);
     console.log(JSON.stringify(report, null, 2));
+    return;
+  }
+
+  // Interactive mode: auto-launch web UI when stdout is a TTY and no --json flag
+  const isInteractive = process.stdout.isTTY && !opts.json;
+  if (isInteractive && events.length > 0) {
+    const { runExplore } = await import("./commands/explore.js");
+    await runExplore(
+      page,
+      8899,
+      false,
+      opts.api as string | undefined,
+      auth,
+      config,
+      !!opts.cache,
+      opts.depth as string,
+      opts.since as string | undefined,
+    );
     return;
   }
 

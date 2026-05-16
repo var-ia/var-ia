@@ -1,5 +1,33 @@
 # Changelog
 
+## 0.5.1 (2026-05-15)
+
+**schema:** `EVENT_SCHEMA_VERSION "0.5.0"`. No `EventType` changes. Added `EVENT_SCHEMA_VERSION` constant and `CLAIM_IDENTITY_VERSION` constant to package exports.
+
+### Added
+- `--json` flag on `analyze` command to force JSON output (disable interactive web UI)
+- Auto-launch web UI when `refract analyze` is run in an interactive terminal
+- `runExplore` now supports `useCache`, `depth`, `since` parameters
+- `scripts/verify-mcp.sh` — MCP connectivity verification script
+
+### Changed
+- Empty events response now shows "No events detected" instead of raw JSON
+- Explorer server waits for port assignment before printing URL (supports random port allocation)
+
+## 0.4.0 / 0.5.0 (2026-05-15)
+
+**schema:** `EVENT_SCHEMA_VERSION "0.4.0"`. Added `sentence_modified` to `EventType` union. Added `parameters` to `FactProvenance` interface. Added `AnalyzerConfig` type. Added `$version` to `AnalyzerConfig`. Added `CLAIM_IDENTITY_VERSION "claimidentityv1"`.
+
+### Added
+- **BYO-inference boundaries**: typed interfaces for 5 judgment points (revert, similarity, heuristic, template, spike) with `buildInferencePrompt()` and `parseInferenceResponse()`
+- **`refract classify`**: CLI command for single-boundary model calls
+- **MCP `classify` tool**: accepts boundary + input, uses MCP sampling or OpenAI-compatible provider
+- **OpenAICompatibleProvider**: works with OpenAI, DeepSeek, Ollama, any `/chat/completions` endpoint
+- **`--config`, `--similarity`, `--report`** flags on `analyze` and `export` commands
+- **Config version pinning**: `config.$version` recorded on every event set
+- **ObservationReport**: structured output with claim lifecycle and Merkle root
+- **On-revision integrity**: every event stamped with `schemaVersion` at generation time
+
 ## 0.3.1 (2026-05-15)
 
 ### Removed

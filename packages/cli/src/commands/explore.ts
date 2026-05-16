@@ -1,5 +1,5 @@
 import { createServer } from "node:http";
-import type { AnalyzerConfig } from "@refract-org/evidence-graph";
+import type { AnalyzerConfig, EvidenceEvent, Revision } from "@refract-org/evidence-graph";
 import type { AuthConfig } from "@refract-org/ingestion";
 import { renderHtmlReport } from "../html-renderer.js";
 import { runAnalyze } from "./analyze.js";
@@ -20,14 +20,17 @@ export async function runExplore(
   apiUrl?: string,
   auth?: AuthConfig,
   config?: AnalyzerConfig,
+  useCache?: boolean,
+  depth?: string,
+  since?: string,
 ): Promise<void> {
   const { events, revisions } = await runAnalyze(
     pageTitle,
-    "detailed",
+    depth ?? "detailed",
     undefined,
     undefined,
-    undefined,
-    false,
+    since,
+    useCache ?? false,
     apiUrl,
     undefined,
     undefined,
@@ -52,12 +55,14 @@ export async function runExplore(
     res.end(html);
   });
 
-  const url = `http://localhost:${port}`;
-  console.log(`\n  Refract Explorer running at ${url}`);
-  console.log(`  Page: ${pageTitle}`);
-  console.log(`  Events: ${events.length}  |  Revisions: ${revisions.length}`);
-  console.log(`  Press Ctrl+C to stop\n`);
-  if (!noOpen) openBrowser(url);
-
-  server.listen(port);
+  server.listen(port, () => {
+    const addr = server.address();
+    const actualPort = typeof addr === "object" && addr ? addr.port : port;
+    const url = `http://localhost:${actualPort}`;
+    console.log(`\n  Refract Explorer running at ${url}`);
+    console.log(`  Page: ${pageTitle}`);
+    console.log(`  Events: ${events.length}  |  Revisions: ${revisions.length}`);
+    console.log(`  Press Ctrl+C to stop\n`);
+    if (!noOpen) openBrowser(url);
+  });
 }
