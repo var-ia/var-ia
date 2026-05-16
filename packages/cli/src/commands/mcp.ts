@@ -1,6 +1,7 @@
-import type { AnalyzerConfig, EvidenceEvent } from "@refract-org/evidence-graph";
-import { DEFAULT_ANALYZER_CONFIG } from "@refract-org/evidence-graph";
+import type { AnalyzerConfig, EvidenceEvent, InferenceBoundary, InferenceResult } from "@refract-org/evidence-graph";
+import { buildInferencePrompt, DEFAULT_ANALYZER_CONFIG } from "@refract-org/evidence-graph";
 import type { AuthConfig } from "@refract-org/ingestion";
+import { OpenAIProvider } from "../inference-provider.js";
 import { runAnalyze } from "./analyze.js";
 import { runClaim } from "./claim.js";
 
@@ -113,16 +114,39 @@ const TOOLS: McpTool[] = [
   },
   {
     name: "cron",
-    description:
-      "Re-observe pages and return current analysis results. For scheduled monitoring — detects new edits, citation changes, and template changes.",
+    description: "One-shot re-observation for cron: reads a pages file, runs analysis, reports new events.",
     inputSchema: {
       type: "object",
       properties: {
-        pagesFile: { type: "string", description: "Path to file with one page title per line" },
-        interval: { type: "string", description: "Lookback window in hours (default: from last observation)" },
-        api: { type: "string", description: "MediaWiki API base URL" },
+        pagesFile: { type: "string", description: "Path to file with page titles (one per line)" },
       },
       required: ["pagesFile"],
+    },
+  },
+  {
+    name: "classify",
+    description:
+      "Ask a model to classify a single observation boundary — revert detection, sentence similarity, edit type, template signal, or activity spike. Uses MCP sampling if no API key is configured, otherwise calls the configured provider.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        boundary: {
+          type: "string",
+          enum: ["revert", "sentence_similarity", "heuristic", "template_signal", "activity_spike"],
+          description: "Which inference boundary to classify",
+        },
+        input: {
+          type: "object",
+          description: "Input data for the boundary (field names vary by boundary type)",
+        },
+        apiKey: {
+          type: "string",
+          description: "API key for the inference provider (optional; falls back to MCP sampling)",
+        },
+        endpoint: { type: "string", description: "Inference provider endpoint URL (default: OpenAI-compatible)" },
+        model: { type: "string", description: "Model name (default: gpt-4o-mini)" },
+      },
+      required: ["boundary", "input"],
     },
   },
 ];
@@ -389,6 +413,82 @@ async function handleToolCall(
       }
       return { content: [{ type: "text", text: lines.join("\n") }] };
     }
+
+    case "classify": {
+      const boundary = params.boundary as InferenceBoundary;
+      const input = params.input as Record<string, unknown>;
+      if (!boundary || !input) {
+        return { content: [{ type: "text", text: "Error: missing 'boundary' or 'input' parameters" }] };
+      }
+
+      const apiKey = (params.apiKey as string) || process.env.REFRACT_INFERENCE_API_KEY || "";
+      const endpoint = (params.endpoint as string) || process.env.REFRACT_INFERENCE_ENDPOINT || "";
+      const model = (params.model as string) || process.env.REFRACT_INFERENCE_MODEL || "";
+
+      try {
+        let result: InferenceResult;
+
+        if (apiKey) {
+          const provider = new OpenAIProvider({ endpoint, apiKey, model });
+          result = await provider.infer(boundary, input);
+        } else if (_clientCapabilities?.sampling) {
+          // MCP sampling: ask the host LLM
+          const prompt = buildInferencePrompt(boundary, input);
+          const samplingId = `classify-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+          const { parseInferenceResponse } = await import("@refract-org/evidence-graph");
+
+          const samplingResult = await new Promise<{ content: { text: string } }>((resolve, reject) => {
+            const timeout = setTimeout(() => reject(new Error("MCP sampling timeout")), 30000);
+            pendingSampling.set(samplingId, {
+              resolve: (value) => {
+                clearTimeout(timeout);
+                const content = (value.result as { content?: Array<{ text?: string }> })?.content?.[0];
+                if (content?.text) resolve({ content: { text: content.text } });
+                else reject(new Error("Empty sampling response"));
+              },
+              reject: (err) => {
+                clearTimeout(timeout);
+                reject(err);
+              },
+            });
+            sendRequest({
+              jsonrpc: "2.0",
+              id: samplingId,
+              method: "sampling/createMessage",
+              params: {
+                messages: [{ role: "user", content: { type: "text", text: prompt } }],
+                maxTokens: 64,
+              },
+            });
+          });
+
+          result = parseInferenceResponse(boundary, samplingResult.content.text, input);
+        } else {
+          return {
+            content: [
+              {
+                type: "text",
+                text: JSON.stringify(
+                  {
+                    boundary,
+                    output: {},
+                    source: "default",
+                    note: "No inference provider configured. Set REFRACT_INFERENCE_API_KEY or connect via MCP client with sampling support.",
+                  },
+                  null,
+                  2,
+                ),
+              },
+            ],
+          };
+        }
+
+        return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+      } catch (error) {
+        return { content: [{ type: "text", text: `Error: ${String(error)}` }] };
+      }
+    }
+
     default:
       return { content: [{ type: "text", text: `Unknown tool: ${name}` }] };
   }

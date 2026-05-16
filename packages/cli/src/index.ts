@@ -335,6 +335,27 @@ evalCmd.action(async (opts) => {
   await runEval(opts.page as string | undefined, opts.groundTruth as string | undefined);
 });
 
+// ── classify ──
+program
+  .command("classify <boundary>")
+  .description("classify a single observation boundary using an inference provider")
+  .option("--input <json>", 'input data as JSON string (e.g. \'{"comment": "revert vandalism"}\')')
+  .option("--api-key <key>", "API key for inference provider")
+  .option("--endpoint <url>", "inference provider endpoint URL (OpenAI-compatible)")
+  .option("--model <name>", "model name (default: gpt-4o-mini)")
+  .action(async (boundary, opts) => {
+    const input = opts.input ? JSON.parse(opts.input as string) : {};
+    const { OpenAIProvider } = await import("./inference-provider.js");
+    const provider = new OpenAIProvider({
+      apiKey: (opts.apiKey as string) || process.env.REFRACT_INFERENCE_API_KEY,
+      endpoint: (opts.endpoint as string) || process.env.REFRACT_INFERENCE_ENDPOINT,
+      model: (opts.model as string) || process.env.REFRACT_INFERENCE_MODEL,
+    });
+    // biome-ignore lint/suspicious/noExplicitAny: dynamic boundary name from CLI
+    const result = await provider.infer(boundary as any, input);
+    console.log(JSON.stringify(result, null, 2));
+  });
+
 // ── mcp ──
 program
   .command("mcp")

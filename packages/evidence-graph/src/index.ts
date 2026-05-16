@@ -1,5 +1,23 @@
 export { createClaimIdentity, createEventIdentity } from "./hash-identity.js";
-
+export type {
+  ActivitySpikeInput,
+  ActivitySpikeOutput,
+  HeuristicInput,
+  HeuristicOutput,
+  InferenceBoundary,
+  InferenceRequest,
+  InferenceResult,
+  RevertInput,
+  RevertOutput,
+  SentenceSimilarityInput,
+  SentenceSimilarityOutput,
+  TemplateSignalInput,
+  TemplateSignalOutput,
+} from "./inference.js";
+export {
+  buildInferencePrompt,
+  parseInferenceResponse,
+} from "./inference.js";
 export type { MerkleProof, ReplayManifest } from "./replay-manifest.js";
 export {
   buildMerkleTree,
