@@ -34,6 +34,7 @@ import {
   createEventIdentity,
   createReplayManifest,
   DEFAULT_ANALYZER_CONFIG,
+  EVENT_SCHEMA_VERSION,
 } from "@refract-org/evidence-graph";
 import type { AuthConfig, RevisionOptions } from "@refract-org/ingestion";
 import { MediaWikiClient } from "@refract-org/ingestion";
@@ -179,11 +180,14 @@ export function buildConfig(options: Record<string, unknown>): AnalyzerConfig {
 
   if (options.sectionRename) {
     const mode = options.sectionRename as string;
-    if (mode === "exact" || mode === "similarity" || mode === "none") {
+    if (["exact", "similarity", "none"].includes(mode)) {
       config.section ??= {};
-      config.section.renameDetection = mode;
+      config.section.renameDetection = mode as "exact" | "similarity" | "none";
     }
   }
+
+  // Pin config version from the package version for traceability
+  config.$version = "0.5.0";
 
   return config;
 }
@@ -711,6 +715,11 @@ export async function runAnalyze(
     writeFileSync(obsFile, JSON.stringify(events, null, 2), "utf-8");
   }
 
+  // Stamp schema version on every event for version-resilient downstream consumption
+  for (const e of events) {
+    (e as unknown as Record<string, unknown>).schemaVersion = EVENT_SCHEMA_VERSION;
+  }
+
   return { events, revisions: sortedRevs };
 }
 
@@ -874,7 +883,7 @@ export function buildObservationReport(
 
   const manifest = createReplayManifest({
     pageTitle,
-    analyzerVersions: { refract: "0.3.1" },
+    analyzerVersions: { refract: "0.5.0" },
     revisions,
     events: claimEvents,
   });
@@ -890,6 +899,6 @@ export function buildObservationReport(
     claims,
     eventCount: events.length,
     merkleRoot: manifest.merkleRoot,
-    analyzerVersion: "0.3.1",
+    analyzerVersion: "0.5.0",
   };
 }

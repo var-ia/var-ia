@@ -1,4 +1,4 @@
-export { createClaimIdentity, createEventIdentity } from "./hash-identity.js";
+export { CLAIM_IDENTITY_VERSION, createClaimIdentity, createEventIdentity } from "./hash-identity.js";
 export type {
   ActivitySpikeInput,
   ActivitySpikeOutput,
@@ -45,6 +45,7 @@ export type {
   ModelInterpretation,
   PolicyDimension,
 } from "./schemas/evidence.js";
+export { EVENT_SCHEMA_VERSION } from "./schemas/evidence.js";
 export type {
   ClaimLedger,
   ClaimLedgerEntry,

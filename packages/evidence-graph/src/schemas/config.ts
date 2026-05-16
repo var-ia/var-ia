@@ -1,4 +1,6 @@
 export interface AnalyzerConfig {
+  /** Optional config version identifier pinned from CLI or consumer. */
+  $version?: string;
   heuristic?: HeuristicConfig;
   revert?: RevertConfig;
   editCluster?: EditClusterConfig;

@@ -1,5 +1,8 @@
 // Evidence event — what happened at a revision boundary
 
+/** Current event schema version. Bump when EventType gains or loses members. */
+export const EVENT_SCHEMA_VERSION = "0.4.0";
+
 export type EvidenceLayer = "observed" | "policy_coded" | "model_interpretation" | "speculative" | "unknown";
 
 export type EventType =
@@ -70,16 +73,17 @@ export interface ModelInterpretation {
 }
 
 export interface EvidenceEvent {
-  eventId?: string;
-  eventType: EventType;
-  claimId?: string;
-  fromRevisionId: number;
-  toRevisionId: number;
-  section: string;
-  before: string;
-  after: string;
-  deterministicFacts: DeterministicFact[];
-  modelInterpretation?: ModelInterpretation;
-  layer: EvidenceLayer;
+  schemaVersion?: string; // EVENT_SCHEMA_VERSION at time of generation
+  eventId?: string; // deterministic content hash (see below)
+  eventType: EventType; // discriminator
+  claimId?: string; // claim identity hash, when applicable
+  fromRevisionId: number; // parent revision
+  toRevisionId: number; // source revision
+  section: string; // section title where change occurred
+  before: string; // text / state before the change
+  after: string; // text / state after the change
+  deterministicFacts: DeterministicFact[]; // facts backing this event
+  modelInterpretation?: ModelInterpretation; // set by downstream consumers
+  layer: EvidenceLayer; // provenance layer
   timestamp: string; // ISO 8601
 }
