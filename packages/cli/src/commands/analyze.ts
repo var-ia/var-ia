@@ -133,7 +133,7 @@ function compilePatterns(config: AnalyzerConfig): void {
 }
 
 /** Current Refract CLI version — single source of truth for output metadata. */
-const REFRACT_VERSION = "0.5.5";
+const REFRACT_VERSION = "0.5.6";
 
 export function buildConfig(options: Record<string, unknown>): AnalyzerConfig {
   const config: AnalyzerConfig = structuredClone(DEFAULT_ANALYZER_CONFIG);
