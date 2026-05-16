@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.5.3 (2026-05-15)
+
+### Added
+- **Slack Block Kit notifications**: Rich-formatted Slack messages with header, page breakdown, emoji indicators (⚠️/✅), and context footer. `sendSlackNotification` now posts `{"blocks": [...]}` instead of `{"text": "..."}`.
+- **GitHub Actions observe workflow**: `.github/workflows/observe.yml` — daily scheduled observation of configurable page titles, auto-commits results.
+- **LangChain document loader**: `refract-py/src/refract_langchain.py` — loads events as `Document` objects with stability metadata for provenance-aware RAG.
+- **Marimo notebook template**: `docs/notebooks.md` updated with Altair-based analysis template.
+- **`.github/workflows/observe.yml`**: reusable scheduled observation workflow.
+
+### Fixed
+- CLI `--version` now reports `0.5.3` (was stuck at `0.5.1` in index.ts)
+
+## 0.5.2 (2026-05-15)
+
+### Fixed
+- **Boundary check script**: regex patterns updated from `@var-ia/` to `@refract-org/` — architectural boundary enforcement was silently non-functional since the rename
+- **Inter-package dependency ranges**: CLI, analyzers, ingestion, and eval all updated caret ranges to match actual published versions (e.g., `evidence-graph ^0.2.2` → `^0.4.0`)
+- **CITATION.cff**: stale `var-ia/var-ia` URL and version `0.2.1` fixed to `refract-org/refract` and `0.5.1`
+- **SUPPORT.md**: stale `nextconsensus/var-ia` discussion/issue URLs fixed to `refract-org/refract`
+
 ## 0.5.1 (2026-05-15)
 
 **schema:** `EVENT_SCHEMA_VERSION "0.5.0"`. No `EventType` changes. Added `EVENT_SCHEMA_VERSION` constant and `CLAIM_IDENTITY_VERSION` constant to package exports.
