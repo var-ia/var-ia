@@ -345,8 +345,8 @@ program
   .option("--model <name>", "model name (default: gpt-4o-mini)")
   .action(async (boundary, opts) => {
     const input = opts.input ? JSON.parse(opts.input as string) : {};
-    const { OpenAIProvider } = await import("./inference-provider.js");
-    const provider = new OpenAIProvider({
+    const { OpenAICompatibleProvider } = await import("./inference-provider.js");
+    const provider = new OpenAICompatibleProvider({
       apiKey: (opts.apiKey as string) || process.env.REFRACT_INFERENCE_API_KEY,
       endpoint: (opts.endpoint as string) || process.env.REFRACT_INFERENCE_ENDPOINT,
       model: (opts.model as string) || process.env.REFRACT_INFERENCE_MODEL,

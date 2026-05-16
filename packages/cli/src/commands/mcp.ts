@@ -1,7 +1,7 @@
 import type { AnalyzerConfig, EvidenceEvent, InferenceBoundary, InferenceResult } from "@refract-org/evidence-graph";
 import { buildInferencePrompt, DEFAULT_ANALYZER_CONFIG } from "@refract-org/evidence-graph";
 import type { AuthConfig } from "@refract-org/ingestion";
-import { OpenAIProvider } from "../inference-provider.js";
+import { OpenAICompatibleProvider } from "../inference-provider.js";
 import { runAnalyze } from "./analyze.js";
 import { runClaim } from "./claim.js";
 
@@ -429,7 +429,7 @@ async function handleToolCall(
         let result: InferenceResult;
 
         if (apiKey) {
-          const provider = new OpenAIProvider({ endpoint, apiKey, model });
+          const provider = new OpenAICompatibleProvider({ endpoint, apiKey, model });
           result = await provider.infer(boundary, input);
         } else if (_clientCapabilities?.sampling) {
           // MCP sampling: ask the host LLM

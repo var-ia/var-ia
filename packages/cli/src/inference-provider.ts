@@ -5,7 +5,23 @@ export interface InferenceProvider {
   infer(boundary: InferenceBoundary, input: Record<string, unknown>): Promise<InferenceResult>;
 }
 
-export class OpenAIProvider implements InferenceProvider {
+/**
+ * OpenAI-compatible REST provider — works with any API that exposes a
+ * /chat/completions endpoint (OpenAI, DeepSeek, Ollama, Anthropic via
+ * API proxy, local OpenAI-compatible servers, etc.).
+ *
+ * Configure via --endpoint and --model flags, or environment variables:
+ *   REFRACT_INFERENCE_ENDPOINT   (default: https://api.openai.com/v1/chat/completions)
+ *   REFRACT_INFERENCE_API_KEY
+ *   REFRACT_INFERENCE_MODEL      (default: gpt-4o-mini)
+ *
+ * Examples:
+ *   DeepSeek:     --endpoint https://api.deepseek.com/v1/chat/completions --model deepseek-chat
+ *   Ollama:       --endpoint http://localhost:11434/v1/chat/completions --model llama3
+ *   Anyscale:     --endpoint https://api.endpoints.anyscale.com/v1/chat/completions
+ *   Together:     --endpoint https://api.together.xyz/v1/chat/completions
+ */
+export class OpenAICompatibleProvider implements InferenceProvider {
   private endpoint: string;
   private apiKey: string;
   private model: string;
@@ -46,7 +62,6 @@ export class OpenAIProvider implements InferenceProvider {
       return parseInferenceResponse(boundary, text, input);
     }
 
-    // Fallback: if no API key, return default
     return { boundary, output: {}, source: "default" };
   }
 }
