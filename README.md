@@ -20,7 +20,7 @@ Built and maintained by [NextConsensus](https://nextconsensus.com). Refract is
 domain-neutral infrastructure for observing how public knowledge changes.
 [Repository boundary](./docs/repository-boundary.md).
 
-![Concept Overview](./docs/diagrams/concept-overview.svg)
+![Concept Overview](https://refract-org.github.io/refract-docs/concept-overview.svg)
 
 ## Why It Exists
 

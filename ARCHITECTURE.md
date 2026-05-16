@@ -48,7 +48,7 @@ On Wikipedia the ground truth is RFC closures and ArbCom decisions; on fandom
 wikis it's talk-page-archived consensus with revision links to the exact edit
 that implemented the decision.
 
-![Architecture Data Flow](./docs/diagrams/architecture-flow.svg)
+![Architecture Data Flow](https://refract-org.github.io/refract-docs/architecture-flow.svg)
 
 ## Data Flow (Text)
 
