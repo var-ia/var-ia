@@ -98,11 +98,14 @@ Refract pairs naturally with modern tools. The event stream is standard NDJSON â
 |----------|-----------|-------------|
 | **Vector databases** | Pinecone, Weaviate, pgvector | Store claim embeddings alongside stability metadata. Query: "find claims like X that are stable and well-sourced." |
 | **RAG frameworks** | LangChain, LlamaIndex | Use Refract's stability signals as retrieval filters or reranking features. Attach claim provenance to each retrieved chunk. |
+| **AI coding agents** | Claude Code, Cline, Codex CLI, OpenClaw | Agents connect via Refract's built-in MCP server (`refract mcp`) to read claim history and cite provenance. |
+| **MCP (Model Context Protocol)** | Any MCP client | `refract mcp` is a native MCP server with tools for analyze, claim, export, cron, and classify. |
 | **Data query** | DuckDB, ClickHouse | Query NDJSON output with SQL: `SELECT event_type, count(*) FROM 'events.jsonl' GROUP BY event_type;` |
 | **Streaming** | Kafka, Redpanda, Cloudflare Queues | Each `EvidenceEvent` is a message keyed by claimId for real-time monitoring. |
 | **Visualization** | Observable Framework, Mermaid, D3 | `refract visualize --format mermaid` produces Mermaid diagrams. Observable has a `@refract-org/observable` data loader. |
-| **Model serving** | OpenAI API, DeepSeek, Ollama, vLLM | Any OpenAI-compatible endpoint plugs into `refract classify` at each BYO-inference boundary. |
-| **Notebooks** | Jupyter, Observable, Marimo | Load events into a DataFrame: `pd.read_json("events.jsonl", lines=True)`. Analyze interactively. |
+| **Model serving** | OpenAI API, DeepSeek, Ollama, vLLM, Workers AI | Any OpenAI-compatible endpoint plugs into `refract classify`. Workers AI runs at the edge. |
+| **Local inference** | WebGPU, MLX, llama.cpp | Run detection models on-device â€” no API key needed. Refract defaults are mechanical; any boundary can use a local model via Ollama or MCP sampling. |
+| **Notebooks** | Jupyter, Marimo, Observable | Load events into a DataFrame: `pd.read_json("events.jsonl", lines=True)`. Marimo's reactive runtime is ideal for live event stream analysis. |
 | **Serverless** | Cloudflare Workers, D1, R2 | Run `refract` via `npx` in a Worker. Store events in D1, export to R2, queue re-observations. Entirely edge-deployable. |
 
 ## Quick Start
