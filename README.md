@@ -27,29 +27,31 @@ domain-neutral infrastructure for observing how public knowledge changes.
 Machines do not just need more retrieved text. They need provenance, instability,
 disagreement, and temporal change — six things that a current snapshot cannot provide:
 
-1. **Where it came from** — when a claim first appeared in the public record
-2. **What changed** — every addition, removal, reintroduction, and rewording
-3. **What supported it** — which citations, sources, and evidence backed the claim
-4. **What challenged it** — reverts, template disputes, talk-page disagreements
-5. **When it stabilized** — how long a claim survived without contestation
-6. **What context altered its meaning** — section moves, lead promotions, category shifts
+1. **Where it appeared** — when a claim first entered the public record
+2. **How it changed** — every addition, removal, reintroduction, and in-place modification
+3. **What was tagged** — policy templates, dispute signals, maintenance markers
+4. **What was reverted** — every revert, edit cluster, concentrated contestation
+5. **What moved** — section reorganization, lead promotion, category shifts, page moves
+6. **What was discussed** — correlated talk page activity, thread lifecycle, activity spikes
 
 Refract makes that knowledge legible to machines by decomposing every statement
 into its history. That is more durable than search, monitoring, or summarization.
 
 ## What It Does
 
-Given a MediaWiki page, the engine produces a structured event stream that tracks
-every claim through six dimensions:
+Given a MediaWiki page, the engine produces a structured event stream with 26
+deterministic event types:
 
-| Dimension | What Refract tracks |
-|-----------|-------------------|
-| **Provenance** | When a sentence first appeared, what sources backed it, where it was placed |
-| **Change** | Additions, removals, reintroductions, rewording across every revision |
-| **Support** | Which citations were added, replaced, or removed — and in what sequence |
-| **Contestation** | Revert cycles, template disputes, talk-page correlations, edit clusters |
-| **Stabilization** | How long a claim survived without challenge, protection changes |
-| **Context** | Section reorganization, lead promotions, category shifts, page moves |
+| Category | What Refract captures |
+|----------|---------------------|
+| **Appearance** | `sentence_first_seen`, `sentence_removed`, `sentence_modified`, `sentence_reintroduced` |
+| **Citations** | `citation_added`, `citation_removed`, `citation_replaced` |
+| **Templates** | `template_added`, `template_removed`, `template_parameter_changed` |
+| **Sections** | `section_reorganized`, `lead_promotion`, `lead_demotion` |
+| **Reverts** | `revert_detected`, `edit_cluster_detected` |
+| **Links & categories** | `wikilink_added`, `wikilink_removed`, `category_added`, `category_removed` |
+| **Page metadata** | `page_moved`, `protection_changed` |
+| **Talk page** | `talk_page_correlated`, `talk_thread_opened`, `talk_thread_archived`, `talk_reply_added`, `talk_activity_spike` |
 
 ## Who This Is For
 
@@ -68,8 +70,17 @@ every claim through six dimensions:
 ## Quick Start
 
 ```bash
-# One command, zero install
+# 1. Analyze a page (zero install, no config needed)
 npx @refract-org/cli analyze "Bitcoin" --depth brief
+
+# 2. View results in the web UI
+refract explore "Bitcoin"
+
+# 3. Export as an ObservationReport with claim lifecycle
+refract analyze "Bitcoin" --report > bitcoin-report.json
+
+# 4. Save as a signed evidence bundle
+refract export "Bitcoin" --bundle > bitcoin-bundle.json
 ```
 
 > **What you're seeing**: These are observed changes — deterministic facts extracted from revision history. Refract reports what changed, not whether a claim is true or false.
@@ -133,7 +144,7 @@ to specific revisions, sources, and policy signals. It complements existing tool
 
 | Tool | What it does | What Refract adds |
 |------|-------------|-----------------|
-| **WikiWho** | Sentence-level authorship (who wrote which token) | Sentence lifecycle: when a sentence first appeared, was removed, or was reintroduced |
+| **WikiWho** | Sentence-level authorship (who wrote which token) | Sentence lifecycle: when a sentence first appeared, was removed, rewrote, or was reintroduced |
 | **ORES** | ML edit quality scores (likely damaging, good-faith) | Deterministic edit classification + policy-coded signals |
 | **XTools** | Edit stats, page history summaries, top editors | Structured event stream: section changes, citation turnover, template diffs, page moves, category shifts |
 | **PetScan** | Category intersection queries across pages | Category evolution per-page over time |
@@ -149,6 +160,25 @@ The engine follows a two-knowledge-split:
    consensus, page protection events) — never redefined by the pipeline.
 
 [Full architecture](./ARCHITECTURE.md)
+
+## Configurable heuristics / BYO-inference boundaries
+
+Every analyzer threshold is a typed function signature where a model can replace the default heuristic. The defaults work offline with no configuration required:
+
+| Boundary | Default (mechanical) | Plug in a model to decide |
+|----------|----------------------|---------------------------|
+| Sentence similarity | Word-overlap ratio (0.8) | "Are these two sentences the same claim?" |
+| Revert detection | 6 regex patterns | "Is this edit comment a revert?" |
+| Template classification | Name-to-type lookup | "What policy signal does this template represent?" |
+| Edit cluster detection | Time window + min size | "Are these edits semantically related?" |
+| Heuristic classification | Size thresholds + comment patterns | "What kind of edit is this?" |
+
+Pass overrides via `--config` file or inline CLI flags (`--similarity`, `--spike-factor`, `--cluster-window`, etc.). The effective parameters are recorded in each event's `FactProvenance.parameters` when non-default values are used.
+
+```bash
+# Domain-tuned: Fandom wikis have tighter edit clusters
+refract analyze "Darth_Vader" --api https://starwars.fandom.com/api.php --cluster-window 30 --similarity 0.85
+```
 
 ## Private Instances
 
