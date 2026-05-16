@@ -132,6 +132,9 @@ function compilePatterns(config: AnalyzerConfig): void {
   }
 }
 
+/** Current Refract CLI version — single source of truth for output metadata. */
+const REFRACT_VERSION = "0.5.1";
+
 export function buildConfig(options: Record<string, unknown>): AnalyzerConfig {
   const config: AnalyzerConfig = structuredClone(DEFAULT_ANALYZER_CONFIG);
 
@@ -187,7 +190,7 @@ export function buildConfig(options: Record<string, unknown>): AnalyzerConfig {
   }
 
   // Pin config version from the package version for traceability
-  config.$version = "0.5.1";
+  config.$version = REFRACT_VERSION;
 
   return config;
 }
@@ -883,7 +886,7 @@ export function buildObservationReport(
 
   const manifest = createReplayManifest({
     pageTitle,
-    analyzerVersions: { refract: "0.5.1" },
+    analyzerVersions: { refract: REFRACT_VERSION },
     revisions,
     events: claimEvents,
   });
@@ -899,6 +902,6 @@ export function buildObservationReport(
     claims,
     eventCount: events.length,
     merkleRoot: manifest.merkleRoot,
-    analyzerVersion: "0.5.0",
+    analyzerVersion: REFRACT_VERSION,
   };
 }
