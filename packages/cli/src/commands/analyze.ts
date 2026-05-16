@@ -133,7 +133,7 @@ function compilePatterns(config: AnalyzerConfig): void {
 }
 
 /** Current Refract CLI version — single source of truth for output metadata. */
-const REFRACT_VERSION = "0.5.3";
+const REFRACT_VERSION = "0.5.4";
 
 export function buildConfig(options: Record<string, unknown>): AnalyzerConfig {
   const config: AnalyzerConfig = structuredClone(DEFAULT_ANALYZER_CONFIG);
@@ -901,6 +901,7 @@ export function buildObservationReport(
     },
     claims,
     eventCount: events.length,
+    uniqueEditorCount: [...new Set(revisions.map((r) => r.user).filter(Boolean))].length,
     merkleRoot: manifest.merkleRoot,
     analyzerVersion: REFRACT_VERSION,
   };

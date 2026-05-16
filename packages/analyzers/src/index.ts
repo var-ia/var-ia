@@ -61,7 +61,7 @@ export { buildCategoryEvents, diffCategories, extractCategories } from "./catego
 export { buildSourceId, buildSourceLineage, citationTracker } from "./citation-tracker.js";
 export type { EditClusterOptions } from "./edit-cluster-detector.js";
 export { detectEditClusters } from "./edit-cluster-detector.js";
-export type { HeuristicKind, HeuristicOptions } from "./heuristic-classifier.js";
+export type { HeuristicKind, HeuristicOptions, UserMetadata } from "./heuristic-classifier.js";
 export { classifyHeuristic } from "./heuristic-classifier.js";
 export type { ObservationDiff } from "./observation-differ.js";
 export { diffObservations } from "./observation-differ.js";

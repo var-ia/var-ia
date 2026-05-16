@@ -12,6 +12,13 @@ export type HeuristicKind =
 
 export type HeuristicOptions = AnalyzerConfig["heuristic"];
 
+export interface UserMetadata {
+  /** Editor's total edit count across all pages at observation time. */
+  editCount?: number;
+  /** Days since editor registered at observation time. */
+  registrationAgeDays?: number;
+}
+
 const DEFAULT_VANDALISM_PATTERNS: RegExp[] = [/\b(vandal|vandalism|spam|blanking|test edit)\b/i];
 const DEFAULT_SOURCING_PATTERNS: RegExp[] = [/\b(cite|ref|source|reference|citation|add ref|rm ref)\b/i];
 const REVERT_PATTERNS = /\b(rv|revert|reverted|undo|undid|rollback|rvv)\b/i;
@@ -25,6 +32,7 @@ export function classifyHeuristic(
   comment: string,
   sizeDelta: number,
   options?: AnalyzerConfig["heuristic"],
+  userMetadata?: UserMetadata,
 ): HeuristicKind {
   const norm = comment.toLowerCase().trim();
 

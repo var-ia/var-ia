@@ -79,6 +79,7 @@ export interface ObservationReport {
   revisionRange: { from: number; to: number };
   claims: Record<string, ClaimLedger>;
   eventCount: number;
+  uniqueEditorCount: number;
   merkleRoot: string;
   analyzerVersion: string;
 }

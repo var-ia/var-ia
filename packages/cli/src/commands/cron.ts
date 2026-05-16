@@ -48,6 +48,7 @@ function mergeObservationReports(prior: ObservationReport | null, current: Obser
     revisionRange: current.revisionRange,
     claims: mergedClaims,
     eventCount: current.eventCount,
+    uniqueEditorCount: Math.max(prior?.uniqueEditorCount ?? 0, current.uniqueEditorCount),
     merkleRoot: current.merkleRoot,
     analyzerVersion: current.analyzerVersion,
   };

@@ -42,6 +42,7 @@ export function detectEditClusters(revisions: Revision[], options?: AnalyzerConf
 
     if (cluster.length >= minSize) {
       const hasSingleEditor = singleEditorCluster(sorted, cluster);
+      const editorCount = uniqueEditorCount(sorted, cluster);
       const _revIds = cluster.map((idx) => sorted[idx].revId);
 
       for (const idx of cluster) clustered.add(idx);
@@ -56,7 +57,7 @@ export function detectEditClusters(revisions: Revision[], options?: AnalyzerConf
         deterministicFacts: [
           {
             fact: "edit_cluster",
-            detail: `revisions=${cluster.length} window_ms=${windowMs} single_editor=${hasSingleEditor}`,
+            detail: `revisions=${cluster.length} editors=${editorCount} window_ms=${windowMs} single_editor=${hasSingleEditor}`,
           },
         ],
         layer: "observed",
@@ -72,4 +73,12 @@ function singleEditorCluster(revisions: Revision[], indices: number[]): boolean 
   const firstUser = revisions[indices[0]].user;
   if (!firstUser) return false;
   return indices.every((i) => revisions[i].user === firstUser);
+}
+
+function uniqueEditorCount(revisions: Revision[], indices: number[]): number {
+  const editors = new Set<string>();
+  for (const i of indices) {
+    if (revisions[i].user) editors.add(revisions[i].user);
+  }
+  return editors.size;
 }
