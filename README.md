@@ -90,6 +90,21 @@ Each consumer brings their own interpretation layer on top of Refract's determin
 
 The common architecture: **Refract extracts the mechanical facts. The downstream system interprets what those facts mean for its domain.** No interpretation enters Refract's pipeline; no consumer re-extracts from raw revision history.
 
+## Complementary technologies
+
+Refract pairs naturally with modern tools. The event stream is standard NDJSON — anything that reads JSON or speaks HTTP can consume it.
+
+| Category | Technology | How they fit |
+|----------|-----------|-------------|
+| **Vector databases** | Pinecone, Weaviate, pgvector | Store claim embeddings alongside stability metadata. Query: "find claims like X that are stable and well-sourced." |
+| **RAG frameworks** | LangChain, LlamaIndex | Use Refract's stability signals as retrieval filters or reranking features. Attach claim provenance to each retrieved chunk. |
+| **Data query** | DuckDB, ClickHouse | Query NDJSON output with SQL: `SELECT event_type, count(*) FROM 'events.jsonl' GROUP BY event_type;` |
+| **Streaming** | Kafka, Redpanda, Cloudflare Queues | Each `EvidenceEvent` is a message keyed by claimId for real-time monitoring. |
+| **Visualization** | Observable Framework, Mermaid, D3 | `refract visualize --format mermaid` produces Mermaid diagrams. Observable has a `@refract-org/observable` data loader. |
+| **Model serving** | OpenAI API, DeepSeek, Ollama, vLLM | Any OpenAI-compatible endpoint plugs into `refract classify` at each BYO-inference boundary. |
+| **Notebooks** | Jupyter, Observable, Marimo | Load events into a DataFrame: `pd.read_json("events.jsonl", lines=True)`. Analyze interactively. |
+| **Serverless** | Cloudflare Workers, D1, R2 | Run `refract` via `npx` in a Worker. Store events in D1, export to R2, queue re-observations. Entirely edge-deployable. |
+
 ## Quick Start
 
 ```bash
