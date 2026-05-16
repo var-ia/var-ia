@@ -180,7 +180,8 @@ const exportCmd = program
   .description("export analysis as structured data")
   .option("-f, --format <format>", "output format: json, csv, ndjson", "json")
   .option("--bundle", "export as signed evidence bundle with SHA-256 hash")
-  .option("--manifest", "export as replay manifest listing all hashes");
+  .option("--manifest", "export as replay manifest listing all hashes")
+  .option("--flatten", "flatten nested fields into flat columns (for csv format)");
 withGlobal(exportCmd);
 withAnalyzerConfig(exportCmd);
 exportCmd.action(async (page, opts) => {
@@ -193,6 +194,7 @@ exportCmd.action(async (page, opts) => {
     extractAuth(opts),
     !!opts.manifest,
     config,
+    !!opts.flatten,
   );
 });
 

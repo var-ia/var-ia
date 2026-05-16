@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import type { AnalyzerConfig, EvidenceEvent, PolicySignal, Report, Revision } from "@refract-org/evidence-graph";
-import { createEventIdentity, createReplayManifest } from "@refract-org/evidence-graph";
+import { EVENT_SCHEMA_VERSION, createEventIdentity, createReplayManifest } from "@refract-org/evidence-graph";
 import type { AuthConfig } from "@refract-org/ingestion";
 import { renderHtmlReport } from "../html-renderer.js";
 import { runAnalyze } from "./analyze.js";
@@ -23,6 +23,7 @@ export async function runExport(
   auth?: AuthConfig,
   manifest?: boolean,
   config?: AnalyzerConfig,
+  flatten?: boolean,
 ): Promise<void> {
   if (bundle) {
     const { events, revisions } = await runAnalyze(
@@ -95,7 +96,7 @@ export async function runExport(
     const report = buildReport(pageTitle, events);
     console.log(JSON.stringify(report, null, 2));
   } else if (format === "csv") {
-    console.log(toCSV(events));
+    console.log(flatten ? toFlatCSV(events) : toCSV(events));
   } else if (format === "ndjson") {
     for (const event of events) {
       console.log(
@@ -259,6 +260,47 @@ function toCSV(events: EvidenceEvent[]): string {
       csvEscape(facts),
     ].join(",");
   });
+  return [header, ...rows].join("\n");
+}
+
+function toFlatCSV(events: EvidenceEvent[]): string {
+  const header = [
+    "timestamp",
+    "event_type",
+    "from_revision_id",
+    "to_revision_id",
+    "section",
+    "event_id",
+    "schema_version",
+    "layer",
+    "fact",
+    "fact_detail",
+    "analyzer_name",
+    "analyzer_version",
+    "input_hashes",
+    "parameters_json",
+  ].join(",");
+
+  const rows = events.map((e) => {
+    const fact = e.deterministicFacts[0];
+    return [
+      e.timestamp,
+      e.eventType,
+      e.fromRevisionId,
+      e.toRevisionId,
+      csvEscape(e.section),
+      e.eventId ?? createEventIdentity(e),
+      e.schemaVersion ?? EVENT_SCHEMA_VERSION,
+      e.layer,
+      csvEscape(fact?.fact ?? ""),
+      csvEscape(fact?.detail ?? ""),
+      fact?.provenance?.analyzer ?? "",
+      fact?.provenance?.version ?? "",
+      fact?.provenance?.inputHashes ? JSON.stringify(fact.provenance.inputHashes) : "",
+      fact?.provenance?.parameters ? JSON.stringify(fact.provenance.parameters) : "",
+    ].join(",");
+  });
+
   return [header, ...rows].join("\n");
 }
 
