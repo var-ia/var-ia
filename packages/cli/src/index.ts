@@ -48,7 +48,7 @@ function extractAuth(opts: Record<string, unknown>): AuthConfig | undefined {
 const program = new Command();
 
 program
-  .name("wikihistory")
+  .name("refract")
   .description("Wikipedia edit history analysis — deterministic L1 observation engine")
   .version("0.5.3")
   .addHelpCommand("help [command]", "show help for a specific command");
@@ -93,7 +93,7 @@ analyzeCmd.action(async (page, opts) => {
 
   if (!page) {
     console.error(red("Error: page title required (or use --pages-file for batch mode)"));
-    console.error(gray("  wikihistory analyze <page> [options]"));
+    console.error(gray("  refract analyze <page> [options]"));
     process.exit(1);
   }
 

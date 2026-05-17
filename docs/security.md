@@ -8,11 +8,11 @@ CLI flags containing credentials (`--api-key`, `--api-password`) are visible in 
 
 ```bash
 # Instead of this (visible in ps aux):
-wikihistory analyze "Page" --api-key "secret"
+refract analyze "Page" --api-key "secret"
 
 # Do this:
 export WIKI_API_KEY="secret"
-wikihistory analyze "Page" --api-key "$WIKI_API_KEY"
+refract analyze "Page" --api-key "$WIKI_API_KEY"
 ```
 
 ## Local storage

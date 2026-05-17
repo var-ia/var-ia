@@ -1,5 +1,5 @@
 ---
-name: varia
+name: refract
 description: Use when integrating MediaWiki edit history analysis, building claim-provenance tools, or working with @refract-org/* packages — deterministic observation engine for public revision histories
 license: AGPL-3.0
 ---
@@ -13,7 +13,7 @@ Deterministic claim-provenance engine for MediaWiki knowledge systems. Evidence,
 - Integrating MediaWiki edit history analysis into a tool
 - Building claim-provenance tracking across revisions
 - Using `@refract-org/*` packages (evidence-graph, analyzers, ingestion)
-- Running the `wikihistory` CLI for page analysis
+- Running the `refract` CLI for page analysis (`wikihistory` also works)
 - Extending the engine with new analyzers or model adapters
 - Setting up L2 model-assisted interpretation on top of L1 deterministic evidence
 
@@ -21,7 +21,7 @@ Deterministic claim-provenance engine for MediaWiki knowledge systems. Evidence,
 
 ```bash
 # CLI via npx (coming) or clone the repo
-git clone https://github.com/refract-org/var-ia
+git clone https://github.com/refract-org/refract
 cd refract && bun install && bun run build
 
 # Analyze a Wikipedia page
@@ -72,7 +72,7 @@ Every integration MUST respect these invariants:
 | `evidence-graph` | `@refract-org/evidence-graph` | Core types/schemas (no deps) |
 | `ingestion` | `@refract-org/ingestion` | Wikipedia API adapters, rate limiting |
 | `analyzers` | `@refract-org/analyzers` | Section diffing, citation tracking, revert detection, template tracking |
-| `cli` | `@refract-org/cli` | `wikihistory` CLI tool |
+| `cli` | `@refract-org/cli` | `refract` CLI tool (alias: `wikihistory`) |
 | `persistence` | (internal) | SQLite caching (bun:sqlite) |
 | `eval` | (internal) | Evaluation harness with benchmark pages |
 
@@ -128,10 +128,10 @@ interface ClaimObject {
 ### CLI Commands
 
 ```
-wikihistory analyze <page>  [--depth brief|detailed|forensic] [--from <rev>] [--to <rev>] [--cache]
-wikihistory claim <page>    --text "<claim>"
-wikihistory export <page>   --format json|csv
-wikihistory watch <page>    [--section <name>]
+refract analyze <page>  [--depth brief|detailed|forensic] [--from <rev>] [--to <rev>] [--cache]
+refract claim <page>    --text "<claim>"
+refract export <page>   --format json|csv
+refract watch <page>    [--section <name>]
 ```
 
 ## Reference Files
@@ -145,7 +145,7 @@ wikihistory watch <page>    [--section <name>]
 
 ## Forbidden Features
 
-When building on top of varia, do NOT create features that:
+When building on top of refract, do NOT create features that:
 
 - Target or identify individual editors
 - Do sentiment analysis or toxicity scoring

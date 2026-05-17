@@ -84,14 +84,14 @@ anything.
 
 ## Completed — Cross-Wiki
 
-- **CW-01:** Cross-Wiki Diff — `wikihistory diff` with 2+ wikis, z-score outlier detection
+- **CW-01:** Cross-Wiki Diff — `refract diff` with 2+ wikis, z-score outlier detection
 - **CW-02:** Multi-Workset Diff — N-way comparison table (extends CW-01)
-- **CW-03:** Evidence Graph Visualization — `wikihistory visualize` (mermaid/dot)
+- **CW-03:** Evidence Graph Visualization — `refract visualize` (mermaid/dot)
 - **CW-04:** Non-English Wikipedia Support — tested against de, fr, ja wikipedias
 - **CW-05:** Private MediaWiki Instance Support — bearer, basic, OAuth2 auth
 
 ## Completed — Infrastructure
 
 - **INFRA-01:** Real L3 Eval — ground truth labels, calibration, benchmark pages
-- **INFRA-02:** Scheduled Re-Observation — `wikihistory watch` + `cron` with notifications
+- **INFRA-02:** Scheduled Re-Observation — `refract watch` + `cron` with notifications
 - **INFRA-04:** Watch Channels — Slack, email, webhook notifications

@@ -66,5 +66,5 @@
       ]
     }
   ],
-  "labelingProcess": "1. Run `wikihistory analyze <page> --depth forensic --format json`. 2. For each revision, assign expectedKind from: revert, vandalism, major_addition, major_removal, sourcing, cosmetic, minor, unknown. 3. Target: ≥20 labeled revisions per page. 4. Re-run eval after label refinement."
+  "labelingProcess": "1. Run `refract analyze <page> --depth forensic --format json`. 2. For each revision, assign expectedKind from: revert, vandalism, major_addition, major_removal, sourcing, cosmetic, minor, unknown. 3. Target: ≥20 labeled revisions per page. 4. Re-run eval after label refinement."
 }

@@ -1,11 +1,11 @@
 # MCP — model context protocol
 
-`wikihistory mcp` starts a JSON-RPC server over stdio that exposes the Refract engine to AI agents via the Model Context Protocol.
+`refract mcp` starts a JSON-RPC server over stdio that exposes the Refract engine to AI agents via the Model Context Protocol.
 
 ## Usage
 
 ```bash
-wikihistory mcp
+refract mcp
 ```
 
 The server runs indefinitely on stdin/stdout. It accepts JSON-RPC 2.0 requests and returns structured responses.
@@ -19,7 +19,7 @@ The server runs indefinitely on stdin/stdout. It accepts JSON-RPC 2.0 requests a
   "mcpServers": {
     "sequent": {
       "command": "npx",
-      "args": ["wikihistory", "mcp"]
+      "args": ["refract", "mcp"]
     }
   }
 }
@@ -32,7 +32,7 @@ The server runs indefinitely on stdin/stdout. It accepts JSON-RPC 2.0 requests a
   "mcpServers": {
     "sequent": {
       "command": "bunx",
-      "args": ["wikihistory", "mcp"]
+      "args": ["refract", "mcp"]
     }
   }
 }

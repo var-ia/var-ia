@@ -1,6 +1,6 @@
 # @refract-org/cli
 
-CLI tool — provides the `wikihistory` command.
+CLI tool — provides the `refract` command (alias: `wikihistory`).
 
 ```bash
 bun add @refract-org/cli
@@ -35,13 +35,13 @@ bun add @refract-org/cli
 ### Examples
 
 ```bash
-wikihistory analyze "COVID-19 pandemic" --depth detailed
-wikihistory claim "Theranos" --text "revolutionary blood testing"
-wikihistory export "Bitcoin" --format ndjson
-wikihistory export "Bitcoin" --bundle
-wikihistory export "Bitcoin" --manifest
-wikihistory diff --wiki-a https://starwars.fandom.com/api.php --wiki-b https://memory-alpha.fandom.com/api.php "energy weapons"
-wikihistory eval
+refract analyze "COVID-19 pandemic" --depth detailed
+refract claim "Theranos" --text "revolutionary blood testing"
+refract export "Bitcoin" --format ndjson
+refract export "Bitcoin" --bundle
+refract export "Bitcoin" --manifest
+refract diff --wiki-a https://starwars.fandom.com/api.php --wiki-b https://memory-alpha.fandom.com/api.php "energy weapons"
+refract eval
 ```
 
-[Refract](https://github.com/refract-org/sequent) · [Docs](https://github.com/refract-org/sequent-docs) · [npm](https://www.npmjs.com/package/@refract-org/cli)
+[Refract](https://github.com/refract-org/refract) · [Docs](https://github.com/refract-org/refract-docs) · [npm](https://www.npmjs.com/package/@refract-org/cli)

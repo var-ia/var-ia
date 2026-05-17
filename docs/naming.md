@@ -5,13 +5,13 @@
 | Name | What it is | Why |
 |------|-----------|-----|
 | **Refract** | The project | Latin for "change" — the engine observes change |
-| **var-ia** | GitHub organization | `varia` was taken; `var-ia` was available |
+| **refract-org** | GitHub organization | npm scope matching; chosen for consistency with the project name |
 | **`@refract-org/*`** | npm package scope | All lowercase by npm convention |
-| **`wikihistory`** | CLI command verb | What you do: analyze wiki revision history |
+| **`refract`** / **`wikihistory`** | CLI commands | `refract` is the primary name; `wikihistory` works as an alias |
 
-## Why `wikihistory` and not `varia`?
+## Why both `refract` and `wikihistory`?
 
-The CLI is named after the action it performs, not the project it belongs to. When you type `wikihistory analyze "Bitcoin"`, the meaning is self-evident: analyze the wiki history of Bitcoin. `varia analyze` would require prior knowledge of what Refract is.
+`refract` is the primary command name. `wikihistory` works as an alias for backward compatibility — users with scripts or muscle memory using the original name won't break on upgrade. When you type `refract analyze "Bitcoin"`, the meaning is self-evident: refract the revision history of Bitcoin.
 
 ## Package paths
 
@@ -20,7 +20,7 @@ The CLI is named after the action it performs, not the project it belongs to. Wh
 bun add -g @refract-org/cli
 
 # Run it
-wikihistory analyze "Earth"
+refract analyze "Earth"
 
 # Import from packages
 import { sectionDiffer } from "@refract-org/analyzers";
@@ -29,13 +29,13 @@ import type { EvidenceEvent } from "@refract-org/evidence-graph";
 
 ## In code
 
-- Use `Refract` (capital V) as the project name in prose
+- Use `Refract` (capital R) as the project name in prose
 - Use `@refract-org/<name>` when referencing packages
-- Use `wikihistory` when referencing the CLI command
+- Use `refract` as the primary CLI command name; `wikihistory` is an alias
 
 ## In shell
 
 ```bash
-wikihistory --version    # 0.3.1
-which wikihistory        # points to @refract-org/cli binary
+refract --version    # 0.5.6
+which refract        # points to @refract-org/cli binary
 ```

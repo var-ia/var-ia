@@ -10,7 +10,7 @@ Refract calls it.
 **I want to know when a sentence first appeared, was removed, or reintroduced.**
 
 ```bash
-wikihistory claim "Bitcoin" --text "cryptocurrency"
+refract claim "Bitcoin" --text "cryptocurrency"
 ```
 
 Returns timeline of the claim across revisions. Example output:
@@ -27,7 +27,7 @@ Returns timeline of the claim across revisions. Example output:
 **I want to compare how Wikipedia and Fandom cover the same topic.**
 
 ```bash
-wikihistory diff "Star Wars" \
+refract diff "Star Wars" \
   --wiki-a https://en.wikipedia.org/w/api.php \
   --wiki-b https://starwars.fandom.com/api.php
 ```
@@ -54,14 +54,14 @@ Cross-Wiki Diff: "Star Wars"
 
 ```bash
 # Bearer token
-wikihistory analyze "Internal Policy" --api https://corp.example.com/w/api.php --api-key "sk-..."
+refract analyze "Internal Policy" --api https://corp.example.com/w/api.php --api-key "sk-..."
 
 # Basic auth
-wikihistory analyze "Internal Policy" --api https://corp.example.com/w/api.php --api-user "user" --api-password "pass"
+refract analyze "Internal Policy" --api https://corp.example.com/w/api.php --api-user "user" --api-password "pass"
 
 # OAuth2
 OAUTH_CLIENT_ID="..." OAUTH_CLIENT_SECRET="..." \
-  wikihistory analyze "Internal Policy" --api https://corp.example.com/w/api.php
+  refract analyze "Internal Policy" --api https://corp.example.com/w/api.php
 ```
 
 ---
@@ -77,7 +77,7 @@ Add to your MCP client config:
   "mcpServers": {
     "sequent": {
       "command": "bunx",
-      "args": ["wikihistory", "mcp"]
+      "args": ["refract", "mcp"]
     }
   }
 }
@@ -94,7 +94,7 @@ Then ask: "When did the Bitcoin article first call it a cryptocurrency?"
 ```bash
 # WikiWho: who wrote which token
 # Refract: when did a claim appear, change, disappear
-wikihistory analyze "Bitcoin" --depth detailed | grep claim
+refract analyze "Bitcoin" --depth detailed | grep claim
 ```
 
 ---
@@ -106,5 +106,5 @@ wikihistory analyze "Bitcoin" --depth detailed | grep claim
 ```bash
 # ORES: ML score for "likely damaging"
 # Refract: deterministic revert detection + policy signal classification
-wikihistory analyze "Bitcoin" --depth detailed | grep -E "revert|template"
+refract analyze "Bitcoin" --depth detailed | grep -E "revert|template"
 ```

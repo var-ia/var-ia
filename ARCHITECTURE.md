@@ -4,7 +4,7 @@ Refract is the git log for public knowledge — a deterministic observation subs
 that ingests revision histories and emits structured, provenance-tagged event
 streams. No model. No interpretation. Byte-for-byte reproducible.
 
-This architecture lives in the **varia** repository (open-source, generic
+This architecture lives in the **refract** repository (open-source, generic
 public-knowledge observability). Healthcare-specific logic lives in private
 repos, which consume this engine's output without modifying it.
 
